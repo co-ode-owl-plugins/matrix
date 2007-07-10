@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+    <VSNode splits="0.8035398230088495 0.19646017699115043">
+        <CNode>
+            <Component label="Property Features">
+                <Property id="pluginId" value="org.coode.PropertyMatrixView"/>
+            </Component>
+        </CNode>
+        <HSNode splits="0.25 0.25">
+            <CNode>
+                <Component label="Object Properties">
+                    <Property id="pluginId" value="org.protege.editor.owl.OWLObjectPropertyTree"/>
+                </Component>
+            </CNode>
+            <CNode>
+                <Component label="Classes">
+                    <Property id="pluginId" value="org.coode.ClassPalette"/>
+                </Component>
+            </CNode>
+        </HSNode>
+    </VSNode>
+</layout>
