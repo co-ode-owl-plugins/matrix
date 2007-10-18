@@ -107,11 +107,23 @@ public class IndividualsHelper {
     public Set<OWLIndividual> getMembers(OWLClass cls) {
         Set<OWLIndividual> instances = new HashSet<OWLIndividual>();
 
-        for (OWLOntology ont : onts){
-            for (OWLAxiom ax : ont.getReferencingAxioms(cls)){
-                if (ax instanceof OWLClassAssertionAxiom &&
+        final OWLClass thing = mngr.getOWLDataFactory().getOWLThing();
+        if (cls.equals(thing)){
+            for (OWLOntology ont : onts){
+                for (OWLIndividual ind : ont.getReferencedIndividuals()){
+                    if (ind.getTypes(ont).isEmpty() || ind.getTypes(ont).contains(thing)){
+                        instances.add(ind);
+                    }
+                }
+            }
+        }
+        else{
+            for (OWLOntology ont : onts){
+                for (OWLAxiom ax : ont.getReferencingAxioms(cls)){
+                    if (ax instanceof OWLClassAssertionAxiom &&
                         ((OWLClassAssertionAxiom)ax).getDescription().equals(cls)){
-                    instances.add(((OWLClassAssertionAxiom)ax).getIndividual());
+                        instances.add(((OWLClassAssertionAxiom)ax).getIndividual());
+                    }
                 }
             }
         }
@@ -132,7 +144,7 @@ public class IndividualsHelper {
         for (OWLOntology ont : onts){
             for (OWLAxiom ax : ont.getReferencingAxioms(cls)){
                 if (ax instanceof OWLClassAssertionAxiom &&
-                        ((OWLClassAssertionAxiom)ax).getDescription().equals(cls)){
+                    ((OWLClassAssertionAxiom)ax).getDescription().equals(cls)){
                     if (axioms.contains(ax)){
                         axioms.remove(ax); // we're satisfied this axiom is already in the ontologies, no need to create or check against it
                     }

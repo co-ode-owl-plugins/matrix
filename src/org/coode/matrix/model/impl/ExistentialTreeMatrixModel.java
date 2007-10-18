@@ -1,15 +1,15 @@
 package org.coode.matrix.model.impl;
 
-import org.semanticweb.owl.model.*;
 import org.coode.matrix.model.api.AbstractTreeMatrixModel;
 import org.coode.matrix.model.helper.FillerHelper;
 import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.semanticweb.owl.model.*;
 
-import java.util.List;
-import java.util.Collections;
-import java.util.Set;
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -100,5 +100,14 @@ public class ExistentialTreeMatrixModel extends AbstractTreeMatrixModel<OWLClass
 
     public Set getSuggestedFillers(OWLClass cls, Object p, int threshold) {
         return helper.getSuggestedFillers(cls, (OWLObjectProperty)p, threshold);
+    }
+
+
+    protected String renderColumnTitle(Object columnObject) {
+        String title = super.renderColumnTitle(columnObject);
+        if (columnObject instanceof OWLProperty){
+            title += " some";
+        }
+        return title;
     }
 }

@@ -1,24 +1,20 @@
 package org.coode.matrix.model.api;
 
 import org.coode.jtreetable.TreeTableModelAdapter;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
-import org.coode.matrix.model.api.TreeMatrixModel;
-import org.coode.matrix.model.api.OWLTreeTableModel;
-import org.coode.matrix.model.api.MatrixColumnModel;
-import org.coode.matrix.model.api.ContentsChangedListener;
 import org.coode.matrix.model.helper.AnnotatorHelper;
+import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
+import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLEntity;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
 import java.net.URI;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -58,7 +54,7 @@ public abstract class AbstractTreeMatrixModel<R extends OWLObject>
 
     protected OWLModelManager mngr;
 
-    private AnnotatorHelper annotHelper;
+    protected AnnotatorHelper annotHelper;
 
     private ContentsChangedListener listener = new ContentsChangedListener() {
 
@@ -118,18 +114,22 @@ public abstract class AbstractTreeMatrixModel<R extends OWLObject>
     public final String getColumnName(int column) {
         if (column > 0) {
             Object columnObject = columns.get(column - 1);
-            if (columnObject instanceof URI){
-                return ((URI)columnObject).getFragment();
-            }
-            if (columnObject instanceof OWLObject) {
-                return mngr.getOWLObjectRenderer().render((OWLObject) columnObject, mngr.getOWLEntityRenderer());
-            }
-            else {
-                return columnObject.toString();
-            }
+            return renderColumnTitle(columnObject);
         }
         else{
             return getTreeColumnLabel();
+        }
+    }
+
+    protected String renderColumnTitle(Object columnObject) {
+        if (columnObject instanceof URI){
+            return ((URI)columnObject).getFragment();
+        }
+        if (columnObject instanceof OWLObject) {
+            return mngr.getOWLObjectRenderer().render((OWLObject) columnObject, mngr.getOWLEntityRenderer());
+        }
+        else {
+            return columnObject.toString();
         }
     }
 

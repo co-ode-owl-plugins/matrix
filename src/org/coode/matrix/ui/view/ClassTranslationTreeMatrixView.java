@@ -1,14 +1,13 @@
 package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.AbstractTreeMatrixModel;
-import org.coode.matrix.model.impl.ClassMembershipTreeMatrixModel;
+import org.coode.matrix.model.impl.ClassTranslationTreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.semanticweb.owl.model.OWLClass;
 
 import javax.swing.table.TableCellEditor;
-
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -40,9 +39,10 @@ import javax.swing.table.TableCellEditor;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class ClassMembershipTreeMatrixView extends AbstractTreeMatrixView<OWLClass>{
+public class ClassTranslationTreeMatrixView extends AbstractTreeMatrixView<OWLClass> {
 
-    protected void initialiseMatrixView() throws Exception {
+    protected boolean isOWLClassView() {
+        return true;
     }
 
     protected OWLObjectHierarchyProvider<OWLClass> getHierarchyProvider() {
@@ -50,17 +50,15 @@ public class ClassMembershipTreeMatrixView extends AbstractTreeMatrixView<OWLCla
     }
 
     protected AbstractTreeMatrixModel<OWLClass> createMatrixModel(OWLObjectTreeTableCellRenderer<OWLClass> tree) {
-        return new ClassMembershipTreeMatrixModel(tree, getOWLModelManager());
+        return new ClassTranslationTreeMatrixModel(tree, getOWLModelManager());
     }
 
+    protected void initialiseMatrixView() throws Exception {
+    }
+
+
     protected TableCellEditor getCellEditor(Object columnObject, OWLClass rowObject) {
-        TableCellEditor editor = super.getCellEditor(columnObject, rowObject);
-        if (columnObject instanceof String){
-            setEditorType(OWLObjectListParser.INDIVIDUAL);
-        }
-        else{
-            setEditorType(OWLObjectListParser.DATATYPE);
-        }
-        return editor;
+        setEditorType(OWLObjectListParser.DATATYPE);
+        return super.getCellEditor(columnObject, rowObject);
     }
 }

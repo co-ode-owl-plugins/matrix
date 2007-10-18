@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 0.4" "http://jpf.sourceforge.net/plugin_0_4.dtd">
 
-<plugin id="org.coode.matrix" version="1.0.5.MatrixView">
+<plugin id="org.coode.matrix" version="1.0.6.MatrixView">
 
     <attributes>
         <attribute id="update-url" value="http://co-ode-owl-plugins.googlecode.com/svn/trunk/matrix/update.xml"/>

@@ -1,14 +1,14 @@
 package org.coode.matrix.model.helper;
 
+import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owl.model.*;
 import org.semanticweb.owl.util.OWLObjectVisitorAdapter;
-import org.protege.editor.owl.model.OWLModelManager;
 
 import java.net.URI;
-import java.util.Set;
-import java.util.List;
-import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -104,6 +104,19 @@ public class AnnotatorHelper {
         }
 
         return changes;
+    }
+
+    public Set<OWLObject> getAnnotationValues(OWLEntity entity, URI uri, String lang) {
+        Set<OWLObject> values = new HashSet<OWLObject>();
+        for (OWLAnnotation annot : getAnnotations(entity, uri)){
+            final OWLObject value = annot.getAnnotationValue();
+            if (value instanceof OWLUntypedConstant){
+                if (lang.equals(((OWLUntypedConstant)value).getLang())){
+                    values.add(value);
+                }
+            }
+        }
+        return values;
     }
 
     class AnnotationAxiomCreator extends OWLObjectVisitorAdapter{

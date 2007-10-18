@@ -1,12 +1,12 @@
 package org.coode.matrix.model.helper;
 
-import org.semanticweb.owl.model.*;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.semanticweb.owl.model.*;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -114,9 +114,11 @@ public class FillerHelper {
                 for (OWLSubClassAxiom ax : ont.getSubClassAxiomsForLHS(namedSuper)){
                     final OWLDescription superCls = ax.getSuperClass();
                     if (superCls instanceof OWLObjectSomeRestriction){
-                        OWLDescription filler = ((OWLObjectSomeRestriction) superCls).getFiller();
-                        if (filler instanceof OWLClass){
-                            namedFillers.add((OWLClass)filler);
+                        if (((OWLObjectSomeRestriction)superCls).getProperty().equals(prop)){
+                            OWLDescription filler = ((OWLObjectSomeRestriction) superCls).getFiller();
+                            if (filler instanceof OWLClass){
+                                namedFillers.add((OWLClass)filler);
+                            }
                         }
                     }
                 }
