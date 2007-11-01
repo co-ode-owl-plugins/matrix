@@ -1,6 +1,7 @@
 package org.coode.matrix.ui.editor;
 
 import org.apache.log4j.Logger;
+import org.coode.matrix.model.impl.FillerModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
 import org.protege.editor.owl.OWLEditorKit;
@@ -55,7 +56,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
 
     private JTextField editor;
 
-    private Set<OWLDescription> oldFillers;
+    private Set<OWLDescription> originalFillers;
 
     private OWLObjectListParser parser;
 
@@ -82,9 +83,14 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
 
 
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        oldFillers = (Set<OWLDescription>) value;
+        if (value instanceof FillerModel){
+            originalFillers = ((FillerModel)value).getAssertedFillersFromSupers();
+        }
+        else{
+            originalFillers = (Set<OWLDescription>) value;
+        }
 
-        editor.setText((value != null) ? ren.render((Set<OWLObject>) value) : "");
+        editor.setText((value != null) ? ren.render(originalFillers) : "");
 
         return editor;
     }
@@ -97,7 +103,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
         catch (OWLException e) {
             Logger.getLogger(OWLObjectListEditor.class).error("Invalid input, reverting...");
         }
-        return oldFillers;
+        return originalFillers;
     }
 
     public boolean isCellEditable(EventObject eventObject) {

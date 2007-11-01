@@ -2,8 +2,8 @@
 <layout>
     <VSNode splits="0.7407079646017699 0.2592920353982301">
         <CNode>
-            <Component label="Class Existential Restrictions">
-                <Property id="pluginId" value="org.coode.ExistentialMatrixView"/>
+            <Component label="Class Existential Matrix">
+                <Property id="pluginId" value="org.coode.matrix.org.coode.ExistentialMatrixView"/>
             </Component>
         </CNode>
         <HSNode splits="0.25 0.25">
@@ -13,11 +13,11 @@
                 </Component>
             </CNode>
             <CNode>
-                <Component label="Classes">
-                    <Property id="pluginId" value="org.coode.ClassPalette"/>
+                <Component label="Classes Palette">
+                    <Property id="pluginId" value="org.coode.matrix.org.coode.ClassPalette"/>
                 </Component>
-                <Component label="Individuals">
-                    <Property id="pluginId" value="org.coode.IndividualsPalette"/>
+                <Component label="Individuals By Class">
+                    <Property id="pluginId" value="org.protege.editor.owl.OWLIndividualsByClass"/>
                 </Component>
             </CNode>
         </HSNode>

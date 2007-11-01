@@ -1,20 +1,21 @@
 package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.AbstractTreeMatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.model.impl.ExistentialTreeMatrixModel;
-import org.coode.matrix.ui.editor.OWLObjectListEditor;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
-import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
+import org.coode.matrix.model.impl.FillerModel;
+import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddObjectPropertyAction;
+import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLOntology;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /*
@@ -83,6 +84,9 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
                         values.add(0, ExistentialTreeMatrixModel.NONE);
                         JComboBox dropDown = new JComboBox(values.toArray());
                         Object value = getMatrixModel().getMatrixValue(cls, p);
+                        if (value instanceof FillerModel){
+                            value = ((FillerModel)value).getAssertedFillersFromSupers();
+                        }
                         if (((Set<OWLDescription>)value).size() == 1){
                             value = ((Set<OWLDescription>)value).iterator().next();
                             if (values.contains(value)){

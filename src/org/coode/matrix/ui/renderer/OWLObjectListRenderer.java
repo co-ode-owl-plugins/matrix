@@ -1,5 +1,7 @@
 package org.coode.matrix.ui.renderer;
 
+import org.coode.matrix.model.impl.FillerModel;
+import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObject;
 
 import javax.swing.*;
@@ -47,10 +49,32 @@ public class OWLObjectListRenderer extends DefaultTableCellRenderer {
     }
 
     public Component getTableCellRendererComponent(JTable jTable, Object object, boolean b, boolean b1, int i, int i1) {
-        if (object instanceof Set) {
+        if (object instanceof FillerModel){
+            JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 2));
+            p.setPreferredSize(getPreferredSize());
+            if (jTable.isCellSelected(i, i1)){
+                p.setBackground(jTable.getSelectionBackground());
+            }
+            else{
+                p.setBackground(jTable.getBackground());
+            }
+            FillerModel fillerModel = (FillerModel) object;
+            addFillers(fillerModel.getAssertedFillersFromEquiv(), p, Color.RED);
+            addFillers(fillerModel.getAssertedFillersFromSupers(), p, Color.BLACK);
+            addFillers(fillerModel.getInheritedFillers(), p, Color.GRAY);
+            return p;
+        }
+        else if (object instanceof Set) {
             object = ren.render((Set<OWLObject>) object);
         }
         return super.getTableCellRendererComponent(jTable, object, b, b1, i, i1);
     }
 
+    private void addFillers(Set<OWLDescription> fillers, JPanel component, Color color) {
+        if (!fillers.isEmpty()){
+            JLabel label = new JLabel(ren.render(fillers));
+            label.setForeground(color);
+            component.add(label);
+        }
+    }
 }

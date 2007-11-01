@@ -106,23 +106,32 @@ public class FillerHelper {
         return objPropHelper.getRanges(p).size() > 0;
     }
 
-    public Set<OWLDescription> getNamedFillers(OWLClass cls, OWLObjectProperty prop) {
+    public Set<OWLDescription> getAssertedNamedFillers(OWLClass cls, OWLObjectProperty prop) {
         Set<OWLDescription> namedFillers = new HashSet<OWLDescription>();
 
         for (OWLOntology ont : mngr.getActiveOntologies()){
-            for (OWLClass namedSuper : getNamedAncestors(cls, true)){
-                for (OWLSubClassAxiom ax : ont.getSubClassAxiomsForLHS(namedSuper)){
-                    final OWLDescription superCls = ax.getSuperClass();
-                    if (superCls instanceof OWLObjectSomeRestriction){
-                        if (((OWLObjectSomeRestriction)superCls).getProperty().equals(prop)){
-                            OWLDescription filler = ((OWLObjectSomeRestriction) superCls).getFiller();
-                            if (filler instanceof OWLClass){
-                                namedFillers.add((OWLClass)filler);
-                            }
+            for (OWLSubClassAxiom ax : ont.getSubClassAxiomsForLHS(cls)){
+                final OWLDescription superCls = ax.getSuperClass();
+                if (superCls instanceof OWLObjectSomeRestriction){
+                    if (((OWLObjectSomeRestriction)superCls).getProperty().equals(prop)){
+                        OWLDescription filler = ((OWLObjectSomeRestriction) superCls).getFiller();
+                        if (filler instanceof OWLClass){
+                            namedFillers.add(filler);
                         }
                     }
                 }
             }
+        }
+
+        return namedFillers;
+    }
+
+    public Set<OWLDescription> getInheritedNamedFillers(OWLClass cls, OWLObjectProperty prop) {
+        Set<OWLDescription> namedFillers = new HashSet<OWLDescription>();
+
+        for (OWLClass namedSuper : getNamedAncestors(cls, false)){
+            namedFillers.addAll(getAssertedNamedFillers(namedSuper, prop));
+            namedFillers.addAll(getAssertedNamedFillersFromEquivs(namedSuper, prop));
         }
 
         return namedFillers;
@@ -186,5 +195,37 @@ public class FillerHelper {
         }
 
         return changes;
+    }
+
+    public Set<OWLDescription> getAssertedNamedFillersFromEquivs(OWLClass cls, OWLObjectProperty p) {
+        NamedFillerExtractor extractor = new NamedFillerExtractor(p, mngr.getActiveOntologies());
+        for (OWLOntology ont : mngr.getActiveOntologies()){
+            for (OWLDescription equiv : cls.getEquivalentClasses(ont)){
+                equiv.accept(extractor);
+            }
+        }
+        return extractor.getFillers();
+    }
+
+    class NamedFillerExtractor extends AbstractExistentialVisitorAdapter {
+
+        private Set<OWLDescription> fillers = new HashSet<OWLDescription>();
+        private OWLObjectProperty p;
+
+        public NamedFillerExtractor(OWLObjectProperty p, Set<OWLOntology> onts) {
+            super(onts);
+            this.p = p;
+        }
+
+        protected void handleRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLDescription> restriction) {
+            if (restriction.getProperty().equals(p) &&
+                restriction.getFiller() instanceof OWLClass){
+                fillers.add(restriction.getFiller());
+            }
+        }
+
+        public Set<OWLDescription> getFillers(){
+            return fillers;
+        }
     }
 }

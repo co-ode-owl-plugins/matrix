@@ -5,10 +5,13 @@ import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.UIHelper;
-import org.semanticweb.owl.model.OWLEntity;
+import org.protege.editor.owl.ui.selector.OWLObjectPropertySelectorPanel;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Collections;
+import java.util.Set;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -55,13 +58,23 @@ public class AddObjectPropertyAction extends DisposableAction {
     }
 
     public void actionPerformed(ActionEvent actionEvent) {
-        UIHelper helper = new UIHelper(eKit);
-        OWLObjectProperty property = helper.pickOWLObjectProperty();
-        if (property != null) {
+        for (OWLObjectProperty property : pickOWLObjectProperties()) {
             model.addColumn(property, -1);
         }
     }
 
     public void dispose() {
     }
+
+    private Set<OWLObjectProperty> pickOWLObjectProperties() {
+        UIHelper helper = new UIHelper(eKit);
+        OWLObjectPropertySelectorPanel objPropPanel = new OWLObjectPropertySelectorPanel(eKit);
+        if (helper.showDialog("Select object property(ies)", objPropPanel) == JOptionPane.OK_OPTION) {
+            return objPropPanel.getSelectedOWLObjectProperties();
+        }
+        else {
+            return Collections.EMPTY_SET;
+        }
+    }
+
 }

@@ -2,8 +2,8 @@
 <layout>
     <VSNode splits="0.8035398230088495 0.19646017699115043">
         <CNode>
-            <Component label="Property Features">
-                <Property id="pluginId" value="org.coode.PropertyMatrixView"/>
+            <Component label="Object Property Features Matrix">
+                <Property id="pluginId" value="org.coode.matrix.org.coode.PropertyMatrixView"/>
             </Component>
         </CNode>
         <HSNode splits="0.25 0.25">
@@ -13,8 +13,8 @@
                 </Component>
             </CNode>
             <CNode>
-                <Component label="Classes">
-                    <Property id="pluginId" value="org.coode.ClassPalette"/>
+                <Component label="Classes Palette">
+                    <Property id="pluginId" value="org.coode.matrix.org.coode.ClassPalette"/>
                 </Component>
             </CNode>
         </HSNode>

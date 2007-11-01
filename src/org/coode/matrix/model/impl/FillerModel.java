@@ -1,12 +1,11 @@
-package org.coode.matrix.ui.renderer;
+package org.coode.matrix.model.impl;
 
-import org.protege.editor.owl.model.OWLModelManager;
-import org.protege.editor.owl.ui.renderer.OWLEntityRenderer;
-import org.protege.editor.owl.ui.renderer.OWLObjectRenderer;
-import org.semanticweb.owl.model.OWLObject;
+import org.coode.matrix.model.helper.FillerHelper;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLObjectProperty;
 
 import java.util.Set;
-
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -36,27 +35,29 @@ import java.util.Set;
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Jul 3, 2007<br><br>
+ * Date: Nov 1, 2007<br><br>
  */
-public class OWLObjectsRenderer {
+public class FillerModel {
 
-    private OWLModelManager mngr;
+    private OWLClass cls;
+    private OWLObjectProperty p;
+    private FillerHelper helper;
 
-    public OWLObjectsRenderer(OWLModelManager mngr) {
-        this.mngr = mngr;
+    public FillerModel(OWLClass cls, OWLObjectProperty p, FillerHelper helper){
+        this.cls = cls;
+        this.p = p;
+        this.helper = helper;
     }
 
-    public String render(Set<? extends OWLObject> objects) {
-        if (objects != null && objects.size() > 0) {
-            StringBuffer str = new StringBuffer();
-            OWLObjectRenderer ren = mngr.getOWLObjectRenderer();
-            OWLEntityRenderer ren2 = mngr.getOWLEntityRenderer();
-            for (OWLObject obj : objects) {
-                str.append(", ");
-                str.append(ren.render(obj, ren2));
-            }
-            return str.substring(2);
-        }
-        return "";
+    public Set<OWLDescription> getAssertedFillersFromSupers(){
+        return helper.getAssertedNamedFillers(cls, p);
+    }
+
+    public Set<OWLDescription> getInheritedFillers(){
+        return helper.getInheritedNamedFillers(cls, p);
+    }
+
+    public Set<OWLDescription> getAssertedFillersFromEquiv(){
+        return helper.getAssertedNamedFillersFromEquivs(cls, p);
     }
 }

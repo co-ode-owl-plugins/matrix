@@ -2,29 +2,31 @@ package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.TreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
-import org.coode.matrix.ui.component.MatrixTreeTable;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
-import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
-import org.coode.matrix.ui.renderer.OWLObjectListRenderer;
 import org.coode.matrix.ui.action.AddAnnotationAction;
 import org.coode.matrix.ui.action.RemoveColumnAction;
+import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.coode.matrix.ui.editor.OWLObjectListEditor;
-import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
+import org.coode.matrix.ui.renderer.OWLObjectListRenderer;
+import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
+import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.OWLEntityComparator;
 import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
 import org.protege.editor.owl.ui.view.AbstractOWLSelectionViewComponent;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLIndividual;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -225,6 +227,18 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         public MyMatrixTreeTable(TreeMatrixModel<R> model, OWLModelManager mngr) {
             super(model, mngr);
         }
+
+//        public Dimension getMinimumSize() {
+//            final Dimension minimumSize = super.getMinimumSize();
+//            return new Dimension(Math.max(minimumSize.width, getParent().getSize().width),
+//                                          minimumSize.height);
+//        }
+//
+//        public Dimension getPreferredSize() {
+//            final Dimension prefSize = super.getPreferredSize();
+//            return new Dimension(Math.max(prefSize.width, getParent().getSize().width),
+//                                          prefSize.height);
+//        }
 
         public TableCellRenderer getCellRenderer(int row, int col) {
             TableCellRenderer ren = null;
