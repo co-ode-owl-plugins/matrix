@@ -104,6 +104,25 @@ public class IndividualsHelper {
         return changes;
     }
 
+    public List<OWLOntologyChange> addRelationships(OWLIndividual subject, OWLObjectProperty p,
+                                                    Set<OWLIndividual> objects, OWLOntology activeOnt) {
+        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+
+        // generate the axioms that should be in the ontology after this has completed
+        Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+        for (OWLIndividual object : objects){
+            OWLObjectPropertyAssertionAxiom relationAxiom =
+                    mngr.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(subject, p, object);
+            axioms.add(relationAxiom);
+        }
+        // add all remaining new axioms to the active ontology
+        for (OWLAxiom ax : axioms){
+            changes.add(new AddAxiom(activeOnt, ax));
+        }
+        return changes;
+    }
+
+
     public Set<OWLIndividual> getMembers(OWLClass cls) {
         Set<OWLIndividual> instances = new HashSet<OWLIndividual>();
 

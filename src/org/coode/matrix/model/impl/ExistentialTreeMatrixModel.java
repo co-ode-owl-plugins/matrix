@@ -2,11 +2,13 @@ package org.coode.matrix.model.impl;
 
 import org.coode.matrix.model.api.AbstractTreeMatrixModel;
 import org.coode.matrix.model.helper.FillerHelper;
+import org.coode.matrix.model.helper.ObjectPropertyHelper;
 import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owl.model.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -45,61 +47,113 @@ public class ExistentialTreeMatrixModel extends AbstractTreeMatrixModel<OWLClass
 
     public static final String NONE = "none";
 
-    private FillerHelper helper;
+    private FillerHelper fillerHelper;
+    private ObjectPropertyHelper objHelper;
+
 
     public ExistentialTreeMatrixModel(OWLObjectTreeTableCellRenderer tree, OWLModelManager mngr) {
         super(tree, mngr);
-        helper = new FillerHelper(mngr);
+        fillerHelper = new FillerHelper(mngr);
+        objHelper = new ObjectPropertyHelper(mngr);
     }
+
 
     protected String getTreeColumnLabel() {
         return "Class";
     }
 
+
     public Object getMatrixValue(OWLClass rowObject, Object columnObject) {
         if (columnObject instanceof OWLObjectProperty){
-            return new FillerModel(rowObject, (OWLObjectProperty)columnObject, helper);
+            return new FillerModel(rowObject, (OWLObjectProperty)columnObject, fillerHelper);
         }
         else {
             return super.getMatrixValue(rowObject, columnObject);
         }
     }
 
+
     public List<OWLOntologyChange> setMatrixValue(OWLClass cls, Object prop, Object value) {
+        List<OWLOntologyChange> changes = new ArrayList <OWLOntologyChange>();
+
         if (prop instanceof OWLObjectProperty){
             if (value.equals(NONE)) {
-                return helper.setNamedFillers(Collections.EMPTY_SET, cls,
-                                              (OWLObjectProperty)prop, mngr.getActiveOntology());
+                changes = fillerHelper.setNamedFillers(Collections.EMPTY_SET, cls,
+                                                       (OWLObjectProperty)prop, mngr.getActiveOntology());
             }
             else if (value instanceof Set) {
-                return helper.setNamedFillers((Set<OWLDescription>) value, cls,
-                                              (OWLObjectProperty)prop, mngr.getActiveOntology());
+                changes = fillerHelper.setNamedFillers((Set<OWLDescription>) value, cls,
+                                                       (OWLObjectProperty)prop, mngr.getActiveOntology());
             }
             else if (value instanceof OWLClass){
-                return helper.setNamedFillers(Collections.singleton((OWLDescription)value), cls,
-                                              (OWLObjectProperty)prop, mngr.getActiveOntology());
+                changes = fillerHelper.setNamedFillers(Collections.singleton((OWLDescription)value), cls,
+                                                       (OWLObjectProperty)prop, mngr.getActiveOntology());
             }
         }
         else{
-            return super.setMatrixValue(cls, prop, value);
+            changes = super.setMatrixValue(cls, prop, value);
         }
-        return Collections.EMPTY_LIST;
+
+        return changes;
     }
+
+
+    public List<OWLOntologyChange> addMatrixValue(OWLClass cls, Object prop, Object value) {
+
+        if (prop instanceof OWLObjectProperty){
+            final OWLObjectProperty objProp = (OWLObjectProperty) prop;
+            if (objHelper.isFunctional(objProp)){
+                if (fillerHelper.getAssertedNamedFillers(cls, objProp).isEmpty()){
+                    return performAdd(cls, objProp, value);
+                }
+            }
+            else{
+                return performAdd(cls, objProp, value);
+            }
+        }
+        else{
+            return super.addMatrixValue(cls, prop, value);
+        }
+
+        return Collections.emptyList();
+    }
+
+    private List<OWLOntologyChange> performAdd(OWLClass cls, OWLObjectProperty objProp, Object value) {
+
+        Set<OWLDescription> newValues = null;
+
+        if (value instanceof Set) {
+            newValues = (Set<OWLDescription>) value;
+        }
+        else if (value instanceof OWLClass){
+            newValues = Collections.singleton((OWLDescription)value);
+        }
+
+        if (newValues != null && !newValues.isEmpty()){
+            return fillerHelper.addNamedFillers(newValues, cls, objProp, mngr.getActiveOntology());
+        }
+
+        return Collections.emptyList();
+    }
+
 
     public boolean isSuitableCellValue(Object value, int row, int col) {
         return value instanceof OWLClass;
     }
 
+
     public boolean isSuitableColumnObject(Object columnObject) {
         return columnObject instanceof OWLObjectProperty || columnObject instanceof URI;
     }
 
+
     public boolean isValueRestricted(OWLClass cls, Object p) {
-        return helper.fillersRestricted((OWLObjectProperty)p);
+        return fillerHelper.fillersRestricted((OWLObjectProperty)p);
     }
 
+
     public Set getSuggestedFillers(OWLClass cls, Object p, int threshold) {
-        return helper.getSuggestedFillers(cls, (OWLObjectProperty)p, threshold);
+        return fillerHelper.getSuggestedFillers(cls, (OWLObjectProperty)p, threshold);
     }
 
 

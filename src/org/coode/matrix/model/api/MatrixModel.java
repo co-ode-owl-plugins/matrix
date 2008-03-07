@@ -3,8 +3,8 @@ package org.coode.matrix.model.api;
 import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -39,19 +39,32 @@ import java.util.List;
  */
 interface MatrixModel<R extends OWLObject> {
 
+    boolean addColumn(Object obj);
+
     boolean addColumn(Object obj, int index);
 
-    void removeColumn(Object obj);
+    boolean removeColumn(Object obj);
 
-    List getColumnObjects();
+    public int indexOf(Object obj);
 
-    R getOWLObjectForRow(int row);
+    public boolean contains(Object value);
 
-    Object getObjectForColumn(int column);
+    R getRowObject(int row);
+
+    Object getColumnObject(int column);
 
     Object getMatrixValue(R rowObject, Object columnObject);
 
     List<OWLOntologyChange> setMatrixValue(R rowObj, Object columnObj, Object value);
+
+    /**
+     * As above, but for non-functional properties where adding a value to an existing set of values is possible
+     * @param rowObj
+     * @param columnObj
+     * @param value
+     * @return a list of changes that need to be applied for this add to take place
+     */
+    List<OWLOntologyChange> addMatrixValue(R rowObj, Object columnObj, Object value);
 
     boolean isSuitableCellValue(Object value, int row, int col);
 
@@ -60,4 +73,8 @@ interface MatrixModel<R extends OWLObject> {
     boolean isValueRestricted(R rowObject, Object columnObject);
 
     Set getSuggestedFillers(R rowObject, Object columnObject, int threshold);
+
+    void setFilterForColumn(int col, Object filter);
+
+    Object getFilterForColumn(int col);
 }

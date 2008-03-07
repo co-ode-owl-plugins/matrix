@@ -1,19 +1,19 @@
 package org.coode.matrix.ui.action;
 
+import org.coode.matrix.model.helper.ObjectPropertyHelper;
+import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.UIHelper;
-import org.coode.matrix.model.api.TreeMatrixModel;
-import org.coode.matrix.model.helper.ObjectPropertyHelper;
-import org.coode.matrix.ui.component.AnnotationURIList;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.*;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -50,14 +50,12 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
     private static final String LABEL = "Select property feature columns";
 
     private OWLEditorKit eKit;
-    private TreeMatrixModel model;
-    private ObjectPropertyHelper helper;
+    private MatrixTreeTable table;
 
-    public SelectPropertyFeaturesAction(OWLEditorKit eKit, TreeMatrixModel model, ObjectPropertyHelper helper) {
+    public SelectPropertyFeaturesAction(OWLEditorKit eKit, MatrixTreeTable table) {
         super(LABEL, OWLIcons.getIcon("property.object.png"));
         this.eKit = eKit;
-        this.model = model;
-        this.helper = helper;
+        this.table = table;
     }
 
     public void dispose() {
@@ -66,15 +64,19 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
     public void actionPerformed(ActionEvent actionEvent) {
         UIHelper uihelper = new UIHelper(eKit);
 
-        PropertyFeaturesPanel uriList = new PropertyFeaturesPanel();
+        PropertyFeaturesPanel featuresPanel = new PropertyFeaturesPanel();
 
-        if (uihelper.showDialog("Pick which features you want to be visible", uriList) == JOptionPane.OK_OPTION){
-            for (final String col : ObjectPropertyHelper.names) {
-                if (uriList.isVisible(col)) {
-                    model.addColumn(col, helper.toIndex(col));
+        if (uihelper.showDialog("Pick which features you want to be visible", featuresPanel) == JOptionPane.OK_OPTION){
+            for (ObjectPropertyHelper.Characteristic c : ObjectPropertyHelper.Characteristic.values()) {
+                if (featuresPanel.isVisible(c)) {
+                    if (!table.containsColumn(c)){
+                        table.addColumn(c);// @@TODO , helper.toIndex(col));
+                    }
                 }
                 else {
-                    model.removeColumn(col);
+                    if (table.containsColumn(c)){
+                        table.removeColumn(c);
+                    }
                 }
             }
         }
@@ -82,17 +84,16 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
 
     class PropertyFeaturesPanel extends JPanel{
 
-        private List<JCheckBox> checkMap = new ArrayList<JCheckBox>();
+        private Map<JCheckBox, ObjectPropertyHelper.Characteristic> checkMap = new HashMap<JCheckBox, ObjectPropertyHelper.Characteristic>();
 
         public PropertyFeaturesPanel() {
             setLayout(new BorderLayout());
             Box box = new Box(BoxLayout.Y_AXIS);
 
-            for (int i=0; i<ObjectPropertyHelper.names.size(); i++){
-                final String name = ObjectPropertyHelper.names.get(i);
-                JCheckBox check = new JCheckBox(name);
-                check.setSelected(model.getColumnObjects().contains(name));
-                checkMap.add(check);
+            for (ObjectPropertyHelper.Characteristic c : ObjectPropertyHelper.Characteristic.values()){
+                JCheckBox check = new JCheckBox(c.toString());
+                check.setSelected(table.containsColumn(c));
+                checkMap.put(check, c);
                 box.add(check);
                 box.add(Box.createVerticalStrut(7));
             }
@@ -100,19 +101,23 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
             add(box);
         }
 
-        public List<String> getVisible(){
-            List<String> visible = new ArrayList<String>();
-            for (int i=0; i<ObjectPropertyHelper.names.size(); i++){
-                if (checkMap.get(i).isSelected()){
-                    visible.add(ObjectPropertyHelper.names.get(i));
+        public Set<ObjectPropertyHelper.Characteristic> getVisible(){
+            Set<ObjectPropertyHelper.Characteristic> visible = new HashSet<ObjectPropertyHelper.Characteristic>();
+            for (JCheckBox cb : checkMap.keySet()){
+                if (cb.isSelected()){
+                    visible.add(checkMap.get(cb));
                 }
             }
             return visible;
         }
 
-        public boolean isVisible(String col){
-            int index = helper.toIndex(col);
-            return checkMap.get(index).isSelected();
+        public boolean isVisible(ObjectPropertyHelper.Characteristic c){
+            for (JCheckBox cb : checkMap.keySet()){
+                if (checkMap.get(cb).equals(c)){
+                    return cb.isSelected();
+                }
+            }
+            return false;
         }
     }
 }

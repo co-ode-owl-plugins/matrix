@@ -101,6 +101,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
             return parser.getValues(editor.getText());
         }
         catch (OWLException e) {
+            e.printStackTrace();
             Logger.getLogger(OWLObjectListEditor.class).error("Invalid input, reverting...");
         }
         return originalFillers;

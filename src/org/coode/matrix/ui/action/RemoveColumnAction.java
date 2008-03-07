@@ -1,6 +1,7 @@
 package org.coode.matrix.ui.action;
 
-import org.coode.matrix.model.api.TreeMatrixModel;
+import org.coode.jtreetable.TreeTableModel;
+import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
@@ -45,16 +46,13 @@ public class RemoveColumnAction extends DisposableAction {
 
     private static final String LABEL = "Remove column from matrix";
 
-    private TreeMatrixModel model;
-
     private OWLEditorKit eKit;
 
-    private JTable table;
+    private MatrixTreeTable table;
 
-    public RemoveColumnAction(OWLEditorKit eKit, TreeMatrixModel model, JTable table) {
+    public RemoveColumnAction(OWLEditorKit eKit, MatrixTreeTable table) {
         super(LABEL, OWLIcons.getIcon("property.annotation.remove.png"));
         this.eKit = eKit;
-        this.model = model;
         this.table = table;
     }
 
@@ -62,11 +60,9 @@ public class RemoveColumnAction extends DisposableAction {
     }
 
     public void actionPerformed(ActionEvent actionEvent) {
-        Object property;
         int col = table.getSelectedColumn();
-        if (col > 0) {
-            property = model.getColumnObjects().get(col - 1);
-            model.removeColumn(property);
+        if (col != -1 && !table.getColumnClass(col).equals(TreeTableModel.class)) {
+            table.removeColumn(col);
         }
         else {
             UIHelper helper = new UIHelper(eKit);
@@ -74,7 +70,9 @@ public class RemoveColumnAction extends DisposableAction {
             JList selectorList = createSelector();
 
             if (helper.showDialog(LABEL, new JScrollPane(selectorList)) == JOptionPane.OK_OPTION) {
-                model.removeColumn(selectorList.getSelectedValue());
+                final Object columnObj = selectorList.getSelectedValue();
+                col = table.getColumnModel().getColumnIndex(columnObj);
+                table.removeColumn(col);
             }
         }
     }
@@ -82,11 +80,11 @@ public class RemoveColumnAction extends DisposableAction {
     private JList createSelector() {
         ListModel listmodel = new AbstractListModel() {
             public int getSize() {
-                return model.getColumnObjects().size();
+                return table.getColumnCount()-1;
             }
 
             public Object getElementAt(int i) {
-                return model.getColumnObjects().get(i);
+                return table.getMatrixModel().getColumnObject(i+1);
             }
         };
 

@@ -197,6 +197,20 @@ public class FillerHelper {
         return changes;
     }
 
+
+    public List<OWLOntologyChange> addNamedFillers(Set<OWLDescription> fillers, OWLClass cls, OWLObjectProperty p, OWLOntology activeOnt) {
+        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+
+        for (OWLDescription filler : fillers){
+            OWLObjectSomeRestriction svf = mngr.getOWLDataFactory().getOWLObjectSomeRestriction(p, filler);
+            OWLSubClassAxiom subclassAxiom = mngr.getOWLDataFactory().getOWLSubClassAxiom(cls, svf);
+            changes.add(new AddAxiom(activeOnt, subclassAxiom));
+        }
+
+        return changes;
+    }
+
+
     public Set<OWLDescription> getAssertedNamedFillersFromEquivs(OWLClass cls, OWLObjectProperty p) {
         NamedFillerExtractor extractor = new NamedFillerExtractor(p, mngr.getActiveOntologies());
         for (OWLOntology ont : mngr.getActiveOntologies()){
@@ -206,6 +220,7 @@ public class FillerHelper {
         }
         return extractor.getFillers();
     }
+
 
     class NamedFillerExtractor extends AbstractExistentialVisitorAdapter {
 

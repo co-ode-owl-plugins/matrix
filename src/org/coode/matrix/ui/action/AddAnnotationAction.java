@@ -1,7 +1,7 @@
 package org.coode.matrix.ui.action;
 
-import org.coode.matrix.model.api.TreeMatrixModel;
 import org.coode.matrix.ui.component.AnnotationURIList;
+import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
@@ -47,12 +47,12 @@ public class AddAnnotationAction extends DisposableAction {
     private static final String LABEL = "Add annotation column to matrix";
 
     private OWLEditorKit eKit;
-    private TreeMatrixModel model;
+    private MatrixTreeTable table;
 
-    public AddAnnotationAction(OWLEditorKit eKit, TreeMatrixModel model) {
+    public AddAnnotationAction(OWLEditorKit eKit, MatrixTreeTable table) {
         super(LABEL, OWLIcons.getIcon("property.annotation.add.png"));
         this.eKit = eKit;
-        this.model = model;
+        this.table = table;
     }
 
     public void dispose() {
@@ -66,7 +66,7 @@ public class AddAnnotationAction extends DisposableAction {
         if (helper.showDialog("Pick an annotation URI", uriList) == JOptionPane.OK_OPTION){
             URI uri = uriList.getSelectedURI();
             if (uri != null){
-                model.addColumn(uri, -1);
+                table.addColumn(uri);
             }
         }
     }

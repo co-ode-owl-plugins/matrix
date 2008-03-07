@@ -5,7 +5,7 @@ import org.protege.editor.owl.ui.renderer.OWLEntityRenderer;
 import org.protege.editor.owl.ui.renderer.OWLObjectRenderer;
 import org.semanticweb.owl.model.OWLObject;
 
-import java.util.Set;
+import java.util.Collection;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -46,7 +46,7 @@ public class OWLObjectsRenderer {
         this.mngr = mngr;
     }
 
-    public String render(Set<? extends OWLObject> objects) {
+    public String render(Collection<? extends OWLObject> objects) {
         if (objects != null && objects.size() > 0) {
             StringBuffer str = new StringBuffer();
             OWLObjectRenderer ren = mngr.getOWLObjectRenderer();

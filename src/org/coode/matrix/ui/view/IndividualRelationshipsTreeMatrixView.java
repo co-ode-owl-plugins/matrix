@@ -1,14 +1,15 @@
 package org.coode.matrix.ui.view;
 
-import org.coode.matrix.model.hierarchy.ClassAndIndividualHierarchyProvider;
 import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.hierarchy.ClassAndIndividualHierarchyProvider;
 import org.coode.matrix.model.impl.IndividualRelationsTreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddObjectPropertyAction;
 import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLObjectProperty;
 
 import javax.swing.table.TableCellEditor;
 
@@ -52,7 +53,7 @@ public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixVie
     }
 
     protected void initialiseMatrixView() throws Exception {
-        addAction(new AddObjectPropertyAction(getOWLEditorKit(), getMatrixModel()), "A", "B");
+        addAction(new AddObjectPropertyAction(getOWLEditorKit(), getTable()), "A", "B");
     }
 
     protected OWLObjectHierarchyProvider<OWLEntity> getHierarchyProvider() {
@@ -69,7 +70,7 @@ public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixVie
         return new IndividualRelationsTreeMatrixModel(tree, getOWLModelManager());
     }
 
-    protected TableCellEditor getCellEditor(OWLObjectProperty columnObject, OWLEntity rowObject) {
+    protected TableCellEditor getCellEditor(Object columnObject, OWLEntity rowObject) {
         if (columnObject instanceof OWLObjectProperty){
             setEditorType(OWLObjectListParser.INDIVIDUAL);
         }
@@ -78,7 +79,6 @@ public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixVie
         }
         return super.getCellEditor(columnObject, rowObject);
     }
-
 
     public void disposeView() {
         hierarchyProvider.dispose();

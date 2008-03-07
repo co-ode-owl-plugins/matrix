@@ -1,14 +1,17 @@
 package org.coode.matrix.model.impl;
 
-import org.semanticweb.owl.model.*;
 import org.coode.matrix.model.api.AbstractTreeMatrixModel;
 import org.coode.matrix.model.helper.IndividualsHelper;
 import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLIndividual;
+import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLOntologyChange;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.Collections;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -68,13 +71,34 @@ public class IndividualRelationsTreeMatrixModel extends AbstractTreeMatrixModel<
     public List<OWLOntologyChange> setMatrixValue(OWLEntity ind, Object prop, Object value) {
         if (prop instanceof OWLObjectProperty){
             return helper.setRelationships((OWLIndividual) ind,
-                                           (OWLObjectProperty) prop,
-                                           (Set<OWLIndividual>) value,
-                                           mngr.getActiveOntology());
+                    (OWLObjectProperty) prop,
+                    (Set<OWLIndividual>) value,
+                    mngr.getActiveOntology());
         }
         else{
             return super.setMatrixValue(ind, prop, value);
         }
+    }
+
+
+    public List<OWLOntologyChange> addMatrixValue(OWLEntity rowObj, Object columnObj, Object value) {
+        if (columnObj instanceof OWLObjectProperty){
+            Set<OWLIndividual> values = null;
+            if (value instanceof OWLIndividual){
+                values = Collections.singleton((OWLIndividual)value);
+            }
+            else if (value instanceof Set){
+                // @@TODO check the contents of the set
+                values = (Set<OWLIndividual>)value;
+            }
+            if (values != null){
+                return helper.addRelationships((OWLIndividual) rowObj,
+                        (OWLObjectProperty) columnObj,
+                        values,
+                        mngr.getActiveOntology());
+            }
+        }
+        return super.addMatrixValue(rowObj, columnObj, value);
     }
 
     public boolean isSuitableCellValue(Object value, int row, int col) {
@@ -94,6 +118,6 @@ public class IndividualRelationsTreeMatrixModel extends AbstractTreeMatrixModel<
     }
 
     public boolean isCellEditable(int row, int column) {
-        return getOWLObjectForRow(row) instanceof OWLIndividual;
+        return getRowObject(row) instanceof OWLIndividual;
     }
 }

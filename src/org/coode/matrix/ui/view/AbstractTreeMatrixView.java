@@ -1,5 +1,6 @@
 package org.coode.matrix.ui.view;
 
+import org.coode.jtreetable.TreeTableModel;
 import org.coode.matrix.model.api.TreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddAnnotationAction;
@@ -21,10 +22,15 @@ import org.semanticweb.owl.model.OWLIndividual;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -61,11 +67,16 @@ import java.util.Comparator;
  */
 public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends AbstractOWLSelectionViewComponent {
 
+    private static final boolean FILTERS_SUPPORTED = true;
+
+
     private OWLObjectHierarchyProvider<R> hierarchy;
 
     private OWLObjectTreeTableCellRenderer<R> tree;
 
     private MatrixTreeTable<R> table;
+
+    private JScrollPane scroller;
 
     private TreeMatrixModel<R> model;
 
@@ -74,24 +85,23 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
     private OWLObjectListRenderer objectListRen;
 
     private TableCellEditor objectListEditor;
-    
+
     private OWLObjectListParser parser;
 
     private TreeSelectionListener selectionlistener = new TreeSelectionListener() {
         public void valueChanged(TreeSelectionEvent e) {
-            if (!isPinned()) {
-                TreePath path = tree.getSelectionPath();
-                if (path != null) {
-                    R owlObject = ((OWLObjectTreeNode<R>) path.getLastPathComponent()).getOWLObject();
-                    setSelectedEntity(owlObject);
-                }
-                else {
-                    // Update from OWL selection model
-                    updateViewContentAndHeader();
-                }
-            }
+            handleTreeSelectionChanged();
         }
     };
+
+
+    private MouseListener columnFilterMouseListener = new MouseAdapter(){
+        public void mouseClicked(MouseEvent mouseEvent) {
+            int col = table.getColumnModel().getColumnIndexAtX(mouseEvent.getX()) - 1;
+            handleColumnFilterRequest(col);
+        }
+    };
+
 
     // @@TODO ensure no columns remain when the referenced entity is removed from the ontology
     public final void initialiseView() throws Exception {
@@ -105,21 +115,49 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         model = createMatrixModel(tree);
 
         table = new MyMatrixTreeTable(model, getOWLModelManager());
+        if (filtersSupported()){
+            JTableHeader header = table.getTableHeader();
+            header.addMouseListener(columnFilterMouseListener);
+        }
 
-        JScrollPane scroller = new JScrollPane(table);
+        scroller = new JScrollPane(table);
         add(scroller, BorderLayout.CENTER);
 
         createDefaultCellRendererAndEditor();
 
         tree.addTreeSelectionListener(selectionlistener);
 
-        addAction(new AddAnnotationAction(getOWLEditorKit(), model), "A", "A");
-        addAction(new RemoveColumnAction(getOWLEditorKit(), model, table), "B", "A");
+        addAction(new AddAnnotationAction(getOWLEditorKit(), table), "A", "A");
+        addAction(new RemoveColumnAction(getOWLEditorKit(), table), "B", "A");
 
         initialiseMatrixView();
     }
 
-    protected Comparator<R> getOWLEntityComparator() {
+
+    public void disposeView() {
+        tree.removeTreeSelectionListener(selectionlistener);
+        JTableHeader header = table.getTableHeader();
+        header.removeMouseListener(columnFilterMouseListener);
+
+        selectionlistener = null;
+    }
+
+
+    protected abstract OWLObjectHierarchyProvider<R> getHierarchyProvider();
+
+
+    protected abstract TreeMatrixModel<R> createMatrixModel(OWLObjectTreeTableCellRenderer<R> tree);
+
+
+    protected abstract void initialiseMatrixView() throws Exception;
+
+
+    protected boolean filtersSupported() {
+        return FILTERS_SUPPORTED;
+    }
+
+
+    protected final Comparator<R> getOWLEntityComparator() {
         if (comparator == null){
             comparator = new OWLEntityComparator<R>(getOWLModelManager()){
 
@@ -137,32 +175,6 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         return comparator;
     }
 
-    protected abstract OWLObjectHierarchyProvider<R> getHierarchyProvider();
-
-    protected abstract TreeMatrixModel<R> createMatrixModel(OWLObjectTreeTableCellRenderer<R> tree);
-
-    protected TableCellRenderer getCellRendererForColumn(Object columnObject) {
-        return objectListRen;
-    }
-
-    protected TableCellEditor getCellEditor(Object columnObject, R rowObject) {
-        return objectListEditor;
-    }
-
-    protected abstract void initialiseMatrixView() throws Exception;
-
-    protected final TreeMatrixModel<R> getMatrixModel() {
-        return model;
-    }
-
-    protected final JTable getTable() {
-        return table;
-    }
-
-    public void disposeView() {
-        tree.removeTreeSelectionListener(selectionlistener);
-        selectionlistener = null;
-    }
 
     protected R updateView() {
         R selectedOWLObject = getSelectedOWLEntity();
@@ -184,6 +196,36 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         return selectedOWLObject;
     }
 
+
+    protected TableCellRenderer getCellRendererForColumn(Object columnObject) {
+        return objectListRen;
+    }
+
+
+    protected TableCellEditor getCellEditor(Object columnObject, R rowObject) {
+        return objectListEditor;
+    }
+
+
+    protected final TreeMatrixModel<R> getMatrixModel() {
+        return model;
+    }
+
+
+    protected final MatrixTreeTable getTable() {
+        return table;
+    }
+
+
+    /**
+     *
+     * @param type - one of "CLASS, OBJPROP, DATAPROP, INDIVIDUAL, DATATYPE" constants from OWLObjectListParser
+     */
+    protected final void setEditorType(int type) {
+        parser.setTypes(Collections.singleton(type));
+    }
+
+
     private R getSelectedOWLEntity() {
         if (isOWLClassView()) {
             return (R) getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
@@ -202,6 +244,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         }
     }
 
+
     private void createDefaultCellRendererAndEditor() {
         OWLObjectsRenderer objRen = new OWLObjectsRenderer(getOWLModelManager());
 
@@ -211,13 +254,38 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         objectListRen = new OWLObjectListRenderer(objRen);
     }
 
-    /**
-     *
-     * @param type - one of "CLASS, OBJPROP, DATAPROP, INDIVIDUAL, DATATYPE" constants from OWLObjectListParser
-     */
-    protected final void setEditorType(int type) {
-        parser.setTypes(Collections.singleton(type));
+
+    private void handleColumnFilterRequest(int col) {
+        if (col >= 0 && getColumnObject(col) instanceof URI){
+            String lang = JOptionPane.showInputDialog("Enter a language filter (or leave blank for all)");
+            if (lang.length() == 0){
+                lang = null;
+            }
+            model.setFilterForColumn(col, lang);
+            model.getTreeTableModelAdapter().fireTableStructureChanged();
+        }
     }
+
+
+    private void handleTreeSelectionChanged() {
+        if (!isPinned()) {
+            TreePath path = tree.getSelectionPath();
+            if (path != null) {
+                R owlObject = ((OWLObjectTreeNode<R>) path.getLastPathComponent()).getOWLObject();
+                setSelectedEntity(owlObject);
+            }
+            else {
+                // Update from OWL selection model
+                updateViewContentAndHeader();
+            }
+        }
+    }
+
+
+    private Object getColumnObject(int col) {
+        return table.getMatrixModel().getColumnObject(col);//getColumnModel().getColumn(col).getHeaderValue();
+    }
+
 
     /**
      * Table that asks for the renderers and editors for a given column from the view
@@ -226,24 +294,14 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
         public MyMatrixTreeTable(TreeMatrixModel<R> model, OWLModelManager mngr) {
             super(model, mngr);
+            setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         }
 
-//        public Dimension getMinimumSize() {
-//            final Dimension minimumSize = super.getMinimumSize();
-//            return new Dimension(Math.max(minimumSize.width, getParent().getSize().width),
-//                                          minimumSize.height);
-//        }
-//
-//        public Dimension getPreferredSize() {
-//            final Dimension prefSize = super.getPreferredSize();
-//            return new Dimension(Math.max(prefSize.width, getParent().getSize().width),
-//                                          prefSize.height);
-//        }
 
         public TableCellRenderer getCellRenderer(int row, int col) {
             TableCellRenderer ren = null;
-            if (col > 0) {
-                Object colObj = model.getObjectForColumn(col);
+            if (!getColumnClass(col).equals(TreeTableModel.class)) {
+                Object colObj = getColumnObject(col);
                 ren = getCellRendererForColumn(colObj);
             }
             if (ren == null) {
@@ -252,11 +310,12 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
             return ren;
         }
 
+
         public TableCellEditor getCellEditor(int row, int col) {
             TableCellEditor editor = null;
-            if (col > 0) {
-                Object colObj = model.getObjectForColumn(col);
-                R rowObj = model.getOWLObjectForRow(row);
+            if (!getColumnClass(col).equals(TreeTableModel.class)) {
+                Object colObj = getColumnObject(col);
+                R rowObj = model.getRowObject(row);
                 editor = AbstractTreeMatrixView.this.getCellEditor(colObj, rowObj);
             }
             if (editor == null) {

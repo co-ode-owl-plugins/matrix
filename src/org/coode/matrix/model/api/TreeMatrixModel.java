@@ -1,14 +1,11 @@
 package org.coode.matrix.model.api;
 
-import org.semanticweb.owl.model.OWLObject;
 import org.coode.jtreetable.TreeTableCellRenderer;
 import org.coode.jtreetable.TreeTableModelAdapter;
+import org.semanticweb.owl.model.OWLObject;
 
 import javax.swing.*;
-
-import sun.jvm.hotspot.code.CodeBlob;
-
-import java.util.List;
+import javax.swing.table.TableColumnModel;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -60,4 +57,6 @@ public interface TreeMatrixModel<R extends OWLObject> extends MatrixModel<R> {
      * @return a TableModel implementation for the treetable
      */
     TreeTableModelAdapter getTreeTableModelAdapter();
+
+    TableColumnModel getColumnModel();
 }

@@ -1,6 +1,6 @@
 package org.coode.matrix.ui.action;
 
-import org.coode.matrix.model.api.TreeMatrixModel;
+import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
@@ -49,17 +49,17 @@ public class AddObjectPropertyAction extends DisposableAction {
     private static final String LABEL = "Add object property column to matrix";
 
     private OWLEditorKit eKit;
-    private TreeMatrixModel model;
+    private MatrixTreeTable table;
 
-    public AddObjectPropertyAction(OWLEditorKit eKit, TreeMatrixModel model) {
+    public AddObjectPropertyAction(OWLEditorKit eKit, MatrixTreeTable table) {
         super(LABEL, OWLIcons.getIcon("property.object.add.png"));
         this.eKit = eKit;
-        this.model = model;
+        this.table = table;
     }
 
     public void actionPerformed(ActionEvent actionEvent) {
         for (OWLObjectProperty property : pickOWLObjectProperties()) {
-            model.addColumn(property, -1);
+            table.addColumn(property);
         }
     }
 

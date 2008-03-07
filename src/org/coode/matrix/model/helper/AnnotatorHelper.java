@@ -47,10 +47,12 @@ public class AnnotatorHelper {
 
     private AnnotationAxiomCreator annotationAxiomCreator;
 
+
     public AnnotatorHelper(OWLModelManager mngr) {
         this.mngr = mngr;
         this.annotationAxiomCreator = new AnnotationAxiomCreator();
     }
+
 
     public Set<OWLAnnotation> getAnnotations(OWLEntity entity, URI prop) {
         Set<OWLAnnotation> annots = new HashSet<OWLAnnotation>();
@@ -64,6 +66,7 @@ public class AnnotatorHelper {
         return annots;
     }
 
+
     public Set<OWLObject> getAnnotationValues(OWLEntity entity, URI uri) {
         Set<OWLObject> values = new HashSet<OWLObject>();
         for (OWLAnnotation annot : getAnnotations(entity, uri)){
@@ -71,6 +74,7 @@ public class AnnotatorHelper {
         }
         return values;
     }
+
 
     public List<OWLOntologyChange> setAnnotationValues(OWLEntity entity, URI uri,
                                                        Set<OWLObject> values,
@@ -106,6 +110,7 @@ public class AnnotatorHelper {
         return changes;
     }
 
+
     public Set<OWLObject> getAnnotationValues(OWLEntity entity, URI uri, String lang) {
         Set<OWLObject> values = new HashSet<OWLObject>();
         for (OWLAnnotation annot : getAnnotations(entity, uri)){
@@ -118,6 +123,7 @@ public class AnnotatorHelper {
         }
         return values;
     }
+
 
     class AnnotationAxiomCreator extends OWLObjectVisitorAdapter{
         private OWLEntity entity;

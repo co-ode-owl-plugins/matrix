@@ -1,7 +1,7 @@
 package org.coode.matrix.model.helper;
 
-import org.semanticweb.owl.model.*;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.semanticweb.owl.model.*;
 
 import java.util.*;
 
@@ -38,41 +38,29 @@ import java.util.*;
  */
 public class ObjectPropertyHelper {
 
-    public static final List<String> names = Arrays.asList(
-            "Fun", "Sym", "InvF", "Tra", "Anti-Sym", "Refl", "Irrefl", "Domain", "Range", "Inverse");
+    public static enum Characteristic {FUNCTIONAL, SYMMETRIC, INVERSE_FUNCTIONAL, TRANSITIVE, ANTI_SYMMETRIC, REFLEXIVE, IRREFLEXIVE};
 
-    public static final int FUNCTIONAL = 0;
-    public static final int SYMMETRIC = 1;
-    public static final int INVERSE_FUNCTIONAL = 2;
-    public static final int TRANSITIVE = 3;
-    public static final int ANTI_SYMMETRIC = 4;
-    public static final int REFLEXIVE = 5;
-    public static final int IRREFLEXIVE = 6;
-    public static final int DOMAIN = 7;
-    public static final int RANGE = 8;
-    public static final int INVERSE = 9;
-
-    private static final int START_FEATURES = FUNCTIONAL;
-    private static final int END_FEATURES = IRREFLEXIVE;
-    public static final int AXIOM_TYPE_COUNT = INVERSE;
+    public static enum Feature {DOMAIN, RANGE, INVERSE};
 
     private OWLModelManager mngr;
+
+    public static void main(String[] args) {
+
+        Characteristic c = Characteristic.FUNCTIONAL;
+        if (c instanceof Characteristic){
+            System.out.println("true");
+        }
+    }
+
 
     public ObjectPropertyHelper(OWLModelManager mngr) {
         this.mngr = mngr;
     }
 
-    public final boolean isCharacteristic(Object o) {
-        if (o instanceof String){
-            int feature = toIndex((String)o);
-            return feature >= START_FEATURES && feature <= END_FEATURES;
-        }
-        return false;
-    }
 
-    public final boolean getPropertyCharacteristic(OWLObjectProperty p, String characteristic) {
+    public final boolean getPropertyCharacteristic(OWLObjectProperty p, Characteristic characteristic) {
 
-        OWLAxiom searchAxiom = createAxiomOfType(p, names.indexOf(characteristic));
+        OWLAxiom searchAxiom = createAxiomOfType(p, characteristic);
 
         for (OWLOntology ont : mngr.getActiveOntologies()){
             if (ont.getReferencingAxioms(p).contains(searchAxiom)){
@@ -82,8 +70,7 @@ public class ObjectPropertyHelper {
         return false;
     }
 
-    private final OWLAxiom createAxiomOfType(OWLObjectProperty p, int type){
-        mngr.getOWLDataFactory();
+    private final OWLAxiom createAxiomOfType(OWLObjectProperty p, Characteristic type){
         switch (type) {
             case FUNCTIONAL:
                 return mngr.getOWLDataFactory().getOWLFunctionalObjectPropertyAxiom(p);
@@ -104,11 +91,11 @@ public class ObjectPropertyHelper {
     }
 
     public List<OWLOntologyChange> setPropertyCharacteristic(boolean value, OWLObjectProperty p,
-                                                             String characteristic, OWLOntology activeOnt) {
+                                                             Characteristic characteristic, OWLOntology activeOnt) {
 
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
-        OWLAxiom newAxiom = createAxiomOfType(p, names.indexOf(characteristic));
+        OWLAxiom newAxiom = createAxiomOfType(p, characteristic);
 
         if (value){ // if the characteristic is set, make sure the axiom exists
             for (OWLOntology ont : mngr.getActiveOntologies()){
@@ -231,17 +218,6 @@ public class ObjectPropertyHelper {
         return changes;
     }
 
-//    public List<String> getColumnNames() {
-//        return names;
-//    }
-
-    public int toIndex(String colName) {
-        return names.indexOf(colName);
-    }
-
-    public String toString(int feature) {
-        return names.get(feature);
-    }
 
     public Set<OWLDescription> getRanges(OWLObjectProperty p) {
         Set<OWLDescription> ranges = new HashSet<OWLDescription>();
@@ -269,5 +245,9 @@ public class ObjectPropertyHelper {
             }
         }
         return inverses;
+    }
+
+    public boolean isFunctional(OWLObjectProperty prop) {
+        return getPropertyCharacteristic(prop, Characteristic.FUNCTIONAL);
     }
 }

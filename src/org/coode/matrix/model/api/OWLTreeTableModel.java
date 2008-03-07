@@ -38,6 +38,10 @@ import javax.swing.*;
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
+ *
+ * An implementation of a tree table model that takes an OWLObjectHierarchyProvider to generate the tree.
+ *
+ * This is a generic use tree table model that can be used quite seperately from the matrix code.
  */
 class OWLTreeTableModel<O extends OWLObject> extends AbstractTreeTableModel {
 
@@ -59,39 +63,51 @@ class OWLTreeTableModel<O extends OWLObject> extends AbstractTreeTableModel {
                 }
             };
 
+    /**
+     * Constructor that creates a tree table model using the given hierarchy provider
+     * @param hierarchyProvider
+     */
     public OWLTreeTableModel(OWLObjectHierarchyProvider<O> hierarchyProvider) {
         super((hierarchyProvider.getRoots().size() > 0) ? hierarchyProvider.getRoots().iterator().next() : null);
         this.hierarchyProvider = hierarchyProvider;
         hierarchyProvider.addListener(owlHierarchyListener);
     }
 
+
     public int getRowCount() {
         return tree.getRowCount();
     }
+
 
     public int getColumnCount() {
         return 1;
     }
 
+
     public String getColumnName(int column) {
         return null;
     }
+
 
     public Object getValueAt(Object node, int column) {
         return node;
     }
 
+
     public Class getColumnClass(int column) {
         return (column == 0) ? TreeTableModel.class : super.getColumnClass(column);
     }
+
 
     public Object getChild(Object object, int i) {
         return hierarchyProvider.getChildren((O) object).toArray()[i];
     }
 
+
     public int getChildCount(Object object) {
         return hierarchyProvider.getChildren((O) object).size();
     }
+
 
     protected void finalize() throws Throwable {
         hierarchyProvider.removeListener(owlHierarchyListener);

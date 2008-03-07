@@ -54,7 +54,7 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
     private int threshold = 10;
 
     protected void initialiseMatrixView() throws Exception {
-        addAction(new AddObjectPropertyAction(getOWLEditorKit(), getMatrixModel()), "A", "B");
+        addAction(new AddObjectPropertyAction(getOWLEditorKit(), getTable()), "A", "B");
     }
 
     protected OWLObjectHierarchyProvider<OWLClass> getHierarchyProvider() {
@@ -70,6 +70,7 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
     }
 
     protected TableCellEditor getCellEditor(Object columnObject, OWLClass cls) {
+
         if (columnObject instanceof OWLObjectProperty){
 
             // make sure the editor only shows classes
@@ -102,6 +103,7 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
         else{
             setEditorType(OWLObjectListParser.DATATYPE);
         }
+        
         return super.getCellEditor(columnObject, cls);
     }
 

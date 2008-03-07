@@ -7,6 +7,7 @@ import org.semanticweb.owl.model.OWLObject;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.util.Collection;
 import java.util.Set;
 
 /*
@@ -42,6 +43,10 @@ import java.util.Set;
  */
 public class OWLObjectListRenderer extends DefaultTableCellRenderer {
 
+    private static final Color EQUIV_COLOUR = new Color(80, 80, 80);
+    private static final Color SUPER_COLOUR = new Color(0, 0, 0);
+    private static final Color INHERITED_COLOUR = new Color(160, 160, 160);
+
     private OWLObjectsRenderer ren;
 
     public OWLObjectListRenderer(OWLObjectsRenderer ren) {
@@ -59,13 +64,13 @@ public class OWLObjectListRenderer extends DefaultTableCellRenderer {
                 p.setBackground(jTable.getBackground());
             }
             FillerModel fillerModel = (FillerModel) object;
-            addFillers(fillerModel.getAssertedFillersFromEquiv(), p, Color.RED);
-            addFillers(fillerModel.getAssertedFillersFromSupers(), p, Color.BLACK);
-            addFillers(fillerModel.getInheritedFillers(), p, Color.GRAY);
+            addFillers(fillerModel.getAssertedFillersFromEquiv(), p, EQUIV_COLOUR);
+            addFillers(fillerModel.getAssertedFillersFromSupers(), p, SUPER_COLOUR);
+            addFillers(fillerModel.getInheritedFillers(), p, INHERITED_COLOUR);
             return p;
         }
-        else if (object instanceof Set) {
-            object = ren.render((Set<OWLObject>) object);
+        else if (object instanceof Collection) {
+            object = ren.render((Collection<OWLObject>) object);
         }
         return super.getTableCellRendererComponent(jTable, object, b, b1, i, i1);
     }
