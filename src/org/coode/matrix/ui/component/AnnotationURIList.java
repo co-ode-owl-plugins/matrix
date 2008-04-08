@@ -1,19 +1,23 @@
 package org.coode.matrix.ui.component;
 
+import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ui.list.MList;
-import org.protege.editor.core.ui.list.MListSectionHeader;
 import org.protege.editor.core.ui.list.MListItem;
-import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
+import org.protege.editor.core.ui.list.MListSectionHeader;
 import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 import org.semanticweb.owl.vocab.DublinCoreVocabulary;
+import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -96,7 +100,7 @@ public class AnnotationURIList extends MList {
             rebuildAnnotationURIList();
         }
         catch (URISyntaxException e) {
-            e.printStackTrace();
+            ProtegeApplication.getErrorLog().handleError(Thread.currentThread(), e);            
         }
     }
 

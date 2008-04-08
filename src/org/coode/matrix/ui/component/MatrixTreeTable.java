@@ -257,7 +257,10 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
     // stretch the columns widths if they are too small to fit the viewport
     public boolean getScrollableTracksViewportWidth() {
-        return getColumnCount()*200 < getParent().getWidth();
+        return getPreferredSize().width < getParent().getWidth();
+//        return true;
+//        return getColumnCount() == 1;
+//        return getColumnCount()*200 < getParent().getWidth();
     }
 
 
