@@ -1,7 +1,7 @@
 package org.coode.matrix.ui.palette;
 
+import org.protege.editor.owl.ui.frame.AnnotationURIList;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
-import org.coode.matrix.ui.component.AnnotationURIList;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,11 +45,12 @@ public class AnnotationURIPalette extends AbstractOWLViewComponent {
         setLayout(new BorderLayout());
 
         uriList = new AnnotationURIList(getOWLEditorKit());
+        uriList.rebuildAnnotationURIList();
 
         add(new JScrollPane(uriList), BorderLayout.CENTER);
     }
 
     protected void disposeOWLView() {
-        //@@TODO implement
+        uriList = null;
     }
 }

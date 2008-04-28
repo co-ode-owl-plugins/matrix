@@ -1,11 +1,11 @@
 package org.coode.matrix.ui.action;
 
-import org.coode.matrix.ui.component.AnnotationURIList;
 import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.UIHelper;
+import org.protege.editor.owl.ui.frame.AnnotationURIList;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -49,9 +49,12 @@ public class AddAnnotationAction extends DisposableAction {
     private OWLEditorKit eKit;
     private MatrixTreeTable table;
 
+    private AnnotationURIList uriList;
+
     public AddAnnotationAction(OWLEditorKit eKit, MatrixTreeTable table) {
         super(LABEL, OWLIcons.getIcon("property.annotation.add.png"));
         this.eKit = eKit;
+        uriList = new AnnotationURIList(eKit);
         this.table = table;
     }
 
@@ -61,9 +64,9 @@ public class AddAnnotationAction extends DisposableAction {
     public void actionPerformed(ActionEvent actionEvent) {
         UIHelper helper = new UIHelper(eKit);
 
-        AnnotationURIList uriList = new AnnotationURIList(eKit);
+        uriList.rebuildAnnotationURIList();
 
-        if (helper.showDialog("Pick an annotation URI", uriList) == JOptionPane.OK_OPTION){
+        if (helper.showDialog("Pick an annotation URI", new JScrollPane(uriList)) == JOptionPane.OK_OPTION){
             URI uri = uriList.getSelectedURI();
             if (uri != null){
                 table.addColumn(uri);
