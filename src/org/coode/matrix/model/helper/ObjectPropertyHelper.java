@@ -47,9 +47,9 @@ public class ObjectPropertyHelper {
     public static void main(String[] args) {
 
         Characteristic c = Characteristic.FUNCTIONAL;
-        if (c instanceof Characteristic){
-            System.out.println("true");
-        }
+//        if (c instanceof Characteristic){
+//            System.out.println("true");
+//        }
     }
 
 

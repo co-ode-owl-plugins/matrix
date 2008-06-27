@@ -15,10 +15,10 @@ import org.semanticweb.owl.model.OWLOntologyChange;
 
 import javax.swing.*;
 import java.net.URI;
-import java.util.Comparator;
-import java.util.Set;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -60,16 +60,16 @@ public class TestMatrixTreeTable {
         OWLEditorKit eKit = new OWLEditorKit(eKitFac);
         OWLModelManager mngr = new OWLModelManagerImpl();
         try {
-            mngr.loadOntology(new URI("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl"));
+            mngr.getOWLOntologyManager().loadOntologyFromPhysicalURI(new URI("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl"));
             OWLObjectHierarchyProvider<OWLClass> provider = mngr.getOWLClassHierarchyProvider();
 
-            Comparator comp = new OWLEntityComparator(mngr);
+            Comparator<OWLClass> comp = new OWLEntityComparator<OWLClass>(mngr);
             OWLObjectTreeTableCellRenderer<OWLClass> ren = new OWLObjectTreeTableCellRenderer<OWLClass>(eKit, provider, comp);
 
             AbstractTreeMatrixModel<OWLClass> model = new AbstractTreeMatrixModel<OWLClass>(ren, mngr) {
 
                 public Object getMatrixValue(OWLClass rowObject, Object columnObject) {
-                    return "hehe";
+                    return rowObject + ": " + columnObject;
                 }
 
                 public List<OWLOntologyChange> setMatrixValue(OWLClass rowObj, Object columnObj, Object value) {
@@ -77,11 +77,11 @@ public class TestMatrixTreeTable {
                 }
 
                 public boolean isSuitableCellValue(Object value, int row, int col) {
-                    return false;  //@@TODO implement
+                    return false;
                 }
 
                 public boolean isSuitableColumnObject(Object columnObject) {
-                    return false;  //@@TODO implement
+                    return false;
                 }
 
                 public boolean isValueRestricted(OWLClass rowObject, Object columnObject) {
@@ -99,7 +99,7 @@ public class TestMatrixTreeTable {
 
             table = new MatrixTreeTable<OWLClass>(model, mngr);
 
-            JOptionPane.showMessageDialog(null, new JScrollPane(table));
+            JOptionPane.showConfirmDialog(null, new JScrollPane(table), "Test MatrixTreeTable", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         }
         catch (Exception e) {
             Logger.getLogger(TestMatrixTreeTable.class).error(e);

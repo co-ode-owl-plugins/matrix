@@ -65,7 +65,7 @@ public class ExistentialTreeMatrixModel extends AbstractTreeMatrixModel<OWLClass
 
     public Object getMatrixValue(OWLClass rowObject, Object columnObject) {
         if (columnObject instanceof OWLObjectProperty){
-            return new FillerModel(rowObject, (OWLObjectProperty)columnObject, fillerHelper);
+            return new FillerModel(rowObject, (OWLObjectProperty) columnObject, fillerHelper);
         }
         else {
             return super.getMatrixValue(rowObject, columnObject);

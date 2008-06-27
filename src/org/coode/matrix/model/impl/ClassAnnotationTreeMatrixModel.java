@@ -1,19 +1,14 @@
 package org.coode.matrix.model.impl;
 
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 import org.coode.matrix.model.api.AbstractTreeMatrixModel;
-import org.coode.matrix.model.helper.AnnotatorHelper;
 import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.vocab.OWLRDFVocabulary;
 
 import java.net.URI;
-import java.util.Set;
 import java.util.Collections;
-import java.util.List;
-import java.security.InvalidParameterException;
+import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -50,8 +45,8 @@ public class ClassAnnotationTreeMatrixModel extends AbstractTreeMatrixModel<OWLC
     public ClassAnnotationTreeMatrixModel(OWLObjectTreeTableCellRenderer<OWLClass> tree, OWLModelManager mngr) {
         super(tree, mngr);
 
-        addColumn(OWLRDFVocabulary.RDFS_LABEL.getURI(), -1);
-        addColumn(OWLRDFVocabulary.RDFS_COMMENT.getURI(), -1);
+        addColumn(OWLRDFVocabulary.RDFS_LABEL.getURI());
+        addColumn(OWLRDFVocabulary.RDFS_COMMENT.getURI());
     }
 
     protected String getTreeColumnLabel() {

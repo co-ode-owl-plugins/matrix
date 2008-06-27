@@ -258,7 +258,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
     private void handleColumnFilterRequest(int col) {
         if (col >= 0 && getColumnObject(col) instanceof URI){
             String lang = JOptionPane.showInputDialog("Enter a language filter (or leave blank for all)");
-            if (lang.length() == 0){
+            if (lang == null || lang.length() == 0){
                 lang = null;
             }
             model.setFilterForColumn(col, lang);
@@ -283,7 +283,8 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
 
     private Object getColumnObject(int col) {
-        return table.getMatrixModel().getColumnObject(col);//getColumnModel().getColumn(col).getHeaderValue();
+        return table.getColumnModel().getColumn(col).getHeaderValue();
+//        return table.getMatrixModel().getColumnObject(col);//getColumnModel().getColumn(col).getHeaderValue();
     }
 
 
@@ -303,6 +304,8 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
             if (!getColumnClass(col).equals(TreeTableModel.class)) {
                 Object colObj = getColumnObject(col);
                 ren = getCellRendererForColumn(colObj);
+//                System.out.println("col/colObj = " + col + "/" + colObj);
+//                System.out.println("ren.getClass() = " + ren.getClass());
             }
             if (ren == null) {
                 ren = super.getCellRenderer(row, col);
@@ -317,6 +320,9 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
                 Object colObj = getColumnObject(col);
                 R rowObj = model.getRowObject(row);
                 editor = AbstractTreeMatrixView.this.getCellEditor(colObj, rowObj);
+                // we are getting the correct editor for the given column
+//                System.out.println("col/colObj = " + col + "/" + colObj);
+//                System.out.println("editor.getClass() = " + editor.getClass());
             }
             if (editor == null) {
                 editor = super.getCellEditor(row, col);

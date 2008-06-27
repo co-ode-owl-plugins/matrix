@@ -70,8 +70,6 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
         defaultCursor = getCursor();
 
-        setShowGrid(true);
-
         setGridColor(Color.LIGHT_GRAY);//getSelectionBackground());
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

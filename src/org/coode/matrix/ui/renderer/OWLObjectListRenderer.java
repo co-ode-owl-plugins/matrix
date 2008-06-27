@@ -43,9 +43,11 @@ import java.util.Set;
  */
 public class OWLObjectListRenderer extends DefaultTableCellRenderer {
 
-    private static final Color EQUIV_COLOUR = new Color(80, 80, 80);
-    private static final Color SUPER_COLOUR = new Color(0, 0, 0);
-    private static final Color INHERITED_COLOUR = new Color(160, 160, 160);
+    private static final Color NOT_EDITABLE_COLOUR = new Color(80, 80, 80);
+    private static final Color EDITABLE_COLOUR = new Color(0, 0, 0);
+
+    private static final Color ASSERTED_COLOUR = new Color(255, 255, 255);
+    private static final Color INHERITED_COLOUR = new Color(255, 255, 160);
 
     private OWLObjectsRenderer ren;
 
@@ -53,32 +55,34 @@ public class OWLObjectListRenderer extends DefaultTableCellRenderer {
         this.ren = ren;
     }
 
-    public Component getTableCellRendererComponent(JTable jTable, Object object, boolean b, boolean b1, int i, int i1) {
-        if (object instanceof FillerModel){
+    public Component getTableCellRendererComponent(JTable jTable, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+        if (value instanceof FillerModel){
             JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 2));
             p.setPreferredSize(getPreferredSize());
-            if (jTable.isCellSelected(i, i1)){
+            if (isSelected){
                 p.setBackground(jTable.getSelectionBackground());
             }
             else{
                 p.setBackground(jTable.getBackground());
             }
-            FillerModel fillerModel = (FillerModel) object;
-            addFillers(fillerModel.getAssertedFillersFromEquiv(), p, EQUIV_COLOUR);
-            addFillers(fillerModel.getAssertedFillersFromSupers(), p, SUPER_COLOUR);
-            addFillers(fillerModel.getInheritedFillers(), p, INHERITED_COLOUR);
+            System.out.println("col->value = " +  col + "->" + value);
+            FillerModel fillerModel = (FillerModel) value;
+            addFillers(fillerModel.getAssertedFillersFromEquiv(), p, NOT_EDITABLE_COLOUR, ASSERTED_COLOUR);
+            addFillers(fillerModel.getAssertedFillersFromSupers(), p, EDITABLE_COLOUR, ASSERTED_COLOUR);
+            addFillers(fillerModel.getInheritedFillers(), p, NOT_EDITABLE_COLOUR, INHERITED_COLOUR);
             return p;
         }
-        else if (object instanceof Collection) {
-            object = ren.render((Collection<OWLObject>) object);
+        else if (value instanceof Collection) {
+            value = ren.render((Collection<OWLObject>) value);
         }
-        return super.getTableCellRendererComponent(jTable, object, b, b1, i, i1);
+        return super.getTableCellRendererComponent(jTable, value, isSelected, hasFocus, row, col);
     }
 
-    private void addFillers(Set<OWLDescription> fillers, JPanel component, Color color) {
+    private void addFillers(Set<OWLDescription> fillers, JPanel component, Color color, Color background) {
         if (!fillers.isEmpty()){
             JLabel label = new JLabel(ren.render(fillers));
             label.setForeground(color);
+            label.setBackground(background);
             component.add(label);
         }
     }

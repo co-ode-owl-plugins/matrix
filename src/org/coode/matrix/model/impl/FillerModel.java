@@ -60,4 +60,16 @@ public class FillerModel {
     public Set<OWLDescription> getAssertedFillersFromEquiv(){
         return helper.getAssertedNamedFillersFromEquivs(cls, p);
     }
+
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for(OWLDescription descr : getAssertedFillersFromSupers()){
+            if (sb.length() != 0){
+                sb.append(", ");
+            }
+            sb.append(descr.toString());
+        }
+        return sb.toString();
+    }
 }

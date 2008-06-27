@@ -1,9 +1,9 @@
 package org.coode.matrix.ui.editor;
 
-import org.apache.log4j.Logger;
 import org.coode.matrix.model.impl.FillerModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
+import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.description.OWLExpressionParserException;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionAutoCompleter;
@@ -101,8 +101,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
             return parser.getValues(editor.getText());
         }
         catch (OWLException e) {
-            e.printStackTrace();
-            Logger.getLogger(OWLObjectListEditor.class).error("Invalid input, reverting...");
+            ProtegeApplication.getErrorLog().handleError(Thread.currentThread(), e);            
         }
         return originalFillers;
     }
