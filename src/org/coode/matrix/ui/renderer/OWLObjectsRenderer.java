@@ -1,8 +1,6 @@
 package org.coode.matrix.ui.renderer;
 
 import org.protege.editor.owl.model.OWLModelManager;
-import org.protege.editor.owl.ui.renderer.OWLEntityRenderer;
-import org.protege.editor.owl.ui.renderer.OWLObjectRenderer;
 import org.semanticweb.owl.model.OWLObject;
 
 import java.util.Collection;
@@ -49,11 +47,9 @@ public class OWLObjectsRenderer {
     public String render(Collection<? extends OWLObject> objects) {
         if (objects != null && objects.size() > 0) {
             StringBuffer str = new StringBuffer();
-            OWLObjectRenderer ren = mngr.getOWLObjectRenderer();
-            OWLEntityRenderer ren2 = mngr.getOWLEntityRenderer();
             for (OWLObject obj : objects) {
                 str.append(", ");
-                str.append(ren.render(obj, ren2));
+                str.append(mngr.getRendering(obj));
             }
             return str.substring(2);
         }

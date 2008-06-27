@@ -237,7 +237,7 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
             label = ((URI)columnObject).getFragment();
         }
         else if (columnObject instanceof OWLObject) {
-            label = mngr.getOWLObjectRenderer().render((OWLObject) columnObject, mngr.getOWLEntityRenderer());
+            label = mngr.getRendering((OWLObject) columnObject);
         }
         else {
             label = columnObject.toString();
