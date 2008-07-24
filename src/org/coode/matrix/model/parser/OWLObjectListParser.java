@@ -4,18 +4,19 @@ import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.description.OWLExpressionParserException;
 import org.protege.editor.owl.model.description.manchester.DataTypeMapper;
 import org.protege.editor.owl.model.description.manchester.DataTypeMapperImpl;
-import org.protege.editor.owl.model.description.manchester.EntityMapperImpl;
 import org.protege.editor.owl.model.description.manchester.EntityMapper;
+import org.protege.editor.owl.model.description.manchester.EntityMapperImpl;
+import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.semanticweb.owl.model.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
+import java.util.regex.Pattern;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -50,6 +51,7 @@ import java.io.IOException;
  */
 public class OWLObjectListParser {
 
+    private static final String SEPERATOR = ",";
     public static final int DATATYPE = 0;
     public static final int CLASS = 1;
     public static final int OBJPROP = 2;
@@ -61,6 +63,7 @@ public class OWLObjectListParser {
 
     private Set<Integer> types;
     private OWLModelManager mngr;
+
 
     public OWLObjectListParser(OWLModelManager mngr) {
         this.mngr = mngr;
@@ -76,10 +79,11 @@ public class OWLObjectListParser {
     public Set<OWLObject> getValues(String expression) throws OWLExpressionParserException {
         Set<OWLObject> values = new HashSet<OWLObject>();
         if (expression.length() > 0) {
-            String[] strings = expression.split(", ");
+            final OWLExpressionChecker<OWLDescription> checker = mngr.getOWLExpressionCheckerFactory().getOWLDescriptionChecker();
+            String[] strings = expression.split(SEPERATOR);
             for (String string : strings) {
                 if (isDescriptionParser()){
-                    values.add(mngr.getOWLDescriptionParser().createOWLDescription(string));
+                    values.add(checker.createObject(string));
                 }
                 else if (isDatatypeParser()) {
                     values.add(parseDatatype(string.trim()));

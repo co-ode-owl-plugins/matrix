@@ -228,19 +228,19 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
     private R getSelectedOWLEntity() {
         if (isOWLClassView()) {
-            return (R) getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
+            return (R) getOWLEditorKit().getWorkspace().getOWLSelectionModel().getLastSelectedClass();
         }
         else if (isOWLObjectPropertyView()) {
-            return (R) getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedObjectProperty();
+            return (R) getOWLEditorKit().getWorkspace().getOWLSelectionModel().getLastSelectedObjectProperty();
         }
         else if (isOWLDataPropertyView()) {
-            return (R) getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedDataProperty();
+            return (R) getOWLEditorKit().getWorkspace().getOWLSelectionModel().getLastSelectedDataProperty();
         }
         else if (isOWLIndividualView()) {
-            return (R) getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getLastSelectedIndividual();
+            return (R) getOWLEditorKit().getWorkspace().getOWLSelectionModel().getLastSelectedIndividual();
         }
         else {
-            return (R) getOWLEditorKit().getOWLWorkspace().getOWLSelectionModel().getSelectedEntity();
+            return (R) getOWLEditorKit().getWorkspace().getOWLSelectionModel().getSelectedEntity();
         }
     }
 

@@ -70,7 +70,7 @@ public class AddObjectPropertyAction extends DisposableAction {
         UIHelper helper = new UIHelper(eKit);
         OWLObjectPropertySelectorPanel objPropPanel = new OWLObjectPropertySelectorPanel(eKit);
         if (helper.showDialog("Select object property(ies)", objPropPanel) == JOptionPane.OK_OPTION) {
-            return objPropPanel.getSelectedOWLObjectProperties();
+            return objPropPanel.getSelectedObjects();
         }
         else {
             return Collections.EMPTY_SET;
