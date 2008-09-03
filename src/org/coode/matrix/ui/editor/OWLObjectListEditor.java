@@ -8,6 +8,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.description.OWLExpressionParserException;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionAutoCompleter;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
+import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLObject;
@@ -60,15 +61,11 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
 
     private OWLObjectListParser parser;
 
-    public OWLObjectListEditor(OWLEditorKit eKit, OWLObjectsRenderer ren, OWLObjectListParser parser) {
-        super();
+    private OWLDescriptionAutoCompleter ac;
 
-        this.ren = ren;
-        this.parser = parser;
+    private OWLEditorKit eKit;
 
-        editor = new JTextField();
-
-        OWLExpressionChecker<Set<OWLObject>> checker = new OWLExpressionChecker<Set<OWLObject>>(){
+    private OWLExpressionChecker<Set<OWLObject>> checker = new OWLExpressionChecker<Set<OWLObject>>(){
             public void check(String text) throws OWLExpressionParserException {
                 OWLObjectListEditor.this.parser.isWellFormed(text);
             }
@@ -78,11 +75,32 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
             }
         };
 
-        OWLDescriptionAutoCompleter ac = new OWLDescriptionAutoCompleter(eKit, editor, checker);
+
+    public OWLObjectListEditor(OWLEditorKit eKit, OWLObjectsRenderer ren, OWLObjectListParser parser) {
+        super();
+
+        this.eKit = eKit;
+        this.ren = ren;
+        this.parser = parser;
+
+        editor = new JTextField();
+    }
+
+
+    public boolean stopCellEditing() {
+        ac.uninstall();
+        return super.stopCellEditing();
+    }
+
+
+    public void cancelCellEditing() {
+        ac.uninstall();
+        super.cancelCellEditing();
     }
 
 
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+
         if (value instanceof FillerModel){
             originalFillers = ((FillerModel)value).getAssertedFillersFromSupers();
         }
@@ -90,7 +108,9 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
             originalFillers = (Set<OWLDescription>) value;
         }
 
+        editor.setFont(OWLRendererPreferences.getInstance().getFont());
         editor.setText((value != null) ? ren.render(originalFillers) : "");
+        ac = new OWLDescriptionAutoCompleter(eKit, editor, checker);
 
         return editor;
     }
@@ -105,6 +125,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
         }
         return originalFillers;
     }
+
 
     public boolean isCellEditable(EventObject eventObject) {
         if (eventObject instanceof MouseEvent) {

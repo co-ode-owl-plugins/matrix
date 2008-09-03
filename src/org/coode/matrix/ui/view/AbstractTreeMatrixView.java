@@ -138,7 +138,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         tree.removeTreeSelectionListener(selectionlistener);
         JTableHeader header = table.getTableHeader();
         header.removeMouseListener(columnFilterMouseListener);
-
+        table.dispose();
         selectionlistener = null;
     }
 

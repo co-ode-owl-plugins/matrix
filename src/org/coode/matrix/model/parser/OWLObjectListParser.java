@@ -82,11 +82,12 @@ public class OWLObjectListParser {
             final OWLExpressionChecker<OWLDescription> checker = mngr.getOWLExpressionCheckerFactory().getOWLDescriptionChecker();
             String[] strings = expression.split(SEPERATOR);
             for (String string : strings) {
+                string = string.trim();
                 if (isDescriptionParser()){
                     values.add(checker.createObject(string));
                 }
                 else if (isDatatypeParser()) {
-                    values.add(parseDatatype(string.trim()));
+                    values.add(parseDatatype(string));
                 }
                 else{
                     OWLEntity oe = entityMapper.getOWLEntity(string);

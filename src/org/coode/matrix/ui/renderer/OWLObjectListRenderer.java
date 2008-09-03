@@ -1,6 +1,7 @@
 package org.coode.matrix.ui.renderer;
 
 import org.coode.matrix.model.impl.FillerModel;
+import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObject;
 
@@ -65,7 +66,6 @@ public class OWLObjectListRenderer extends DefaultTableCellRenderer {
             else{
                 p.setBackground(jTable.getBackground());
             }
-            System.out.println("col->value = " +  col + "->" + value);
             FillerModel fillerModel = (FillerModel) value;
             addFillers(fillerModel.getAssertedFillersFromEquiv(), p, NOT_EDITABLE_COLOUR, ASSERTED_COLOUR);
             addFillers(fillerModel.getAssertedFillersFromSupers(), p, EDITABLE_COLOUR, ASSERTED_COLOUR);
@@ -81,6 +81,7 @@ public class OWLObjectListRenderer extends DefaultTableCellRenderer {
     private void addFillers(Set<OWLDescription> fillers, JPanel component, Color color, Color background) {
         if (!fillers.isEmpty()){
             JLabel label = new JLabel(ren.render(fillers));
+            label.setFont(OWLRendererPreferences.getInstance().getFont());
             label.setForeground(color);
             label.setBackground(background);
             component.add(label);

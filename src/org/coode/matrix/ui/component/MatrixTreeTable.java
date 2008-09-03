@@ -6,7 +6,11 @@ package org.coode.matrix.ui.component;
 import org.coode.jtreetable.JTreeTable;
 import org.coode.matrix.model.api.TreeMatrixModel;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.event.EventType;
+import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
+import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.ui.renderer.LinkedObjectComponent;
+import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.protege.editor.owl.ui.table.OWLObjectDropTargetListener;
 import org.protege.editor.owl.ui.transfer.OWLObjectDropTarget;
 import org.semanticweb.owl.model.OWLEntity;
@@ -60,6 +64,14 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
         }
     };
 
+    private OWLModelManagerListener l = new OWLModelManagerListener(){
+
+        public void handleChange(OWLModelManagerChangeEvent event) {
+            if (event.getType().equals(EventType.ENTITY_RENDERER_CHANGED)){
+                handleRendererChanged();
+            }
+        }
+    };
 
     public MatrixTreeTable(TreeMatrixModel<R> model, OWLModelManager mngr) {
 
@@ -69,6 +81,10 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
         this.mngr = mngr;
 
         defaultCursor = getCursor();
+
+        handleRendererChanged();
+
+        mngr.addListener(l);
 
         setGridColor(Color.LIGHT_GRAY);//getSelectionBackground());
 
@@ -81,7 +97,12 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
         // must be disabled otherwise JTable redraws all columns on a tableChanged() losing any width info
         // columns are added manually in tableChanged()
         setAutoCreateColumnsFromModel(false);
+
         setupColumns();
+    }
+
+    public void dispose(){
+        mngr.removeListener(l);
     }
 
     // override necessary as the default implementation converts header objects to Strings
@@ -96,6 +117,7 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
         }
         cm.getColumn(0).setPreferredWidth(300);
     }
+
 
     public boolean dropOWLObjects(List<OWLObject> owlObjects, Point pt, int type) {
         boolean result = false;
@@ -259,6 +281,11 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 //        return true;
 //        return getColumnCount() == 1;
 //        return getColumnCount()*200 < getParent().getWidth();
+    }
+
+
+    private void handleRendererChanged() {
+        setRowHeight(getFontMetrics(OWLRendererPreferences.getInstance().getFont()).getHeight());
     }
 
 
