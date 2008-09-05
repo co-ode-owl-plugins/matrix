@@ -9,6 +9,7 @@ import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
+import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.net.URI;
@@ -46,12 +47,11 @@ import java.net.URI;
  */
 public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProperty> {
 
-//    private ObjectPropertyHelper objPropHelper;
-
     protected void initialiseMatrixView() throws Exception {
-//        objPropHelper = new ObjectPropertyHelper(getOWLModelManager());
 
         addAction(new SelectPropertyFeaturesAction(getOWLEditorKit(), getTable()), "A", "B");
+
+        getTable().setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     }
 
     protected OWLObjectHierarchyProvider<OWLObjectProperty> getHierarchyProvider() {
@@ -103,11 +103,4 @@ public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProp
         }
         return null;
     }
-
-//    protected void setColumnWidths(TableColumnModel tcm) {
-//        for (int i = ObjectPropertyHelper.START_FEATURES+1; i <= ObjectPropertyHelper.END_FEATURES+1; i++) {
-//            tcm.getColumn(i).setMinWidth(40);
-//            tcm.getColumn(i).setMaxWidth(40);
-//        }
-//    }
 }

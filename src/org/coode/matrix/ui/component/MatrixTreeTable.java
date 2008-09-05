@@ -45,7 +45,6 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
     private TableCellRenderer headerRenderer = new DefaultTableCellRenderer(){
         public Component getTableCellRendererComponent(JTable table, Object value, boolean b, boolean b1, int y, int x) {
             // use getColumnName from the model
-//            int modelIndex = table.getColumnModel().getColumn(x).getModelIndex();
             value = getMatrixModel().getTreeTableModelAdapter().getColumnName(x);
             super.getTableCellRendererComponent(table, value, b, b1, y, x);
             // Inherit the colors and font from the header component
@@ -74,7 +73,8 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
     };
 
     public MatrixTreeTable(TreeMatrixModel<R> model, OWLModelManager mngr) {
-
+        // constructor ensures createColsFromModel disabled otherwise JTable redraws all columns
+        // on a tableChanged() losing any width info columns are added manually in tableChanged()
         super(model.getTreeTableModelAdapter(), model.getColumnModel(), model.getTreeRenderer());
 
         this.model = model;
@@ -94,10 +94,6 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
         setDragEnabled(false);
 
-        // must be disabled otherwise JTable redraws all columns on a tableChanged() losing any width info
-        // columns are added manually in tableChanged()
-        setAutoCreateColumnsFromModel(false);
-
         setupColumns();
     }
 
@@ -114,8 +110,8 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
         for (int i=0; i<getModel().getColumnCount(); i++){
             final TableColumn tc = cm.getColumn(i);
             tc.setHeaderRenderer(headerRenderer);
+//            packColumn(i);
         }
-        cm.getColumn(0).setPreferredWidth(300);
     }
 
 
@@ -206,7 +202,6 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
         if (success){
             TableColumn c = getColumnModel().getColumn(index);
             c.setHeaderRenderer(headerRenderer);
-            packColumn(index);
         }
 
         return success;
@@ -241,46 +236,6 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
             }
         }
         return success;
-    }
-
-
-    private void packColumn(int vColIndex){
-        DefaultTableColumnModel colModel = (DefaultTableColumnModel)getColumnModel();
-        TableColumn col = colModel.getColumn(vColIndex);
-
-        // Get width of column header
-        TableCellRenderer renderer = col.getHeaderRenderer();
-        if (renderer == null) {
-            renderer = getTableHeader().getDefaultRenderer();
-        }
-        Component comp = renderer.getTableCellRendererComponent(
-                this, col.getHeaderValue(), false, false, 0, 0);
-
-        int width = comp.getPreferredSize().width;
-
-        // Get maximum width of column data
-        for (int r=0; r < getRowCount(); r++) {
-            renderer = getCellRenderer(r, vColIndex);
-            comp = renderer.getTableCellRendererComponent(
-                    this, getValueAt(r, vColIndex), false, false, r, vColIndex);
-            width = Math.max(width, comp.getPreferredSize().width);
-        }
-
-        if (comp instanceof JCheckBox){
-            col.setPreferredWidth(width);
-        }
-        else{
-            col.setPreferredWidth(Math.max(width, 200));
-        }
-    }
-
-
-    // stretch the columns widths if they are too small to fit the viewport
-    public boolean getScrollableTracksViewportWidth() {
-        return getPreferredSize().width < getParent().getWidth();
-//        return true;
-//        return getColumnCount() == 1;
-//        return getColumnCount()*200 < getParent().getWidth();
     }
 
 

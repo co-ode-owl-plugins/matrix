@@ -59,7 +59,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
     // create and keep the column model in sync but don't use it for indexing as the colModel gets shifted around
     // when the columns are moved in the table. The model indices should be static.
     private TableColumnModel colModel;
-//    private List columnObjects = new ArrayList();
 
 
     private Map filterMap = new HashMap();
@@ -76,7 +75,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
     // create the model with single 
     private TableColumnModel createColumnModel() {
         DefaultTableColumnModel model = new DefaultTableColumnModel();
-//        columnObjects.add(null);
         model.addColumn(new TableColumn());
         return model;
     }
@@ -96,7 +94,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
             tc.setHeaderValue(newValue);
             tc.setModelIndex(index);
             colModel.addColumn(tc);
-//            columnObjects.add(newValue);
             return true;
         }
         return false;
@@ -105,7 +102,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
 
     public final boolean removeColumn(Object obj) {
         for (int i=0; i< getColumnCount(); i++){
-//            columnObjects.remove(obj);
             TableColumn tc = colModel.getColumn(i);
             if (obj.equals(tc.getHeaderValue())){
                 colModel.removeColumn(tc);
@@ -126,7 +122,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
      * @return
      */
     public final Object getColumnObject(int column) {
-//        return columnObjects.get(column);
         return colModel.getColumn(column).getHeaderValue();
     }
 
@@ -164,7 +159,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
 
 
     public int indexOf(Object obj) {
-//        return columnObjects.indexOf(obj);
         for (int i=0; i< colModel.getColumnCount(); i++){
             if (obj.equals(colModel.getColumn(i).getHeaderValue())){
                 return i;
@@ -175,7 +169,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
 
 
     public boolean contains(Object value) {
-//        return columnObjects.contains(value);
         return indexOf(value) != -1;
     }
 
@@ -199,11 +192,7 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
         final R rowObject = getRowObject(row);
         if (column > 0) {
             final Object columnObject = getColumnObject(column);
-            Object value = getMatrixValue(rowObject, columnObject);
-            // we are getting the correct value for the value
-//            System.out.print("c/cObj = " + column + "/" + columnObject);
-//            System.out.println(" -> " + value);
-            return value;
+            return getMatrixValue(rowObject, columnObject);
         }
         else {
             return rowObject;
@@ -226,6 +215,7 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
         return this;
     }
 
+    
     public TableColumnModel getColumnModel() {
         return colModel;
     }
@@ -249,38 +239,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
         }
         return label;
     }
-
-
-///////////////////////////////
-
-//    /**
-//     * Will only add unique columns to the axis
-//     *
-//     * @param newValues
-//     * @return true if any columns added
-//     */
-//    public boolean add(Collection newValues) {
-//        boolean result = false;
-//        for (Object value : newValues) {
-//            if (add(value)) {
-//                result = true;
-//            }
-//        }
-//        return result;
-//    }
-
-
-//    public boolean remove(Collection oldValues) {
-//        boolean result = false;
-//        for (int i=0; i< colModel.getColumnCount(); i++){
-//            TableColumn tc = colModel.getColumn(i);
-//            if (oldValues.contains(tc.getHeaderValue())){
-//                colModel.removeColumn(tc);
-//                result = true;
-//            }
-//        }
-//        return result;
-//    }
 
 
     public void setFilterForColumn(int col, Object filter) {
