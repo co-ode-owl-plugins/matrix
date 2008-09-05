@@ -14,6 +14,8 @@ import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLObject;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -66,14 +68,14 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
     private OWLEditorKit eKit;
 
     private OWLExpressionChecker<Set<OWLObject>> checker = new OWLExpressionChecker<Set<OWLObject>>(){
-            public void check(String text) throws OWLExpressionParserException {
-                OWLObjectListEditor.this.parser.isWellFormed(text);
-            }
+        public void check(String text) throws OWLExpressionParserException {
+            OWLObjectListEditor.this.parser.isWellFormed(text);
+        }
 
-            public Set<OWLObject> createObject(String text) throws OWLExpressionParserException {
-                return OWLObjectListEditor.this.parser.getValues(text);
-            }
-        };
+        public Set<OWLObject> createObject(String text) throws OWLExpressionParserException {
+            return OWLObjectListEditor.this.parser.getValues(text);
+        }
+    };
 
 
     public OWLObjectListEditor(OWLEditorKit eKit, OWLObjectsRenderer ren, OWLObjectListParser parser) {
@@ -84,6 +86,25 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
         this.parser = parser;
 
         editor = new JTextField();
+
+        // workaround to ensure the editor properly gets the focus (and caret)
+        // which is required in order for Ac to work
+        // see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4256006
+        editor.addAncestorListener( new AncestorListener(){
+            public void ancestorAdded(AncestorEvent e){
+                editor.requestFocus();
+                // also, remove the default selection otherwise the first character gets lost
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run() {
+                        final int end = editor.getDocument().getLength();
+                        editor.setSelectionStart(end);
+                        editor.setSelectionEnd(end);
+                    }
+                });
+            }
+            public void ancestorMoved(AncestorEvent e){}
+            public void ancestorRemoved(AncestorEvent e){}
+        });
     }
 
 
@@ -121,7 +142,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
             return parser.getValues(editor.getText());
         }
         catch (OWLException e) {
-            ProtegeApplication.getErrorLog().handleError(Thread.currentThread(), e);            
+            ProtegeApplication.getErrorLog().handleError(Thread.currentThread(), e);
         }
         return originalFillers;
     }
