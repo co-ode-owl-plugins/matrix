@@ -3,6 +3,8 @@ package org.coode.matrix.ui.view;
 import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddAnnotationAction;
+import org.coode.matrix.ui.action.AutoResizeColumnsAction;
+import org.coode.matrix.ui.action.PackColumnsAction;
 import org.coode.matrix.ui.action.RemoveColumnAction;
 import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.coode.matrix.ui.editor.OWLObjectListEditor;
@@ -70,6 +72,8 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
     private MatrixTreeTable<R> treeTable;
 
+//    private  tree;
+
     private OWLEntityComparator<R> comparator;
 
     private OWLObjectListRenderer objectListRen;
@@ -92,19 +96,16 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         }
     };
 
-    private OWLModelManagerTree<R> tree;
 
-
-    // @@TODO ensure no columns remain when the referenced entity is removed from the ontology
     public final void initialiseView() throws Exception {
 
         setLayout(new BorderLayout(6, 6));
 
         OWLObjectHierarchyProvider<R> hierarchy = getHierarchyProvider();
 
-        tree = new OWLModelManagerTree<R>(getOWLEditorKit(), hierarchy);
+        OWLModelManagerTree<R> tree = new OWLModelManagerTree<R>(getOWLEditorKit(), hierarchy);
 
-        final MatrixModel<R> model = createMatrixModel(tree);
+        MatrixModel<R> model = createMatrixModel(tree);
 
         treeTable = new MatrixTreeTable<R>(tree, model, getOWLModelManager());
 
@@ -133,12 +134,16 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         addAction(new AddAnnotationAction(getOWLEditorKit(), treeTable), "A", "A");
         addAction(new RemoveColumnAction(getOWLEditorKit(), treeTable), "B", "A");
 
+        addAction(new PackColumnsAction(treeTable.getTable(), "Fit columns to content", null), "C", "A");
+
+        addAction(new AutoResizeColumnsAction(treeTable.getTable(), "Fit columns to window", null), "C", "B");
+
         initialiseMatrixView();
     }
 
 
     public void disposeView() {
-        tree.dispose();
+        treeTable.getTree().dispose();
         treeTable.getTree().removeTreeSelectionListener(selectionlistener);
         JTableHeader header = treeTable.getTable().getTableHeader();
         header.removeMouseListener(columnFilterMouseListener);
