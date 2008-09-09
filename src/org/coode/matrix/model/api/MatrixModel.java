@@ -40,6 +40,8 @@ import java.util.Set;
  */
 public interface MatrixModel<R extends OWLObject> extends TreeTableModel<R> {
 
+    String getTreeColumnLabel();
+
     Object getMatrixValue(R rowObject, Object columnObject);
 
     List<OWLOntologyChange> setMatrixValue(R rowObj, Object columnObj, Object value);

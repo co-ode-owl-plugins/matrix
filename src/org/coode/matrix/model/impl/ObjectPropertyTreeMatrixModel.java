@@ -62,7 +62,7 @@ public class ObjectPropertyTreeMatrixModel extends AbstractMatrixModel<OWLObject
         }
     }
 
-    protected String getTreeColumnLabel() {
+    public String getTreeColumnLabel() {
         return "Object Property";
     }
 

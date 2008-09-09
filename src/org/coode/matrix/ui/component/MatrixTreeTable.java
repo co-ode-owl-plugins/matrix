@@ -91,7 +91,7 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
 
         mngr.addListener(l);
 
-        getTable().setGridColor(Color.LIGHT_GRAY);//getSelectionBackground());
+        getTable().setGridColor(Color.LIGHT_GRAY);
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
@@ -110,16 +110,17 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
         mngr.removeListener(l);
     }
 
-    // override necessary as the default implementation converts header objects to Strings
-    public void createDefaultColumnsFromModel() {
+
+    protected String getTreeTitle() {
+        return getModel().getTreeColumnLabel();
     }
+
 
     private void setupColumns(){
         final TableColumnModel cm = getTable().getColumnModel();
         for (int i=0; i<getTable().getColumnCount(); i++){
             final TableColumn tc = cm.getColumn(i);
             tc.setHeaderRenderer(headerRenderer);
-//            packColumn(i);
         }
     }
 
@@ -135,7 +136,7 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
 
 
     public MatrixModel<R> getModel(){
-        return model;
+        return (MatrixModel<R>)super.getModel();
     }
 
 

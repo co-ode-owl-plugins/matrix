@@ -54,7 +54,7 @@ public class ClassMembershipTreeMatrixModel extends AbstractMatrixModel<OWLClass
         addColumn(COLUMN_NAME);
     }
 
-    protected String getTreeColumnLabel() {
+    public String getTreeColumnLabel() {
         return "Class";
     }
 

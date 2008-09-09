@@ -51,7 +51,7 @@ public class ClassTranslationTreeMatrixModel extends AbstractMatrixModel<OWLClas
         addColumn(new AnnotationLanguagePair(OWLRDFVocabulary.RDFS_LABEL.getURI(), "en"));
     }
 
-    protected String getTreeColumnLabel() {
+    public String getTreeColumnLabel() {
         return "Class";
     }
 

@@ -93,7 +93,7 @@ public class TestMatrixTreeTable {
                     return Collections.EMPTY_SET;
                 }
 
-                protected String getTreeColumnLabel() {
+                public String getTreeColumnLabel() {
                     return "Entity";
                 }
             };

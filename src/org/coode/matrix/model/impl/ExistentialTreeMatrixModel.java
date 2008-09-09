@@ -58,7 +58,7 @@ public class ExistentialTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
     }
 
 
-    protected String getTreeColumnLabel() {
+    public String getTreeColumnLabel() {
         return "Class";
     }
 

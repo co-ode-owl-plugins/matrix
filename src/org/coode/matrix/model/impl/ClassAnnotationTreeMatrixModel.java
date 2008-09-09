@@ -49,7 +49,7 @@ public class ClassAnnotationTreeMatrixModel extends AbstractMatrixModel<OWLClass
         addColumn(OWLRDFVocabulary.RDFS_COMMENT.getURI());
     }
 
-    protected String getTreeColumnLabel() {
+    public String getTreeColumnLabel() {
         return "Class";
     }
 

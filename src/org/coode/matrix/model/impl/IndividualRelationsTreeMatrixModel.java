@@ -52,7 +52,7 @@ public class IndividualRelationsTreeMatrixModel extends AbstractMatrixModel<OWLE
         helper = new IndividualsHelper(mngr.getOWLOntologyManager(), mngr.getActiveOntologies());
     }
 
-    protected String getTreeColumnLabel() {
+    public String getTreeColumnLabel() {
         return "Individual";
     }
 
