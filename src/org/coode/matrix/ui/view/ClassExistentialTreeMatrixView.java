@@ -1,13 +1,13 @@
 package org.coode.matrix.ui.view;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.impl.ExistentialTreeMatrixModel;
 import org.coode.matrix.model.impl.FillerModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddObjectPropertyAction;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObjectProperty;
@@ -54,14 +54,14 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
     private int threshold = 10;
 
     protected void initialiseMatrixView() throws Exception {
-        addAction(new AddObjectPropertyAction(getOWLEditorKit(), getTable()), "A", "B");
+        addAction(new AddObjectPropertyAction(getOWLEditorKit(), getTreeTable()), "A", "B");
     }
 
     protected OWLObjectHierarchyProvider<OWLClass> getHierarchyProvider() {
         return getOWLModelManager().getOWLClassHierarchyProvider();
     }
 
-    protected AbstractTreeMatrixModel<OWLClass> createMatrixModel(OWLObjectTreeTableCellRenderer tree) {
+    protected MatrixModel<OWLClass> createMatrixModel(OWLObjectTree<OWLClass> tree) {
         return new ExistentialTreeMatrixModel(tree, getOWLModelManager());
     }
 
@@ -69,7 +69,7 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
         return true;
     }
 
-    protected TableCellEditor getCellEditor(Object columnObject, OWLClass cls) {
+    protected TableCellEditor getCellEditor(OWLClass cls, Object columnObject) {
 
         if (columnObject instanceof OWLObjectProperty){
 
@@ -78,13 +78,13 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
 
             OWLObjectProperty p = (OWLObjectProperty)columnObject;
             if (isFunctional(p)) {
-                if (getMatrixModel().isValueRestricted(cls, p)) {
-                    Set fillers = getMatrixModel().getSuggestedFillers(cls, p, threshold);
+                if (getTreeTable().getModel().isValueRestricted(cls, p)) {
+                    Set fillers = getTreeTable().getModel().getSuggestedFillers(cls, p, threshold);
                     if (!fillers.isEmpty()) {
                         java.util.List values = new ArrayList(fillers);
                         values.add(0, ExistentialTreeMatrixModel.NONE);
                         JComboBox dropDown = new JComboBox(values.toArray());
-                        Object value = getMatrixModel().getMatrixValue(cls, p);
+                        Object value = getTreeTable().getModel().getMatrixValue(cls, p);
                         if (value instanceof FillerModel){
                             value = ((FillerModel)value).getAssertedFillersFromSupers();
                         }
@@ -104,7 +104,7 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
             setEditorType(OWLObjectListParser.DATATYPE);
         }
         
-        return super.getCellEditor(columnObject, cls);
+        return super.getCellEditor(cls, columnObject);
     }
 
     private boolean isFunctional(OWLObjectProperty p) {

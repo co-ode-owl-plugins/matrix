@@ -1,15 +1,16 @@
 package org.coode.matrix.test;
 
 import org.apache.log4j.Logger;
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.AbstractMatrixModel;
+import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.ui.component.MatrixTreeTable;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.OWLEditorKitFactory;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.OWLModelManagerImpl;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.OWLEntityComparator;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
@@ -64,9 +65,9 @@ public class TestMatrixTreeTable {
             OWLObjectHierarchyProvider<OWLClass> provider = mngr.getOWLClassHierarchyProvider();
 
             Comparator<OWLClass> comp = new OWLEntityComparator<OWLClass>(mngr);
-            OWLObjectTreeTableCellRenderer<OWLClass> ren = new OWLObjectTreeTableCellRenderer<OWLClass>(eKit, provider, comp);
+            OWLObjectTree<OWLClass> tree = new OWLObjectTree<OWLClass>(eKit, provider, comp);
 
-            AbstractTreeMatrixModel<OWLClass> model = new AbstractTreeMatrixModel<OWLClass>(ren, mngr) {
+            MatrixModel<OWLClass> model = new AbstractMatrixModel<OWLClass>(tree, mngr) {
 
                 public Object getMatrixValue(OWLClass rowObject, Object columnObject) {
                     return rowObject + ": " + columnObject;
@@ -97,7 +98,7 @@ public class TestMatrixTreeTable {
                 }
             };
 
-            table = new MatrixTreeTable<OWLClass>(model, mngr);
+            table = new MatrixTreeTable<OWLClass>(tree, model, mngr);
 
             JOptionPane.showConfirmDialog(null, new JScrollPane(table), "Test MatrixTreeTable", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         }

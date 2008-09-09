@@ -7,6 +7,7 @@ import org.semanticweb.owl.model.OWLObject;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.Collection;
 import java.util.Set;
@@ -42,7 +43,7 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class OWLObjectListRenderer extends DefaultTableCellRenderer {
+public class OWLObjectListRenderer implements TableCellRenderer {
 
     private static final Color NOT_EDITABLE_COLOUR = new Color(80, 80, 80);
     private static final Color EDITABLE_COLOUR = new Color(0, 0, 0);
@@ -52,14 +53,20 @@ public class OWLObjectListRenderer extends DefaultTableCellRenderer {
 
     private OWLObjectsRenderer ren;
 
+    private JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 2));
+
+    private Component delegate;
+
+    private DefaultTableCellRenderer defaultCellRenderer = new DefaultTableCellRenderer();
+
+
     public OWLObjectListRenderer(OWLObjectsRenderer ren) {
         this.ren = ren;
     }
 
     public Component getTableCellRendererComponent(JTable jTable, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
         if (value instanceof FillerModel){
-            JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 2));
-            p.setPreferredSize(getPreferredSize());
+            p.removeAll();
             if (isSelected){
                 p.setBackground(jTable.getSelectionBackground());
             }
@@ -67,24 +74,31 @@ public class OWLObjectListRenderer extends DefaultTableCellRenderer {
                 p.setBackground(jTable.getBackground());
             }
             FillerModel fillerModel = (FillerModel) value;
-            addFillers(fillerModel.getAssertedFillersFromEquiv(), p, NOT_EDITABLE_COLOUR, ASSERTED_COLOUR);
-            addFillers(fillerModel.getAssertedFillersFromSupers(), p, EDITABLE_COLOUR, ASSERTED_COLOUR);
-            addFillers(fillerModel.getInheritedFillers(), p, NOT_EDITABLE_COLOUR, INHERITED_COLOUR);
-            return p;
+            addFillers(fillerModel.getAssertedFillersFromEquiv(), NOT_EDITABLE_COLOUR, ASSERTED_COLOUR);
+            addFillers(fillerModel.getAssertedFillersFromSupers(), EDITABLE_COLOUR, ASSERTED_COLOUR);
+            addFillers(fillerModel.getInheritedFillers(), NOT_EDITABLE_COLOUR, INHERITED_COLOUR);
+            delegate = p;
         }
         else if (value instanceof Collection) {
             value = ren.render((Collection<OWLObject>) value);
+            delegate = defaultCellRenderer.getTableCellRendererComponent(jTable, value, isSelected, hasFocus, row, col);
         }
-        return super.getTableCellRendererComponent(jTable, value, isSelected, hasFocus, row, col);
+        return delegate;
     }
 
-    private void addFillers(Set<OWLDescription> fillers, JPanel component, Color color, Color background) {
+
+    public Dimension getPreferredSize() {
+        return delegate.getPreferredSize();
+    }
+
+
+    private void addFillers(Set<OWLDescription> fillers, Color color, Color background) {
         if (!fillers.isEmpty()){
             JLabel label = new JLabel(ren.render(fillers));
             label.setFont(OWLRendererPreferences.getInstance().getFont());
             label.setForeground(color);
             label.setBackground(background);
-            component.add(label);
+            p.add(label);
         }
     }
 }

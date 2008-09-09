@@ -1,23 +1,15 @@
 package org.coode.matrix.model.api;
 
-import org.coode.jtreetable.TreeTableModelAdapter;
 import org.coode.matrix.model.helper.AnnotatorHelper;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.*;
+import uk.ac.manchester.cs.bhig.jtreetable.AbstractTreeTableModel;
 
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import java.net.URI;
 import java.security.InvalidParameterException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -50,100 +42,47 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends TreeTableModelAdapter implements TreeMatrixModel<R> {
+public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractTreeTableModel<R>
+        implements MatrixModel<R> {
 
     protected OWLModelManager mngr;
 
     protected AnnotatorHelper annotHelper;
 
-    // create and keep the column model in sync but don't use it for indexing as the colModel gets shifted around
-    // when the columns are moved in the table. The model indices should be static.
-    private TableColumnModel colModel;
-
-
     private Map filterMap = new HashMap();
 
+    private OWLObjectTree<R> tree;
 
-    public AbstractTreeMatrixModel(OWLObjectTreeTableCellRenderer treeRenderer, OWLModelManager mngr) {
-        super(new OWLTreeTableModel<R>(treeRenderer.getHierarchyProvider()), treeRenderer);
+    private OWLOntologyChangeListener ontChangeListener = new OWLOntologyChangeListener(){
 
-        this.colModel = createColumnModel();
+        public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
+            handleOntologyChanges(changes);
+        }
+    };
+
+
+    public AbstractMatrixModel(OWLObjectTree<R> tree, OWLModelManager mngr) {
+        super(tree);
+        this.tree = tree;
         this.mngr = mngr;
+        mngr.addOntologyChangeListener(ontChangeListener);
         this.annotHelper = new AnnotatorHelper(mngr);
     }
 
-    // create the model with single 
-    private TableColumnModel createColumnModel() {
-        DefaultTableColumnModel model = new DefaultTableColumnModel();
-        model.addColumn(new TableColumn());
-        return model;
-    }
 
-
-    protected abstract String getTreeColumnLabel();
-
-
-    public boolean addColumn(Object obj) {
-        return addColumn(obj, colModel.getColumnCount());
-    }
-
-
-    public final boolean addColumn(Object newValue, int index) {
-        if (!contains(newValue)) {
-            TableColumn tc = new TableColumn(index);
-            tc.setHeaderValue(newValue);
-            tc.setModelIndex(index);
-            colModel.addColumn(tc);
-            return true;
-        }
-        return false;
-    }
-
-
-    public final boolean removeColumn(Object obj) {
-        for (int i=0; i< getColumnCount(); i++){
-            TableColumn tc = colModel.getColumn(i);
-            if (obj.equals(tc.getHeaderValue())){
-                colModel.removeColumn(tc);
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    public final R getRowObject(int row) {
-        return ((OWLObjectTreeNode<R>) nodeForRow(row)).getOWLObject();
-    }
-
-    /**
-     *
-     * @param column indexed by physical columns
-     * @return
-     */
-    public final Object getColumnObject(int column) {
-        return colModel.getColumn(column).getHeaderValue();
-    }
-
-
-    public final int getColumnCount() {
-        return colModel.getColumnCount();
+    public void dispose(){
+        mngr.removeOntologyChangeListener(ontChangeListener);
     }
 
 
     public final String getColumnName(int column) {
-        if (column > 0){
-            return renderColumnTitle(getColumnObject(column));
-        }
-        else{
-            return getTreeColumnLabel();
-        }
+        return renderColumnTitle(getColumnObjectAtModelIndex(column));
     }
 
 
     public Object getMatrixValue(R rowObj, Object columnObj) {
         if (rowObj instanceof OWLEntity && columnObj instanceof URI){
-            int col = indexOf(columnObj);
+            int col = getModelIndexOfColumn(columnObj);
             Object filter = getFilterForColumn(col);
             if (filter != null && filter instanceof String){
                 return annotHelper.getAnnotationValues((OWLEntity)rowObj, (URI)columnObj, (String)filter);
@@ -158,21 +97,6 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
     }
 
 
-    public int indexOf(Object obj) {
-        for (int i=0; i< colModel.getColumnCount(); i++){
-            if (obj.equals(colModel.getColumn(i).getHeaderValue())){
-                return i;
-            }
-        }
-        return -1;
-    }
-
-
-    public boolean contains(Object value) {
-        return indexOf(value) != -1;
-    }
-
-
     public List<OWLOntologyChange> setMatrixValue(R rowObj, Object columnObj, Object value) {
         if (columnObj instanceof URI && rowObj instanceof OWLEntity && value instanceof Set){
             return annotHelper.setAnnotationValues((OWLEntity)rowObj,
@@ -183,27 +107,16 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
         throw new InvalidParameterException("Cannot set value (" + value + ") of " + rowObj + " on  column " + columnObj);
     }
 
+
     public List<OWLOntologyChange> addMatrixValue(R rowObj, Object columnObj, Object value) {
         throw new InvalidParameterException("Cannot add value (" + value + ") for " + rowObj + " on  column " + columnObj);
     }
 
 
-    public final Object getValueAt(int row, int column) {
-        final R rowObject = getRowObject(row);
-        if (column > 0) {
-            final Object columnObject = getColumnObject(column);
-            return getMatrixValue(rowObject, columnObject);
-        }
-        else {
-            return rowObject;
-        }
-    }
-
-
-    public final void setValueAt(Object value, int row, int column) {
-        Object columnObject = getColumnObject(column);
+    public final void setValueAt(Object value, R rowObject, int col) {
+        Object columnObject = getColumnObjectAtModelIndex(col);
         if (columnObject != null) {
-            List<OWLOntologyChange> changes = setMatrixValue(getRowObject(row), columnObject, value);
+            List<OWLOntologyChange> changes = setMatrixValue(rowObject, columnObject, value);
             if (!changes.isEmpty()){
                 mngr.applyChanges(changes);
             }
@@ -211,13 +124,15 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
     }
 
 
-    public final TreeTableModelAdapter getTreeTableModelAdapter() {
-        return this;
+    public final Object getValueAt(R rowObject, int col) {
+        final Object columnObject = getColumnObjectAtModelIndex(col);
+        return getMatrixValue(rowObject, columnObject);
     }
 
-    
-    public TableColumnModel getColumnModel() {
-        return colModel;
+
+    // overload because the objects are not of type R - they are nodes
+    public R getNodeForRow(int row) {
+        return (R)((OWLObjectTreeNode)tree.getPathForRow(row).getLastPathComponent()).getOWLObject();
     }
 
 
@@ -241,13 +156,57 @@ public abstract class  AbstractTreeMatrixModel<R extends OWLObject> extends Tree
     }
 
 
+
+    private void handleOntologyChanges(List<? extends OWLOntologyChange> changes) {
+        final Set<OWLEntity> entitiesReferencedByRemoveAxioms = new HashSet<OWLEntity>();
+        OWLOntologyChangeVisitor visitor = new OWLOntologyChangeVisitor() {
+
+            public void visit(AddAxiom addAxiom) {
+            }
+
+
+            public void visit(RemoveAxiom removeAxiom) {
+                entitiesReferencedByRemoveAxioms.addAll(removeAxiom.getEntities());
+            }
+
+
+            public void visit(SetOntologyURI setOntologyURI) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
+        for (OWLOntologyChange change : changes){
+            change.accept(visitor);
+        }
+
+        for (OWLEntity entity : entitiesReferencedByRemoveAxioms){
+            if (getColumns().contains(entity)){
+                if (!isEntityReferenced(entity)){
+                    removeColumn(entity);
+                }
+            }
+        }
+    }
+
+
+    private boolean isEntityReferenced(OWLEntity entity) {
+        for (OWLOntology ont : mngr.getActiveOntologies()){
+            if (ont.containsEntityReference(entity)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+////////////////// Filters
+
+
     public void setFilterForColumn(int col, Object filter) {
-        filterMap.put(getColumnObject(col), filter);
+        filterMap.put(getColumnObjectAtModelIndex(col), filter);
     }
 
 
     public Object getFilterForColumn(int col) {
-        return getFilterForColumn(getColumnObject(col));
+        return getFilterForColumn(getColumnObjectAtModelIndex(col));
     }
 
 

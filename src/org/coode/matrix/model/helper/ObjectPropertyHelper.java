@@ -40,17 +40,9 @@ public class ObjectPropertyHelper {
 
     public static enum Characteristic {FUNCTIONAL, SYMMETRIC, INVERSE_FUNCTIONAL, TRANSITIVE, ANTI_SYMMETRIC, REFLEXIVE, IRREFLEXIVE};
 
-    public static enum Feature {DOMAIN, RANGE, INVERSE};
+    public static enum Feature {DOMAIN, RANGE, INVERSE}
 
     private OWLModelManager mngr;
-
-    public static void main(String[] args) {
-
-        Characteristic c = Characteristic.FUNCTIONAL;
-//        if (c instanceof Characteristic){
-//            System.out.println("true");
-//        }
-    }
 
 
     public ObjectPropertyHelper(OWLModelManager mngr) {

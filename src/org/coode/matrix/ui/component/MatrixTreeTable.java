@@ -3,8 +3,7 @@
 */
 package org.coode.matrix.ui.component;
 
-import org.coode.jtreetable.JTreeTable;
-import org.coode.matrix.model.api.TreeMatrixModel;
+import org.coode.matrix.model.api.MatrixModel;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
@@ -13,9 +12,11 @@ import org.protege.editor.owl.ui.renderer.LinkedObjectComponent;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.protege.editor.owl.ui.table.OWLObjectDropTargetListener;
 import org.protege.editor.owl.ui.transfer.OWLObjectDropTarget;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntologyChange;
+import uk.ac.manchester.cs.bhig.jtreetable.JTreeTable;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -23,6 +24,7 @@ import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetEvent;
 import java.util.List;
 
 /**
@@ -33,20 +35,22 @@ import java.util.List;
  * Bio Health Informatics Group<br>
  * Date: Jan 3, 2008<br><br>
  */
-public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements OWLObjectDropTarget, LinkedObjectComponent {
+public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
+        implements OWLObjectDropTarget, LinkedObjectComponent {
 
 
     private OWLModelManager mngr;
 
-    private TreeMatrixModel<R> model;
+    private MatrixModel<R> model;
 
     private Cursor defaultCursor;
 
     private TableCellRenderer headerRenderer = new DefaultTableCellRenderer(){
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean b, boolean b1, int y, int x) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
             // use getColumnName from the model
-            value = getMatrixModel().getTreeTableModelAdapter().getColumnName(x);
-            super.getTableCellRendererComponent(table, value, b, b1, y, x);
+            col = getTable().convertColumnIndexToModel(col);
+            value = getModel().getColumnName(col);
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
             // Inherit the colors and font from the header component
             if (table != null) {
                 JTableHeader header = table.getTableHeader();
@@ -72,12 +76,13 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
         }
     };
 
-    public MatrixTreeTable(TreeMatrixModel<R> model, OWLModelManager mngr) {
+    public MatrixTreeTable(OWLObjectTree<R> tree, MatrixModel<R> model, OWLModelManager mngr) {
         // constructor ensures createColsFromModel disabled otherwise JTable redraws all columns
         // on a tableChanged() losing any width info columns are added manually in tableChanged()
-        super(model.getTreeTableModelAdapter(), model.getColumnModel(), model.getTreeRenderer());
+        super(tree, model);
 
         this.model = model;
+
         this.mngr = mngr;
 
         defaultCursor = getCursor();
@@ -86,18 +91,22 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
         mngr.addListener(l);
 
-        setGridColor(Color.LIGHT_GRAY);//getSelectionBackground());
+        getTable().setGridColor(Color.LIGHT_GRAY);//getSelectionBackground());
 
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        DropTarget dt = new DropTarget(this, new MatrixDropTargetListener(this));
-
-        setDragEnabled(false);
+        // allow drop on both the table and the scrollpane
+        final Container clientPane = getTable().getParent();
+        DropTarget dt = new DropTarget(clientPane, new MatrixDropTargetListener(this));
+        clientPane.setDropTarget(dt);
+        dt = new DropTarget(getTable(), new MatrixDropTargetListener(this));
+        getTable().setDropTarget(dt);
 
         setupColumns();
     }
 
     public void dispose(){
+        model.dispose();
         mngr.removeListener(l);
     }
 
@@ -106,27 +115,12 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
     }
 
     private void setupColumns(){
-        final TableColumnModel cm = getColumnModel();
-        for (int i=0; i<getModel().getColumnCount(); i++){
+        final TableColumnModel cm = getTable().getColumnModel();
+        for (int i=0; i<getTable().getColumnCount(); i++){
             final TableColumn tc = cm.getColumn(i);
             tc.setHeaderRenderer(headerRenderer);
 //            packColumn(i);
         }
-    }
-
-
-    public boolean dropOWLObjects(List<OWLObject> owlObjects, Point pt, int type) {
-        boolean result = false;
-        for (OWLObject obj : owlObjects) {
-            // if any of the objects are dropped successfully, return true
-            // this behaviour may need revising depending on expectations
-            int dropRow = rowAtPoint(pt);
-            int dropColumn = columnAtPoint(pt);
-            if (dropOWLObject(obj, dropColumn, dropRow)) {
-                result = true;
-            }
-        }
-        return result;
     }
 
 
@@ -135,14 +129,19 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
     }
 
 
-    public TreeMatrixModel<R> getMatrixModel(){
+    public OWLObjectTree<R> getTree() {
+        return (OWLObjectTree<R>)super.getTree();
+    }
+
+
+    public MatrixModel<R> getModel(){
         return model;
     }
 
 
     public R getSelectedOWLObject() {
-        if (getSelectedRow() >= 0) {
-            return (R) getValueAt(getSelectedRow(), 0);
+        if (getTable().getSelectedRow() >= 0) {
+            return (R) model.getValueAt(getTable().getSelectedRow(), 0);
         }
         else {
             return null;
@@ -150,15 +149,35 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
     }
 
 
+    public boolean dropOWLObjects(List<OWLObject> owlObjects, Point pt, int type) {
+        boolean result = false;
+        int dropRow = getTable().rowAtPoint(pt);
+        int dropColumn = getTable().columnAtPoint(pt);
+        for (OWLObject obj : owlObjects) {
+            // if any of the objects are dropped successfully, return true
+            // this behaviour may need revising depending on expectations
+            if (dropOWLObject(obj, dropColumn, dropRow)) {
+                result = true;
+            }
+        }
+        if (result){
+            getTable().repaint();
+        }
+        return result;
+    }
+
+
     protected boolean dropOWLObject(OWLObject owlObject, int dropColumn, int dropRow) {
 
         boolean result = false;
 
-        if (model.isSuitableCellValue(owlObject, dropRow, dropColumn)) {
+        int modelColumn = getTable().convertColumnIndexToModel(dropColumn);
+
+        if (model.isSuitableCellValue(owlObject, dropRow, modelColumn)) {
 
             // droppedInSelection is true when more than one row is selected and one of the selected rows is dropped on
             boolean droppedInSelection = false;
-            int[] selectedRows = getSelectedRows();
+            int[] selectedRows = getTable().getSelectedRows();
             if (selectedRows.length > 1) {
                 for (int selectedRow : selectedRows) {
                     if (selectedRow == dropRow) {
@@ -170,21 +189,20 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
             if (droppedInSelection) {
                 for (int selectedRow : selectedRows) {
-                    if (addValue(owlObject, selectedRow, dropColumn)){
+                    if (addValue(owlObject, selectedRow, modelColumn)){
                         result = true;
                     }
                 }
             }
             else {
-                result = addValue(owlObject, dropRow, dropColumn);
+                result = addValue(owlObject, dropRow, modelColumn);
             }
 
             if (result){
-                repaint(getCellRect(dropRow, dropColumn, true));                
+                repaint(getTable().getCellRect(dropRow, modelColumn, true));
             }
         }
         else if (model.isSuitableColumnObject(owlObject)) {
-            dropColumn = Math.max(dropColumn, 1);
             result = addColumn(owlObject);
         }
         return result;
@@ -192,15 +210,15 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
 
     public boolean addColumn(Object object) {
-        return addColumn(object, getColumnModel().getColumnCount());
+        return addColumn(object, getTable().getColumnCount());
     }
 
 
     public boolean addColumn(Object object, int index) {
-        boolean success = model.addColumn(object, index);
+        boolean success = model.addColumn(object);
 
         if (success){
-            TableColumn c = getColumnModel().getColumn(index);
+            TableColumn c = getTable().getColumnModel().getColumn(index);
             c.setHeaderRenderer(headerRenderer);
         }
 
@@ -208,27 +226,11 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
     }
 
 
-    public boolean removeColumn(int colIndex){
-        Object colObj = model.getColumnObject(colIndex);
-        return removeColumn(colObj);
-    }
-
-
-    public boolean removeColumn(Object colObj){
-        return model.removeColumn(colObj);
-    }
-
-
-    public boolean containsColumn(Object columnObj) {
-        return model.contains(columnObj);
-    }
-
-
     private boolean addValue(OWLObject value, int row, int col) {
         boolean success = false;
-        if (model.getTreeTableModelAdapter().isCellEditable(row, col)) {
-            R rowObj = model.getRowObject(row);
-            Object colObj = model.getColumnObject(col);
+        if (model.isCellEditable(row, col)) {
+            R rowObj = model.getNodeForRow(row);
+            Object colObj = model.getColumnObjectAtModelIndex(col);
             List<OWLOntologyChange> changes = model.addMatrixValue(rowObj, colObj, value);
             if (!changes.isEmpty()){
                 mngr.applyChanges(changes);
@@ -240,7 +242,9 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
 
     private void handleRendererChanged() {
-        setRowHeight(getFontMetrics(OWLRendererPreferences.getInstance().getFont()).getHeight());
+        final int rowHeight = getFontMetrics(OWLRendererPreferences.getInstance().getFont()).getHeight();
+        getTree().setRowHeight(rowHeight);
+        getTable().validate();
     }
 
 
@@ -255,9 +259,7 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
         if (mousePos == null) {
             return new Point();
         }
-        int row = rowAtPoint(mousePos);
-        int col = columnAtPoint(mousePos);
-        Rectangle cellRect = getCellRect(row, col, true);
+        Rectangle cellRect = getMouseCellRect();
         return new Point(mousePos.x - cellRect.x, mousePos.y - cellRect.y);
     }
 
@@ -265,7 +267,8 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
     public Rectangle getMouseCellRect() {
         Point mousePos = getMousePosition();
         if(mousePos != null) {
-            return getCellRect(rowAtPoint(mousePos), columnAtPoint(mousePos), true);
+            return getTable().getCellRect(getTable().rowAtPoint(mousePos),
+                                          getTable().columnAtPoint(mousePos), true);
         }
         else {
             return null;
@@ -273,16 +276,16 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
     }
 
-
-    public Object getCellObject() {
-        Point mousePosition = getMousePosition();
-        if (mousePosition == null) {
-            return null;
-        }
-        int row = rowAtPoint(mousePosition);
-        int col = columnAtPoint(mousePosition);
-        return getValueAt(row, col);
-    }
+                //
+                //    public Object getCellObject() {
+                //        Point mousePosition = getMousePosition();
+                //        if (mousePosition == null) {
+                //            return null;
+                //        }
+                //        int row = getTable().rowAtPoint(mousePosition);
+                //        int col = getTable().columnAtPoint(mousePosition);
+                //        return getTable().getValueAt(row, col);
+                //    }
 
 
     public void setLinkedObject(OWLObject object) {
@@ -321,20 +324,31 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable implements 
 
             Transferable t = dtde.getTransferable();
             if (isAcceptableTransferable(t)) {
-                if (getSelectedRows().length < 2) {
+                if (getTable().getSelectedRows().length < 2) {
                     Point pt = dtde.getLocation();
-                    int row = rowAtPoint(pt);
-                    int col = columnAtPoint(pt);
+                    int row = getTable().rowAtPoint(pt);
+                    int col = getTable().columnAtPoint(pt);
 
-                    if (row != -1 && col > 0) {
+                    if (row != -1) {
                         OWLObject obj = getDropObjects(t).iterator().next();
                         if (model.isSuitableCellValue(obj, row, col)) {
                             // Provide a bit of feedback by selecting the table row
-                            getSelectionModel().setSelectionInterval(row, row);
+                            getTable().getSelectionModel().setSelectionInterval(row, row);
+
+                            setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+                        }
+                        else{
+                            setCursor(defaultCursor);
                         }
                     }
                 }
             }
+        }
+
+
+        public void dragExit(DropTargetEvent dte) {
+            super.dragExit(dte);
+            setCursor(defaultCursor);
         }
     }
 }

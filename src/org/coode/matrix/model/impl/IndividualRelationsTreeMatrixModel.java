@@ -1,9 +1,9 @@
 package org.coode.matrix.model.impl;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.helper.IndividualsHelper;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;
@@ -43,11 +43,11 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 4, 2007<br><br>
  */
-public class IndividualRelationsTreeMatrixModel extends AbstractTreeMatrixModel<OWLEntity> {
+public class IndividualRelationsTreeMatrixModel extends AbstractMatrixModel<OWLEntity> {
 
     private IndividualsHelper helper;
 
-    public IndividualRelationsTreeMatrixModel(OWLObjectTreeTableCellRenderer<OWLEntity> tree, OWLModelManager mngr) {
+    public IndividualRelationsTreeMatrixModel(OWLObjectTree<OWLEntity> tree, OWLModelManager mngr) {
         super(tree, mngr);
         helper = new IndividualsHelper(mngr.getOWLOntologyManager(), mngr.getActiveOntologies());
     }
@@ -117,7 +117,7 @@ public class IndividualRelationsTreeMatrixModel extends AbstractTreeMatrixModel<
         return Collections.EMPTY_SET;
     }
 
-    public boolean isCellEditable(int row, int column) {
-        return getRowObject(row) instanceof OWLIndividual;
+    public boolean isCellEditable(OWLEntity rowObject, int column) {
+        return rowObject instanceof OWLIndividual;
     }
 }

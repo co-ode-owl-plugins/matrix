@@ -1,8 +1,8 @@
 package org.coode.matrix.model.impl;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
+import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.vocab.OWLRDFVocabulary;
@@ -42,13 +42,13 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class ClassTranslationTreeMatrixModel extends AbstractTreeMatrixModel<OWLClass> {
+public class ClassTranslationTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 
-    public ClassTranslationTreeMatrixModel(OWLObjectTreeTableCellRenderer<OWLClass> tree, OWLModelManager mngr) {
+    public ClassTranslationTreeMatrixModel(OWLObjectTree<OWLClass> tree, OWLModelManager mngr) {
         super(tree, mngr);
 
-        addColumn(new AnnotationLanguagePair(OWLRDFVocabulary.RDFS_LABEL.getURI(), ""), -1);
-        addColumn(new AnnotationLanguagePair(OWLRDFVocabulary.RDFS_LABEL.getURI(), "en"), -1);
+        addColumn(new AnnotationLanguagePair(OWLRDFVocabulary.RDFS_LABEL.getURI(), ""));
+        addColumn(new AnnotationLanguagePair(OWLRDFVocabulary.RDFS_LABEL.getURI(), "en"));
     }
 
     protected String getTreeColumnLabel() {

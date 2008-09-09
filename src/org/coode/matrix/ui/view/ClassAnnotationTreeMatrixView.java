@@ -1,15 +1,13 @@
 package org.coode.matrix.ui.view;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.impl.ClassAnnotationTreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLClass;
 
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableCellEditor;
-import java.net.URI;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -52,7 +50,7 @@ public class ClassAnnotationTreeMatrixView extends AbstractTreeMatrixView<OWLCla
         return getOWLModelManager().getOWLClassHierarchyProvider();
     }
 
-    protected AbstractTreeMatrixModel<OWLClass> createMatrixModel(OWLObjectTreeTableCellRenderer<OWLClass> tree) {
+    protected MatrixModel<OWLClass> createMatrixModel(OWLObjectTree<OWLClass> tree) {
         return new ClassAnnotationTreeMatrixModel(tree, getOWLModelManager());
     }
 
@@ -60,8 +58,8 @@ public class ClassAnnotationTreeMatrixView extends AbstractTreeMatrixView<OWLCla
     }
 
 
-    protected TableCellEditor getCellEditor(Object columnObject, OWLClass rowObject) {
+    protected TableCellEditor getCellEditor(OWLClass rowObject, Object columnObject) {
         setEditorType(OWLObjectListParser.DATATYPE);
-        return super.getCellEditor(columnObject, rowObject);
+        return super.getCellEditor(rowObject, columnObject);
     }
 }

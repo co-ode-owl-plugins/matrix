@@ -1,9 +1,9 @@
 package org.coode.matrix.model.impl;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.helper.ObjectPropertyHelper;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObjectProperty;
@@ -44,11 +44,11 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 4, 2007<br><br>
  */
-public class ObjectPropertyTreeMatrixModel extends AbstractTreeMatrixModel<OWLObjectProperty> {
+public class ObjectPropertyTreeMatrixModel extends AbstractMatrixModel<OWLObjectProperty> {
 
     private ObjectPropertyHelper objPropHelper;
 
-    public ObjectPropertyTreeMatrixModel(OWLObjectTreeTableCellRenderer<OWLObjectProperty> tree, OWLModelManager mngr) {
+    public ObjectPropertyTreeMatrixModel(OWLObjectTree<OWLObjectProperty> tree, OWLModelManager mngr) {
         super(tree, mngr);
 
         objPropHelper = new ObjectPropertyHelper(mngr);
@@ -68,7 +68,7 @@ public class ObjectPropertyTreeMatrixModel extends AbstractTreeMatrixModel<OWLOb
 
     public Object getMatrixValue(OWLObjectProperty prop, Object colObj) {
         if (colObj instanceof ObjectPropertyHelper.Characteristic){
-                return objPropHelper.getPropertyCharacteristic(prop, (ObjectPropertyHelper.Characteristic)colObj);
+            return objPropHelper.getPropertyCharacteristic(prop, (ObjectPropertyHelper.Characteristic)colObj);
         }
         else if (colObj instanceof ObjectPropertyHelper.Feature){
             switch((ObjectPropertyHelper.Feature)colObj){
@@ -76,19 +76,16 @@ public class ObjectPropertyTreeMatrixModel extends AbstractTreeMatrixModel<OWLOb
                 case RANGE: return objPropHelper.getRanges(prop);
                 case INVERSE: return objPropHelper.getInverses(prop);
             }
+            return null;
         }
-        else {
-            return super.getMatrixValue(prop, colObj);
-        }
-
-        return null;
+        return super.getMatrixValue(prop, colObj);
     }
 
     public List<OWLOntologyChange> setMatrixValue(OWLObjectProperty prop, Object colObj, Object value) {
         if (colObj instanceof ObjectPropertyHelper.Characteristic){
-                return objPropHelper.setPropertyCharacteristic((Boolean) value, prop,
-                                                               (ObjectPropertyHelper.Characteristic) colObj,
-                                                               mngr.getActiveOntology());
+            return objPropHelper.setPropertyCharacteristic((Boolean) value, prop,
+                                                           (ObjectPropertyHelper.Characteristic) colObj,
+                                                           mngr.getActiveOntology());
         }
         else if (colObj instanceof ObjectPropertyHelper.Feature){
             switch((ObjectPropertyHelper.Feature)colObj){
@@ -96,15 +93,38 @@ public class ObjectPropertyTreeMatrixModel extends AbstractTreeMatrixModel<OWLOb
                 case RANGE: return objPropHelper.setRanges(prop, (Set<OWLDescription>)value, mngr.getActiveOntology());
                 case INVERSE: return objPropHelper.setInverses(prop, (Set<OWLObjectProperty>)value, mngr.getActiveOntology());
             }
+            return Collections.emptyList();
         }
-        else{
-            return super.setMatrixValue(prop, colObj, value);
-        }
-        return Collections.EMPTY_LIST;
+        return super.setMatrixValue(prop, colObj, value);
     }
 
+
+    public List<OWLOntologyChange> addMatrixValue(OWLObjectProperty prop, Object colObj, Object value) {
+        if (colObj instanceof ObjectPropertyHelper.Feature){
+            switch((ObjectPropertyHelper.Feature)colObj){
+                case DOMAIN:
+                    Set<OWLDescription> domains = objPropHelper.getDomains(prop);
+                    domains.add((OWLDescription)value);
+                    return objPropHelper.setDomains(prop, domains, mngr.getActiveOntology());
+
+                case RANGE:
+                    Set<OWLDescription> ranges = objPropHelper.getRanges(prop);
+                    ranges.add((OWLDescription)value);
+                    return objPropHelper.setRanges(prop, ranges, mngr.getActiveOntology());
+
+                case INVERSE:
+                    Set<OWLObjectProperty> inverses = objPropHelper.getInverses(prop);
+                    inverses.add((OWLObjectProperty)value);
+                    return objPropHelper.setInverses(prop, inverses, mngr.getActiveOntology());
+            }
+            return Collections.emptyList();
+        }
+        return super.addMatrixValue(prop, colObj, value);
+    }
+
+
     public boolean isSuitableCellValue(Object value, int row, int col) {
-        final Object colObj = getColumnObject(col);
+        final Object colObj = getColumnObjectAtModelIndex(col);
         if (colObj instanceof ObjectPropertyHelper.Feature){
             switch((ObjectPropertyHelper.Feature)colObj){
                 case INVERSE: return value instanceof OWLObjectProperty;
@@ -128,7 +148,7 @@ public class ObjectPropertyTreeMatrixModel extends AbstractTreeMatrixModel<OWLOb
     }
 
     public Class getColumnClass(int column) {
-        final Object colObj = getColumnObject(column);
+        final Object colObj = getColumnObjectAtModelIndex(column);
         if (colObj instanceof ObjectPropertyHelper.Characteristic){
             return Boolean.class;
         }

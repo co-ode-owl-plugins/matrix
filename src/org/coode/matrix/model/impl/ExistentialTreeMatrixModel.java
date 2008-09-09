@@ -1,10 +1,10 @@
 package org.coode.matrix.model.impl;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.helper.FillerHelper;
 import org.coode.matrix.model.helper.ObjectPropertyHelper;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.*;
 
 import java.net.URI;
@@ -43,7 +43,7 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class ExistentialTreeMatrixModel extends AbstractTreeMatrixModel<OWLClass> {
+public class ExistentialTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 
     public static final String NONE = "none";
 
@@ -51,7 +51,7 @@ public class ExistentialTreeMatrixModel extends AbstractTreeMatrixModel<OWLClass
     private ObjectPropertyHelper objHelper;
 
 
-    public ExistentialTreeMatrixModel(OWLObjectTreeTableCellRenderer tree, OWLModelManager mngr) {
+    public ExistentialTreeMatrixModel(OWLObjectTree<OWLClass> tree, OWLModelManager mngr) {
         super(tree, mngr);
         fillerHelper = new FillerHelper(mngr);
         objHelper = new ObjectPropertyHelper(mngr);

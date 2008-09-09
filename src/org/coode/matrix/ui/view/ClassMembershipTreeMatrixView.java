@@ -1,10 +1,10 @@
 package org.coode.matrix.ui.view;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.impl.ClassMembershipTreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLClass;
 
 import javax.swing.table.TableCellEditor;
@@ -49,12 +49,12 @@ public class ClassMembershipTreeMatrixView extends AbstractTreeMatrixView<OWLCla
         return getOWLModelManager().getOWLClassHierarchyProvider();
     }
 
-    protected AbstractTreeMatrixModel<OWLClass> createMatrixModel(OWLObjectTreeTableCellRenderer<OWLClass> tree) {
+    protected MatrixModel<OWLClass> createMatrixModel(OWLObjectTree<OWLClass> tree) {
         return new ClassMembershipTreeMatrixModel(tree, getOWLModelManager());
     }
 
-    protected TableCellEditor getCellEditor(Object columnObject, OWLClass rowObject) {
-        TableCellEditor editor = super.getCellEditor(columnObject, rowObject);
+    protected TableCellEditor getCellEditor(OWLClass rowObject, Object columnObject) {
+        TableCellEditor editor = super.getCellEditor(rowObject, columnObject);
         if (columnObject instanceof String){
             setEditorType(OWLObjectListParser.INDIVIDUAL);
         }

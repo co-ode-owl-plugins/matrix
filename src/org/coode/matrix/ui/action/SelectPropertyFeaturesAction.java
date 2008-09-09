@@ -69,14 +69,10 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
         if (uihelper.showDialog("Pick which features you want to be visible", featuresPanel) == JOptionPane.OK_OPTION){
             for (ObjectPropertyHelper.Characteristic c : ObjectPropertyHelper.Characteristic.values()) {
                 if (featuresPanel.isVisible(c)) {
-                    if (!table.containsColumn(c)){
-                        table.addColumn(c);// @@TODO , helper.toIndex(col));
-                    }
+                    table.addColumn(c);
                 }
                 else {
-                    if (table.containsColumn(c)){
-                        table.removeColumn(c);
-                    }
+                    table.getModel().removeColumn(c);
                 }
             }
         }
@@ -92,7 +88,7 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
 
             for (ObjectPropertyHelper.Characteristic c : ObjectPropertyHelper.Characteristic.values()){
                 JCheckBox check = new JCheckBox(c.toString());
-                check.setSelected(table.containsColumn(c));
+                check.setSelected(table.getModel().getModelIndexOfColumn(c) != -1);
                 checkMap.put(check, c);
                 box.add(check);
                 box.add(Box.createVerticalStrut(7));

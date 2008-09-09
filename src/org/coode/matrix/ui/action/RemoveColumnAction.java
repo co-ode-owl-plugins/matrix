@@ -1,6 +1,5 @@
 package org.coode.matrix.ui.action;
 
-import org.coode.jtreetable.TreeTableModel;
 import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
@@ -48,21 +47,23 @@ public class RemoveColumnAction extends DisposableAction {
 
     private OWLEditorKit eKit;
 
-    private MatrixTreeTable table;
+    private MatrixTreeTable treeTable;
 
     public RemoveColumnAction(OWLEditorKit eKit, MatrixTreeTable table) {
         super(LABEL, OWLIcons.getIcon("property.annotation.remove.png"));
         this.eKit = eKit;
-        this.table = table;
+        this.treeTable = table;
     }
 
     public void dispose() {
     }
 
     public void actionPerformed(ActionEvent actionEvent) {
-        int col = table.getSelectedColumn();
-        if (col != -1 && !table.getColumnClass(col).equals(TreeTableModel.class)) {
-            table.removeColumn(col);
+        int col = treeTable.getTable().getSelectedColumn();
+        if (col >= 0) {
+            int modelIndex = treeTable.getTable().convertColumnIndexToModel(col);
+            final Object colObject = treeTable.getModel().getColumnObjectAtModelIndex(modelIndex);
+            treeTable.getModel().removeColumn(colObject);
         }
         else {
             UIHelper helper = new UIHelper(eKit);
@@ -71,8 +72,7 @@ public class RemoveColumnAction extends DisposableAction {
 
             if (helper.showDialog(LABEL, new JScrollPane(selectorList)) == JOptionPane.OK_OPTION) {
                 final Object columnObj = selectorList.getSelectedValue();
-                col = table.getColumnModel().getColumnIndex(columnObj);
-                table.removeColumn(col);
+                treeTable.getModel().removeColumn(columnObj);
             }
         }
     }
@@ -80,15 +80,18 @@ public class RemoveColumnAction extends DisposableAction {
     private JList createSelector() {
         ListModel listmodel = new AbstractListModel() {
             public int getSize() {
-                return table.getColumnCount()-1;
+                return treeTable.getModel().getColumnCount();
             }
 
             public Object getElementAt(int i) {
-                return table.getMatrixModel().getColumnObject(i+1);
+                int modelIndex = treeTable.getTable().convertColumnIndexToModel(i);
+                return treeTable.getModel().getColumnObjectAtModelIndex(modelIndex);
             }
         };
 
         JList selectorList = new JList(listmodel);
+
+        selectorList.setSelectedIndex(0);
 
         selectorList.setCellRenderer(new OWLCellRenderer(eKit));
 

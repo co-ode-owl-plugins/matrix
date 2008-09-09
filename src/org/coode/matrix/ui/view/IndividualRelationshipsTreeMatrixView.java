@@ -1,13 +1,13 @@
 package org.coode.matrix.ui.view;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.hierarchy.ClassAndIndividualHierarchyProvider;
 import org.coode.matrix.model.impl.IndividualRelationsTreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddObjectPropertyAction;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
@@ -53,7 +53,7 @@ public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixVie
     }
 
     protected void initialiseMatrixView() throws Exception {
-        addAction(new AddObjectPropertyAction(getOWLEditorKit(), getTable()), "A", "B");
+        addAction(new AddObjectPropertyAction(getOWLEditorKit(), getTreeTable()), "A", "B");
     }
 
     protected OWLObjectHierarchyProvider<OWLEntity> getHierarchyProvider() {
@@ -66,18 +66,18 @@ public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixVie
         return hierarchyProvider;
     }
 
-    protected AbstractTreeMatrixModel<OWLEntity> createMatrixModel(OWLObjectTreeTableCellRenderer<OWLEntity> tree) {
+    protected MatrixModel<OWLEntity> createMatrixModel(OWLObjectTree<OWLEntity> tree) {
         return new IndividualRelationsTreeMatrixModel(tree, getOWLModelManager());
     }
 
-    protected TableCellEditor getCellEditor(Object columnObject, OWLEntity rowObject) {
+    protected TableCellEditor getCellEditor(OWLEntity rowObject, Object columnObject) {
         if (columnObject instanceof OWLObjectProperty){
             setEditorType(OWLObjectListParser.INDIVIDUAL);
         }
         else{
             setEditorType(OWLObjectListParser.DATATYPE);
         }
-        return super.getCellEditor(columnObject, rowObject);
+        return super.getCellEditor(rowObject, columnObject);
     }
 
     public void disposeView() {

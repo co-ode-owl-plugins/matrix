@@ -1,12 +1,12 @@
 package org.coode.matrix.ui.view;
 
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
+import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.helper.ObjectPropertyHelper;
 import org.coode.matrix.model.impl.ObjectPropertyTreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.SelectPropertyFeaturesAction;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
 import javax.swing.*;
@@ -49,16 +49,16 @@ public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProp
 
     protected void initialiseMatrixView() throws Exception {
 
-        addAction(new SelectPropertyFeaturesAction(getOWLEditorKit(), getTable()), "A", "B");
+        addAction(new SelectPropertyFeaturesAction(getOWLEditorKit(), getTreeTable()), "A", "B");
 
-        getTable().setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        getTreeTable().getTable().setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     }
 
     protected OWLObjectHierarchyProvider<OWLObjectProperty> getHierarchyProvider() {
         return getOWLModelManager().getOWLObjectPropertyHierarchyProvider();
     }
 
-    protected AbstractTreeMatrixModel<OWLObjectProperty> createMatrixModel(OWLObjectTreeTableCellRenderer<OWLObjectProperty> tree) {
+    protected MatrixModel<OWLObjectProperty> createMatrixModel(OWLObjectTree<OWLObjectProperty> tree) {
         return new ObjectPropertyTreeMatrixModel(tree, getOWLModelManager());
     }
 
@@ -66,24 +66,24 @@ public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProp
         return true;
     }
 
-    protected TableCellEditor getCellEditor(Object colObj, OWLObjectProperty p) {
+    protected TableCellEditor getCellEditor(OWLObjectProperty p, Object colObj) {
         if (colObj instanceof ObjectPropertyHelper.Feature){
             if (colObj instanceof ObjectPropertyHelper.Feature){
                 switch((ObjectPropertyHelper.Feature)colObj){
                     case INVERSE:
                         setEditorType(OWLObjectListParser.OBJPROP);
-                        return super.getCellEditor(colObj, p);
+                        return super.getCellEditor(p, colObj);
                     case DOMAIN: // fallthrough
                     case RANGE:
                         setEditorType(OWLObjectListParser.CLASS);
-                        return super.getCellEditor(colObj, p);
+                        return super.getCellEditor(p, colObj);
 
                 }
             }
         }
         else if (colObj instanceof URI){
             setEditorType(OWLObjectListParser.DATATYPE); // not sure why this is datatype for annotations?
-            return super.getCellEditor(colObj, p);
+            return super.getCellEditor(p, colObj);
         }
         // otherwise, this will be one of the boolean characteristics - so just use the table default
         return null;

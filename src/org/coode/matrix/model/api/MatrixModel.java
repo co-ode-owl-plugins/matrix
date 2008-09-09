@@ -2,6 +2,7 @@ package org.coode.matrix.model.api;
 
 import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntologyChange;
+import uk.ac.manchester.cs.bhig.jtreetable.TreeTableModel;
 
 import java.util.List;
 import java.util.Set;
@@ -37,33 +38,12 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-interface MatrixModel<R extends OWLObject> {
-
-    boolean addColumn(Object obj);
-
-    boolean addColumn(Object obj, int index);
-
-    boolean removeColumn(Object obj);
-
-    public int indexOf(Object obj);
-
-    public boolean contains(Object value);
-
-    R getRowObject(int row);
-
-    Object getColumnObject(int column);
+public interface MatrixModel<R extends OWLObject> extends TreeTableModel<R> {
 
     Object getMatrixValue(R rowObject, Object columnObject);
 
     List<OWLOntologyChange> setMatrixValue(R rowObj, Object columnObj, Object value);
 
-    /**
-     * As above, but for non-functional properties where adding a value to an existing set of values is possible
-     * @param rowObj
-     * @param columnObj
-     * @param value
-     * @return a list of changes that need to be applied for this add to take place
-     */
     List<OWLOntologyChange> addMatrixValue(R rowObj, Object columnObj, Object value);
 
     boolean isSuitableCellValue(Object value, int row, int col);
@@ -77,4 +57,6 @@ interface MatrixModel<R extends OWLObject> {
     void setFilterForColumn(int col, Object filter);
 
     Object getFilterForColumn(int col);
+
+    void dispose();
 }

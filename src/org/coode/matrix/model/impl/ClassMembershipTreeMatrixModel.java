@@ -1,16 +1,16 @@
 package org.coode.matrix.model.impl;
 
+import org.coode.matrix.model.api.AbstractMatrixModel;
+import org.coode.matrix.model.helper.IndividualsHelper;
+import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntologyChange;
-import org.coode.matrix.model.api.AbstractTreeMatrixModel;
-import org.coode.matrix.model.helper.IndividualsHelper;
-import org.coode.matrix.ui.renderer.OWLObjectTreeTableCellRenderer;
-import org.protege.editor.owl.model.OWLModelManager;
 
-import java.util.Set;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -42,16 +42,16 @@ import java.util.Collections;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class ClassMembershipTreeMatrixModel extends AbstractTreeMatrixModel<OWLClass> {
+public class ClassMembershipTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 
     private static final String COLUMN_NAME = "Members";
 
     private IndividualsHelper helper;
 
-    public ClassMembershipTreeMatrixModel(OWLObjectTreeTableCellRenderer tree, OWLModelManager mngr) {
+    public ClassMembershipTreeMatrixModel(OWLObjectTree<OWLClass> tree, OWLModelManager mngr) {
         super(tree, mngr);
         helper = new IndividualsHelper(mngr.getOWLOntologyManager(), mngr.getActiveOntologies());
-        addColumn(COLUMN_NAME, -1);
+        addColumn(COLUMN_NAME);
     }
 
     protected String getTreeColumnLabel() {
