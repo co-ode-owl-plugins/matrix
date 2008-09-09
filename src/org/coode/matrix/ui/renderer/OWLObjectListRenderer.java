@@ -79,8 +79,10 @@ public class OWLObjectListRenderer implements TableCellRenderer {
             addFillers(fillerModel.getInheritedFillers(), NOT_EDITABLE_COLOUR, INHERITED_COLOUR);
             delegate = p;
         }
-        else if (value instanceof Collection) {
-            value = ren.render((Collection<OWLObject>) value);
+        else{
+            if (value instanceof Collection) {
+                value = ren.render((Collection<OWLObject>) value);
+            }
             delegate = defaultCellRenderer.getTableCellRendererComponent(jTable, value, isSelected, hasFocus, row, col);
         }
         return delegate;
