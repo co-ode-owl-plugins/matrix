@@ -5,7 +5,7 @@
     <extension id="org.coode.MatrixTab"
             point="org.protege.editor.core.application.WorkspaceTab">
         <label value="Matrix"/>
-        <class value="org.protege.editor.core.ui.workspace.WorkspaceViewsTab"/>
+        <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
         <editorKitId value="OWLEditorKit"/>
         <index value="F"/>
         <defaultViewConfigFileName value="org.coode.MatrixTab.xml"/>
@@ -75,7 +75,7 @@
     <extension id="org.coode.PropertyMatrixTab"
             point="org.protege.editor.core.application.WorkspaceTab">
         <label value="Property Matrix"/>
-        <class value="org.protege.editor.core.ui.workspace.WorkspaceViewsTab"/>
+        <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
         <editorKitId value="OWLEditorKit"/>
         <index value="G"/>
         <defaultViewConfigFileName value="org.coode.PropertyMatrixTab.xml"/>
