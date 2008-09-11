@@ -3,10 +3,7 @@ package org.coode.matrix.model.helper;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.semanticweb.owl.model.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -70,40 +67,31 @@ public class FillerHelper {
         Set<OWLClass> possibleFillers = new HashSet<OWLClass>();
 
         for (OWLDescription range : objPropHelper.getRanges(p)) {
-            if (range instanceof OWLClass) {
-                possibleFillers.add((OWLClass) range);
+            if (!range.isAnonymous()) {
+                possibleFillers.add(range.asOWLClass());
+                possibleFillers.addAll(mngr.getOWLClassHierarchyProvider().getDescendants(range.asOWLClass()));
+            }
+
+            if (possibleFillers.size() > limit){
+                return Collections.EMPTY_SET;
             }
         }
 
         // @@TODO if objectProp has an inverse, check things that cannot have this prop
 
-        return (accumulateNamedSubclasses(possibleFillers, limit)) ? possibleFillers : null;
+        return possibleFillers;
     }
 
-    private boolean accumulateNamedSubclasses(Set<OWLClass> classes, int limit) {
-        Set<OWLClass> accumulator = new HashSet<OWLClass>();
 
-        for (OWLClass cls : classes) {
-            for (OWLOntology ont : mngr.getActiveOntologies()){
-                for (OWLDescription sub : cls.getSubClasses(ont)){
-                    if (sub instanceof OWLClass){
-                        accumulator.add((OWLClass)sub);
-                    }
-                }
-            }
-            if (classes.size() + accumulator.size() > limit) {
-                return false;
-            }
-        }
-
-        if (accumulator.size() > 0 && accumulateNamedSubclasses(accumulator, limit)) {
-            classes.addAll(accumulator);
-        }
-        return true;
-    }
-
+    // if there is at least one named range, then return true
     public boolean fillersRestricted(OWLObjectProperty p) {
-        return objPropHelper.getRanges(p).size() > 0;
+        final Set<OWLDescription> ranges = objPropHelper.getRanges(p);
+        for (OWLDescription range : ranges){
+            if (!range.isAnonymous()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public Set<OWLDescription> getAssertedNamedFillers(OWLClass cls, OWLObjectProperty prop) {
@@ -115,7 +103,7 @@ public class FillerHelper {
                 if (superCls instanceof OWLObjectSomeRestriction){
                     if (((OWLObjectSomeRestriction)superCls).getProperty().equals(prop)){
                         OWLDescription filler = ((OWLObjectSomeRestriction) superCls).getFiller();
-                        if (filler instanceof OWLClass){
+                        if (!filler.isAnonymous()){
                             namedFillers.add(filler);
                         }
                     }

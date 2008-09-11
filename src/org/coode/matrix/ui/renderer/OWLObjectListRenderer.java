@@ -45,15 +45,14 @@ import java.util.Set;
  */
 public class OWLObjectListRenderer implements TableCellRenderer {
 
-    private static final Color NOT_EDITABLE_COLOUR = new Color(80, 80, 80);
+    private static final Color NOT_EDITABLE_COLOUR = new Color(100, 100, 100);
     private static final Color EDITABLE_COLOUR = new Color(0, 0, 0);
 
-    private static final Color ASSERTED_COLOUR = new Color(255, 255, 255);
     private static final Color INHERITED_COLOUR = new Color(255, 255, 160);
 
     private OWLObjectsRenderer ren;
 
-    private JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 2));
+    private JPanel p;
 
     private Component delegate;
 
@@ -62,6 +61,21 @@ public class OWLObjectListRenderer implements TableCellRenderer {
 
     public OWLObjectListRenderer(OWLObjectsRenderer ren) {
         this.ren = ren;
+        p = new JPanel(){
+            // for some reason the BoxLayout reports a prefSize of 0, 0 so do this by hand
+            public Dimension getPreferredSize() {
+                int prefWidth = 0;
+                int prefHeight = 0;
+                for (Component c : getComponents()){
+                    final Dimension pref = c.getPreferredSize();
+                    prefWidth += pref.width;
+                    prefHeight = Math.max(prefHeight, pref.height);
+                }
+                
+                return new Dimension(prefWidth, prefHeight);
+            }
+        };
+        p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
     }
 
     public Component getTableCellRendererComponent(JTable jTable, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
@@ -74,9 +88,9 @@ public class OWLObjectListRenderer implements TableCellRenderer {
                 p.setBackground(jTable.getBackground());
             }
             FillerModel fillerModel = (FillerModel) value;
-            addFillers(fillerModel.getAssertedFillersFromEquiv(), NOT_EDITABLE_COLOUR, ASSERTED_COLOUR);
-            addFillers(fillerModel.getAssertedFillersFromSupers(), EDITABLE_COLOUR, ASSERTED_COLOUR);
-            addFillers(fillerModel.getInheritedFillers(), NOT_EDITABLE_COLOUR, INHERITED_COLOUR);
+            addFillers(fillerModel.getAssertedFillersFromEquiv(), NOT_EDITABLE_COLOUR, null, isSelected);
+            addFillers(fillerModel.getAssertedFillersFromSupers(), EDITABLE_COLOUR, null, isSelected);
+            addFillers(fillerModel.getInheritedFillers(), NOT_EDITABLE_COLOUR, null, isSelected);
             delegate = p;
         }
         else{
@@ -94,13 +108,21 @@ public class OWLObjectListRenderer implements TableCellRenderer {
     }
 
 
-    private void addFillers(Set<OWLDescription> fillers, Color color, Color background) {
+    private void addFillers(Set<OWLDescription> fillers, Color color, Color background, boolean isSelected) {
         if (!fillers.isEmpty()){
-            JLabel label = new JLabel(ren.render(fillers));
+            String labelString = ren.render(fillers);
+            if (NOT_EDITABLE_COLOUR.equals(color)){
+                labelString = "(" + labelString + ")";
+            }
+            JLabel label = new JLabel(labelString);
             label.setFont(OWLRendererPreferences.getInstance().getFont());
             label.setForeground(color);
-            label.setBackground(background);
+            if (background != null){
+                label.setBackground(background);
+                label.setOpaque(!isSelected);
+            }
             p.add(label);
+            p.add(Box.createHorizontalStrut(4));
         }
     }
 }
