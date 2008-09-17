@@ -1,16 +1,15 @@
 package org.coode.matrix.ui.editor;
 
+import org.apache.log4j.Logger;
 import org.coode.matrix.model.impl.FillerModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
-import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.description.OWLExpressionParserException;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionAutoCompleter;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLObject;
 
 import javax.swing.*;
@@ -54,6 +53,8 @@ import java.util.Set;
  * Date: Jul 3, 2007<br><br>
  */
 public class OWLObjectListEditor extends AbstractCellEditor implements TableCellEditor {
+
+    private static Logger logger = Logger.getLogger(OWLObjectListEditor.class);
 
     private OWLObjectsRenderer ren;
 
@@ -141,8 +142,8 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
         try {
             return parser.getValues(editor.getText());
         }
-        catch (OWLException e) {
-            ProtegeApplication.getErrorLog().handleError(Thread.currentThread(), e);
+        catch (OWLExpressionParserException e) {
+            logger.warn(e.getMessage());
         }
         return originalFillers;
     }
