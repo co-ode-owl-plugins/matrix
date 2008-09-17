@@ -4,6 +4,7 @@ import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.helper.FillerHelper;
 import org.coode.matrix.model.helper.ObjectPropertyHelper;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owl.model.*;
 
@@ -51,9 +52,9 @@ public class ExistentialTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
     private ObjectPropertyHelper objHelper;
 
 
-    public ExistentialTreeMatrixModel(OWLObjectTree<OWLClass> tree, OWLModelManager mngr) {
+    public ExistentialTreeMatrixModel(OWLObjectTree<OWLClass> tree, OWLObjectHierarchyProvider<OWLClass> hp, OWLModelManager mngr) {
         super(tree, mngr);
-        fillerHelper = new FillerHelper(mngr);
+        fillerHelper = new FillerHelper(mngr, hp);
         objHelper = new ObjectPropertyHelper(mngr);
     }
 

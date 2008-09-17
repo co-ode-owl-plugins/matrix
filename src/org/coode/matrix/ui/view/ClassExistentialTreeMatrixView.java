@@ -61,8 +61,8 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
         return getOWLModelManager().getOWLClassHierarchyProvider();
     }
 
-    protected MatrixModel<OWLClass> createMatrixModel(OWLObjectTree<OWLClass> tree) {
-        return new ExistentialTreeMatrixModel(tree, getOWLModelManager());
+    protected final MatrixModel<OWLClass> createMatrixModel(OWLObjectTree<OWLClass> tree) {
+        return new ExistentialTreeMatrixModel(tree, getHierarchyProvider(), getOWLModelManager());
     }
 
     protected boolean isOWLClassView() {

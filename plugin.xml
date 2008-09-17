@@ -19,6 +19,14 @@
         <category value="@org.protege.classcategory"/>
     </extension>
 
+    <extension id="org.coode.InferredExistentialMatrixView"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Class Existential Matrix (Inferred Hierarchy)"/>
+        <class value="org.coode.matrix.ui.view.InferredClassExistentialTreeMatrixView"/>
+        <headerColor value="@org.protege.classcolor"/>
+        <category value="@org.protege.classcategory"/>
+    </extension>
+
     <extension id="org.coode.AnnotationMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
         <label value="Class Annotations Matrix"/>

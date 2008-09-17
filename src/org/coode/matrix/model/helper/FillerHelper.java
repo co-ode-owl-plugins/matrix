@@ -1,6 +1,7 @@
 package org.coode.matrix.model.helper;
 
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.semanticweb.owl.model.*;
 
 import java.util.*;
@@ -39,10 +40,15 @@ import java.util.*;
 public class FillerHelper {
 
     private OWLModelManager mngr;
+
     private ObjectPropertyHelper objPropHelper;
 
-    public FillerHelper(OWLModelManager mngr) {
+    private OWLObjectHierarchyProvider<OWLClass> hp;
+
+
+    public FillerHelper(OWLModelManager mngr, OWLObjectHierarchyProvider<OWLClass> hp) {
         this.mngr = mngr;
+        this.hp = hp;
         this.objPropHelper = new ObjectPropertyHelper(mngr);
     }
 
@@ -69,7 +75,7 @@ public class FillerHelper {
         for (OWLDescription range : objPropHelper.getRanges(p)) {
             if (!range.isAnonymous()) {
                 possibleFillers.add(range.asOWLClass());
-                possibleFillers.addAll(mngr.getOWLClassHierarchyProvider().getDescendants(range.asOWLClass()));
+                possibleFillers.addAll(hp.getDescendants(range.asOWLClass()));
             }
 
             if (possibleFillers.size() > limit){
@@ -114,10 +120,11 @@ public class FillerHelper {
         return namedFillers;
     }
 
+
     public Set<OWLDescription> getInheritedNamedFillers(OWLClass cls, OWLObjectProperty prop) {
         Set<OWLDescription> namedFillers = new HashSet<OWLDescription>();
 
-        for (OWLClass namedSuper : getNamedAncestors(cls, false)){
+        for (OWLClass namedSuper : hp.getAncestors(cls)){
             namedFillers.addAll(getAssertedNamedFillers(namedSuper, prop));
             namedFillers.addAll(getAssertedNamedFillersFromEquivs(namedSuper, prop));
         }
@@ -125,25 +132,6 @@ public class FillerHelper {
         return namedFillers;
     }
 
-    private Set<OWLClass> getNamedAncestors(OWLClass cls, boolean includeCls) {
-        Set<OWLClass> accumulator = new HashSet<OWLClass>();
-        getNamedAncestors(cls, includeCls, accumulator);
-        return accumulator;
-    }
-
-    // the recursive part
-    private void getNamedAncestors(OWLClass cls, boolean includeCls, Set<OWLClass> accumulator) {
-        if (includeCls){
-            accumulator.add(cls);
-        }
-        for (OWLOntology ont : mngr.getActiveOntologies()){
-            for (OWLDescription sub : cls.getSuperClasses(ont)){
-                if (sub instanceof OWLClass && !accumulator.contains((OWLClass)sub)){
-                    getNamedAncestors((OWLClass)sub, true, accumulator);
-                }
-            }
-        }
-    }
 
     public List<OWLOntologyChange> setNamedFillers(Set<OWLDescription> fillers, OWLClass cls,
                                                    OWLObjectProperty p, OWLOntology activeOnt) {
@@ -201,11 +189,9 @@ public class FillerHelper {
 
     public Set<OWLDescription> getAssertedNamedFillersFromEquivs(OWLClass cls, OWLObjectProperty p) {
         NamedFillerExtractor extractor = new NamedFillerExtractor(p, mngr.getActiveOntologies());
-        for (OWLOntology ont : mngr.getActiveOntologies()){
-            for (OWLDescription equiv : cls.getEquivalentClasses(ont)){
+            for (OWLDescription equiv : hp.getEquivalents(cls)){
                 equiv.accept(extractor);
             }
-        }
         return extractor.getFillers();
     }
 
