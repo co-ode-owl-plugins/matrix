@@ -20,6 +20,7 @@ import uk.ac.manchester.cs.bhig.jtreetable.JTreeTable;
 
 import javax.swing.*;
 import javax.swing.table.*;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -93,7 +94,7 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
 
         getTable().setGridColor(Color.LIGHT_GRAY);
 
-        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 
         // allow drop on both the table and the scrollpane
         final Container clientPane = getTable().getParent();
