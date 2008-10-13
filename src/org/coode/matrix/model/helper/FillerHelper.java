@@ -189,9 +189,11 @@ public class FillerHelper {
 
     public Set<OWLDescription> getAssertedNamedFillersFromEquivs(OWLClass cls, OWLObjectProperty p) {
         NamedFillerExtractor extractor = new NamedFillerExtractor(p, mngr.getActiveOntologies());
-            for (OWLDescription equiv : hp.getEquivalents(cls)){
+        for (OWLOntology ont : mngr.getActiveOntologies()){
+            for (OWLDescription equiv : cls.getEquivalentClasses(ont)){
                 equiv.accept(extractor);
             }
+        }
         return extractor.getFillers();
     }
 
