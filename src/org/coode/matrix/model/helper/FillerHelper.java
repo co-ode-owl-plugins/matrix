@@ -124,11 +124,12 @@ public class FillerHelper {
     public Set<OWLDescription> getInheritedNamedFillers(OWLClass cls, OWLObjectProperty prop) {
         Set<OWLDescription> namedFillers = new HashSet<OWLDescription>();
 
-        for (OWLClass namedSuper : hp.getAncestors(cls)){
-            namedFillers.addAll(getAssertedNamedFillers(namedSuper, prop));
-            namedFillers.addAll(getAssertedNamedFillersFromEquivs(namedSuper, prop));
+        if (!cls.isOWLNothing()){
+            for (OWLClass namedSuper : hp.getAncestors(cls)){
+                namedFillers.addAll(getAssertedNamedFillers(namedSuper, prop));
+                namedFillers.addAll(getAssertedNamedFillersFromEquivs(namedSuper, prop));
+            }
         }
-
         return namedFillers;
     }
 
