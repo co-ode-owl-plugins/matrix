@@ -3,8 +3,8 @@ package org.coode.matrix.ui.view;
 import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddAnnotationAction;
-import org.coode.matrix.ui.action.AutoResizeColumnsAction;
-import org.coode.matrix.ui.action.PackColumnsAction;
+import org.coode.matrix.ui.action.FitColumnsToContentAction;
+import org.coode.matrix.ui.action.FitColumnsToWindowAction;
 import org.coode.matrix.ui.action.RemoveColumnAction;
 import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.coode.matrix.ui.editor.OWLObjectListEditor;
@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -68,7 +69,7 @@ import java.util.Comparator;
  */
 public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends AbstractOWLSelectionViewComponent implements CellEditorFactory {
 
-    private static final boolean FILTERS_SUPPORTED = true;
+    private static final boolean FILTERS_SUPPORTED = false;
 
     private MatrixTreeTable<R> treeTable;
 
@@ -91,7 +92,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
     private MouseListener columnFilterMouseListener = new MouseAdapter(){
         public void mouseClicked(MouseEvent mouseEvent) {
-            int col = treeTable.getTable().getColumnModel().getColumnIndexAtX(mouseEvent.getX()) - 1;
+            int col = treeTable.getTable().getColumnModel().getColumnIndexAtX(mouseEvent.getX());
             handleColumnFilterRequest(col);
         }
     };
@@ -134,9 +135,9 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         addAction(new AddAnnotationAction(getOWLEditorKit(), treeTable), "A", "A");
         addAction(new RemoveColumnAction(getOWLEditorKit(), treeTable), "B", "A");
 
-        addAction(new PackColumnsAction(treeTable.getTable(), "Fit columns to content", null), "C", "A");
+        addAction(new FitColumnsToContentAction(treeTable.getTable(), "Fit columns to content", null), "C", "A");
 
-        addAction(new AutoResizeColumnsAction(treeTable.getTable(), "Fit columns to window", null), "C", "B");
+        addAction(new FitColumnsToWindowAction(treeTable.getTable(), "Fit columns to window", null), "C", "B");
 
         initialiseMatrixView();
     }
@@ -267,15 +268,15 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
 
     private void handleColumnFilterRequest(int col) {
-        System.out.println("Filters not currently implemented");
-//        if (col >= 0 && getColumnObject(col) instanceof URI){
-//            String lang = JOptionPane.showInputDialog("Enter a language filter (or leave blank for all)");
-//            if (lang == null || lang.length() == 0){
-//                lang = null;
-//            }
-//            model.setFilterForColumn(col, lang);
-//            model.getTreeTableModelAdapter().fireTableStructureChanged();
-//        }
+        final Object colObj = treeTable.getModel().getColumnModel().getColumn(col).getHeaderValue();
+        if (col >= 0 && colObj instanceof URI){
+            String lang = JOptionPane.showInputDialog("Enter a language filter (or leave blank for all)");
+            if (lang == null || lang.length() == 0){
+                lang = null;
+            }
+            treeTable.getModel().setFilterForColumn(colObj, lang);
+            treeTable.revalidate();
+        }
     }
 
 

@@ -45,7 +45,7 @@ import java.util.Set;
  */
 public class OWLObjectListRenderer implements TableCellRenderer {
 
-    private static final Color NOT_EDITABLE_COLOUR = new Color(100, 100, 100);
+    private static final Color NOT_EDITABLE_COLOUR = new Color(50, 50, 50);
     private static final Color EDITABLE_COLOUR = new Color(0, 0, 0);
 
     private static final Color INHERITED_COLOUR = new Color(255, 255, 160);
@@ -88,9 +88,9 @@ public class OWLObjectListRenderer implements TableCellRenderer {
                 p.setBackground(jTable.getBackground());
             }
             FillerModel fillerModel = (FillerModel) value;
-            addFillers(fillerModel.getAssertedFillersFromEquiv(), NOT_EDITABLE_COLOUR, null, isSelected);
-            addFillers(fillerModel.getAssertedFillersFromSupers(), EDITABLE_COLOUR, null, isSelected);
-            addFillers(fillerModel.getInheritedFillers(), NOT_EDITABLE_COLOUR, null, isSelected);
+            addFillers(fillerModel.getAssertedFillersFromEquiv(), EDITABLE_COLOUR, null, Font.BOLD, isSelected);
+            addFillers(fillerModel.getAssertedFillersFromSupers(), EDITABLE_COLOUR, null, Font.PLAIN, isSelected);
+            addFillers(fillerModel.getInheritedFillers(), NOT_EDITABLE_COLOUR, null, Font.PLAIN, isSelected);
             delegate = p;
         }
         else{
@@ -108,15 +108,25 @@ public class OWLObjectListRenderer implements TableCellRenderer {
     }
 
 
-    private void addFillers(Set<OWLDescription> fillers, Color color, Color background, boolean isSelected) {
+    private void addFillers(Set<OWLDescription> fillers, Color color, Color background, int style, boolean isSelected) {
         if (!fillers.isEmpty()){
             String labelString = ren.render(fillers);
             if (NOT_EDITABLE_COLOUR.equals(color)){
                 labelString = "(" + labelString + ")";
             }
             JLabel label = new JLabel(labelString);
-            label.setFont(OWLRendererPreferences.getInstance().getFont());
-            label.setForeground(color);
+            Font font = OWLRendererPreferences.getInstance().getFont();
+            if (style != Font.PLAIN){
+                font = font.deriveFont(style);
+            }
+            label.setFont(font);
+            if (!isSelected){
+                label.setForeground(color);
+            }
+            else{
+                // invert the colour to make it more visible against the selection
+                label.setForeground(new Color(255-color.getRed(), 255-color.getBlue(), 255-color.getGreen()));
+            }
             if (background != null){
                 label.setBackground(background);
                 label.setOpaque(!isSelected);

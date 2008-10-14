@@ -51,11 +51,18 @@
         <category value="@org.protege.individualcategory"/>
     </extension>
 
-    <extension id="org.coode.ObjPropsPalette"
+    <extension id="ObjPropsPalette"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Object Props"/>
-        <class value="org.protege.editor.owl.ui.propertyhierarchy.OWLObjectPropertyTreeView"/>
+        <label value="Object Properties Palette"/>
+        <class value="org.coode.matrix.ui.palette.ObjectPropertyPalette"/>
         <headerColor value="@org.protege.objectpropertycolor"/>
+    </extension>
+
+    <extension id="DataPropsPalette"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Data Properties Palette"/>
+        <class value="org.coode.matrix.ui.palette.DataPropertyPalette"/>
+        <headerColor value="@org.protege.datapropertycolor"/>
     </extension>
 
     <extension id="org.coode.ClassPalette"
@@ -65,14 +72,14 @@
         <headerColor value="@org.protege.classcolor"/>
     </extension>
 
-    <extension id="org.coode.IndividualsPalette"
+    <extension id="IndividualsPalette"
             point="org.protege.editor.core.application.ViewComponent">
         <label value="Individuals Palette"/>
         <class value="org.coode.matrix.ui.palette.IndividualsPalette"/>
         <headerColor value="@org.protege.individualcolor"/>
     </extension>
 
-    <extension id="org.coode.AnnotationURIPalette"
+    <extension id="AnnotationURIPalette"
             point="org.protege.editor.core.application.ViewComponent">
         <label value="Annotation URI Palette"/>
         <class value="org.coode.matrix.ui.palette.AnnotationURIPalette"/>

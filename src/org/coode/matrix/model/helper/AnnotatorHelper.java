@@ -57,11 +57,7 @@ public class AnnotatorHelper {
     public Set<OWLAnnotation> getAnnotations(OWLEntity entity, URI prop) {
         Set<OWLAnnotation> annots = new HashSet<OWLAnnotation>();
         for (OWLOntology ont : mngr.getActiveOntologies()) {
-            for (OWLAnnotation annot : entity.getAnnotations(ont)) {
-                if (annot.getAnnotationURI().equals(prop)) {
-                    annots.add(annot);
-                }
-            }
+            annots.addAll(entity.getAnnotations(ont, prop));
         }
         return annots;
     }

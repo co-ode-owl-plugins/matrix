@@ -9,7 +9,7 @@
         <HSNode splits="0.25 0.25">
             <CNode>
                 <Component label="Object Properties">
-                    <Property id="pluginId" value="org.protege.editor.owl.OWLObjectPropertyTree"/>
+                    <Property id="pluginId" value="org.coode.matrix.ObjPropsPalette"/>
                 </Component>
             </CNode>
             <CNode>

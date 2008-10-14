@@ -175,7 +175,7 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
 
         int modelColumn = getTable().convertColumnIndexToModel(dropColumn);
 
-        if (model.isSuitableCellValue(owlObject, dropRow, modelColumn)) {
+        if (dropRow >= 0 && model.isSuitableCellValue(owlObject, dropRow, modelColumn)) {
 
             // droppedInSelection is true when more than one row is selected and one of the selected rows is dropped on
             boolean droppedInSelection = false;
@@ -278,16 +278,16 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
 
     }
 
-                //
-                //    public Object getCellObject() {
-                //        Point mousePosition = getMousePosition();
-                //        if (mousePosition == null) {
-                //            return null;
-                //        }
-                //        int row = getTable().rowAtPoint(mousePosition);
-                //        int col = getTable().columnAtPoint(mousePosition);
-                //        return getTable().getValueAt(row, col);
-                //    }
+    //
+    //    public Object getCellObject() {
+    //        Point mousePosition = getMousePosition();
+    //        if (mousePosition == null) {
+    //            return null;
+    //        }
+    //        int row = getTable().rowAtPoint(mousePosition);
+    //        int col = getTable().columnAtPoint(mousePosition);
+    //        return getTable().getValueAt(row, col);
+    //    }
 
 
     public void setLinkedObject(OWLObject object) {

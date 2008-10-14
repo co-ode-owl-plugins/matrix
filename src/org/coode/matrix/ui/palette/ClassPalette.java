@@ -34,7 +34,10 @@ import org.protege.editor.owl.ui.clshierarchy.ToldOWLClassHierarchyViewComponent
  * Date: Jul 3, 2007<br><br>
  */
 public class ClassPalette extends ToldOWLClassHierarchyViewComponent {
-    protected boolean isPinned() {
-        return true;
+
+    public void performExtraInitialisation() throws Exception {
+        super.performExtraInitialisation();
+        getView().setPinned(true);
+        getView().setSyncronizing(false);
     }
 }

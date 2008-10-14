@@ -7,6 +7,7 @@ import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
 import org.semanticweb.owl.model.*;
 import uk.ac.manchester.cs.bhig.jtreetable.AbstractTreeTableModel;
 
+import javax.swing.tree.TreePath;
 import java.net.URI;
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -82,8 +83,7 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
     public Object getMatrixValue(R rowObj, Object columnObj) {
         if (rowObj instanceof OWLEntity && columnObj instanceof URI){
-            int col = getModelIndexOfColumn(columnObj);
-            Object filter = getFilterForColumn(col);
+            Object filter = getFilterForColumn(columnObj);
             if (filter != null && filter instanceof String){
                 return annotHelper.getAnnotationValues((OWLEntity)rowObj, (URI)columnObj, (String)filter);
             }
@@ -132,7 +132,11 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
     // overload because the objects are not of type R - they are nodes
     public R getNodeForRow(int row) {
-        return (R)((OWLObjectTreeNode)tree.getPathForRow(row).getLastPathComponent()).getOWLObject();
+        final TreePath path = tree.getPathForRow(row);
+        if (path != null){
+            return (R)((OWLObjectTreeNode) path.getLastPathComponent()).getOWLObject();
+        }
+        return null;
     }
 
 
@@ -200,13 +204,8 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 ////////////////// Filters
 
 
-    public void setFilterForColumn(int col, Object filter) {
-        filterMap.put(getColumnObjectAtModelIndex(col), filter);
-    }
-
-
-    public Object getFilterForColumn(int col) {
-        return getFilterForColumn(getColumnObjectAtModelIndex(col));
+    public void setFilterForColumn(Object colObj, Object filter) {
+        filterMap.put(colObj, filter);
     }
 
 

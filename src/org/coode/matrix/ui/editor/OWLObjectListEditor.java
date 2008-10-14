@@ -87,6 +87,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
         this.parser = parser;
 
         editor = new JTextField();
+        editor.setBorder(null);
 
         // workaround to ensure the editor properly gets the focus (and caret)
         // which is required in order for Ac to work

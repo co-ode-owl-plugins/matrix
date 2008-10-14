@@ -56,9 +56,7 @@ public interface MatrixModel<R extends OWLObject> extends TreeTableModel<R> {
 
     Set getSuggestedFillers(R rowObject, Object columnObject, int threshold);
 
-    void setFilterForColumn(int col, Object filter);
-
-    Object getFilterForColumn(int col);
+    void setFilterForColumn(Object columnObject, Object filter);
 
     void dispose();
 }

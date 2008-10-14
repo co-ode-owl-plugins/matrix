@@ -1,7 +1,6 @@
 package org.coode.matrix.ui.palette;
 
-import org.protege.editor.owl.ui.view.OWLIndividualsByClassViewComponent;
-
+import org.protege.editor.owl.ui.view.OWLDataPropertyHierarchyViewComponent;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -26,17 +25,17 @@ import org.protege.editor.owl.ui.view.OWLIndividualsByClassViewComponent;
 */
 
 /**
- * Author: Nick Drummond<br>
+ * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Jul 3, 2007<br><br>
+ * Date: Oct 14, 2008<br><br>
  */
-public class IndividualsPalette extends OWLIndividualsByClassViewComponent {
+public class DataPropertyPalette extends OWLDataPropertyHierarchyViewComponent {
 
-    public void initialiseIndividualsView() throws Exception {
-        super.initialiseIndividualsView();
+    public void initialiseView() throws Exception {
+        super.initialiseView();
         getView().setPinned(true);
         getView().setSyncronizing(false);
     }

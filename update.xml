@@ -1,5 +1,5 @@
-<plugin version="1.0.7.MatrixView">
-	<download url="http://co-ode-owl-plugins.googlecode.com/files/org.coode.matrix_1_0_7.zip"/>
+<plugin version="1.0.9.MatrixView">
+	<download url="http://co-ode-owl-plugins.googlecode.com/files/org.coode.matrix_1_0_9.zip"/>
  	<website url="http://www.co-ode.org/downloads/protege-x/plugins.php"/>
 	<readme url="http://www.co-ode.org/downloads/protege-x/readme.txt"/>
 </plugin>

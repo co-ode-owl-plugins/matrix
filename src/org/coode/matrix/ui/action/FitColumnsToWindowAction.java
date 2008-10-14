@@ -1,7 +1,9 @@
-package org.coode.matrix.ui.palette;
+package org.coode.matrix.ui.action;
 
-import org.protege.editor.owl.ui.view.OWLIndividualsByClassViewComponent;
+import org.protege.editor.core.ui.view.DisposableAction;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -26,18 +28,30 @@ import org.protege.editor.owl.ui.view.OWLIndividualsByClassViewComponent;
 */
 
 /**
- * Author: Nick Drummond<br>
+ * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Jul 3, 2007<br><br>
+ * Date: Sep 9, 2008<br><br>
  */
-public class IndividualsPalette extends OWLIndividualsByClassViewComponent {
+public class FitColumnsToWindowAction extends DisposableAction {
 
-    public void initialiseIndividualsView() throws Exception {
-        super.initialiseIndividualsView();
-        getView().setPinned(true);
-        getView().setSyncronizing(false);
+    private JTable table;
+
+
+    public FitColumnsToWindowAction(JTable table, String name, Icon icon) {
+        super(name, icon);
+        this.table = table;
+    }
+
+
+    public void actionPerformed(ActionEvent event) {
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    }
+
+
+    public void dispose() {
+        table = null;
     }
 }

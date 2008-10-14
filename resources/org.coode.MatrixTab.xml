@@ -9,7 +9,10 @@
         <HSNode splits="0.25 0.25">
             <CNode>
                 <Component label="Object Properties">
-                    <Property id="pluginId" value="org.protege.editor.owl.OWLObjectPropertyTree"/>
+                    <Property id="pluginId" value="org.coode.matrix.ObjPropsPalette"/>
+                </Component>
+                <Component label="Data Properties">
+                    <Property id="pluginId" value="org.coode.matrix.DataPropsPalette"/>
                 </Component>
             </CNode>
             <CNode>
@@ -17,7 +20,7 @@
                     <Property id="pluginId" value="org.coode.matrix.org.coode.ClassPalette"/>
                 </Component>
                 <Component label="Individuals By Class">
-                    <Property id="pluginId" value="org.protege.editor.owl.OWLIndividualsByClass"/>
+                    <Property id="pluginId" value="org.coode.matrix.IndividualsPalette"/>
                 </Component>
             </CNode>
         </HSNode>
