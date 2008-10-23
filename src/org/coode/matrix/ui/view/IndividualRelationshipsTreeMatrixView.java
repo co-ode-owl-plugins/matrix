@@ -8,10 +8,14 @@ import org.coode.matrix.ui.action.AddObjectPropertyAction;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
+import org.protege.editor.owl.ui.view.Findable;
+import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
 import javax.swing.table.TableCellEditor;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -44,7 +48,7 @@ import javax.swing.table.TableCellEditor;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixView<OWLEntity> {
+public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixView<OWLEntity> implements Findable<OWLClass> {
 
     private OWLObjectHierarchyProvider<OWLEntity> hierarchyProvider;
 
@@ -83,5 +87,14 @@ public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixVie
     public void disposeView() {
         hierarchyProvider.dispose();
         super.disposeView();
+    }
+
+        public List<OWLClass> find(String match) {
+        return new ArrayList<OWLClass>(getOWLModelManager().getEntityFinder().getMatchingOWLClasses(match));
+    }
+
+
+    public void show(OWLClass cls) {
+        getTreeTable().getTree().setSelectedOWLObject(cls);
     }
 }

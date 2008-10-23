@@ -8,6 +8,7 @@ import org.coode.matrix.ui.action.AddObjectPropertyAction;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
+import org.protege.editor.owl.ui.view.Findable;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObjectProperty;
@@ -16,6 +17,7 @@ import org.semanticweb.owl.model.OWLOntology;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -49,7 +51,7 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLClass> {
+public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLClass> implements Findable<OWLClass> {
 
     private int threshold = 10;
 
@@ -114,5 +116,15 @@ public class ClassExistentialTreeMatrixView extends AbstractTreeMatrixView<OWLCl
             }
         }
         return false;
+    }
+
+
+    public List<OWLClass> find(String match) {
+        return new ArrayList<OWLClass>(getOWLModelManager().getEntityFinder().getMatchingOWLClasses(match));
+    }
+
+
+    public void show(OWLClass cls) {
+        getTreeTable().getTree().setSelectedOWLObject(cls);
     }
 }

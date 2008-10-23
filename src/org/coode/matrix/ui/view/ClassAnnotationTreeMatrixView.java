@@ -5,9 +5,12 @@ import org.coode.matrix.model.impl.ClassAnnotationTreeMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
+import org.protege.editor.owl.ui.view.Findable;
 import org.semanticweb.owl.model.OWLClass;
 
 import javax.swing.table.TableCellEditor;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -40,7 +43,7 @@ import javax.swing.table.TableCellEditor;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class ClassAnnotationTreeMatrixView extends AbstractTreeMatrixView<OWLClass> {
+public class ClassAnnotationTreeMatrixView extends AbstractTreeMatrixView<OWLClass> implements Findable<OWLClass> {
 
     protected boolean isOWLClassView() {
         return true;
@@ -61,5 +64,14 @@ public class ClassAnnotationTreeMatrixView extends AbstractTreeMatrixView<OWLCla
     protected TableCellEditor getCellEditor(OWLClass rowObject, Object columnObject) {
         setEditorType(OWLObjectListParser.DATATYPE);
         return super.getCellEditor(rowObject, columnObject);
+    }
+
+        public List<OWLClass> find(String match) {
+        return new ArrayList<OWLClass>(getOWLModelManager().getEntityFinder().getMatchingOWLClasses(match));
+    }
+
+
+    public void show(OWLClass cls) {
+        getTreeTable().getTree().setSelectedOWLObject(cls);
     }
 }

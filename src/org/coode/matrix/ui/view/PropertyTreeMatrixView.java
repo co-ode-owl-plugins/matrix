@@ -7,12 +7,15 @@ import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.SelectPropertyFeaturesAction;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
+import org.protege.editor.owl.ui.view.Findable;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -45,7 +48,7 @@ import java.net.URI;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProperty> {
+public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProperty> implements Findable<OWLObjectProperty> {
 
     protected void initialiseMatrixView() throws Exception {
 
@@ -102,5 +105,14 @@ public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProp
             return super.getCellRendererForColumn(colObj);
         }
         return null;
+    }
+
+        public List<OWLObjectProperty> find(String match) {
+        return new ArrayList<OWLObjectProperty>(getOWLModelManager().getEntityFinder().getMatchingOWLObjectProperties(match));
+    }
+
+
+    public void show(OWLObjectProperty cls) {
+        getTreeTable().getTree().setSelectedOWLObject(cls);
     }
 }
