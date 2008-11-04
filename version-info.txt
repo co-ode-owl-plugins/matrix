@@ -8,6 +8,7 @@ Version info
 
 v1.0.10 (4th Nov 2008)
 - tree is now searchable
+- auto-update activated
 
 v1.0.9 (15th Oct 2008)
 - Improved scroller behaviour in new JTreeTable implementation
