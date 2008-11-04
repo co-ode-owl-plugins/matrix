@@ -1,0 +1,17 @@
+The Matrix tab/views plug-ins provide several spreadsheet-style views of an ontology,
+including existential fillers, individual relationships, and an object properties view.
+You can use drag and drop to add columns and values.
+
+
+Version info
+------------
+
+v1.0.10 (4th Nov 2008)
+- tree is now searchable
+
+v1.0.9 (15th Oct 2008)
+- Improved scroller behaviour in new JTreeTable implementation
+- Improved renderer clarity on selection
+
+
+See also: http://www.co-ode.org/downloads/protege-x/plugins/#matrix

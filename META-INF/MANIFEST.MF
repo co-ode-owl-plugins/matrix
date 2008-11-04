@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Update-Url: http://www.co-ode-owl-plugins.googlecode.com/svn/trunk/matrix/update.properties
 Bundle-ManifestVersion: 2
 Bundle-Name: Matrix Views
 Bundle-SymbolicName: org.coode.matrix;singleton:=true
@@ -9,7 +10,7 @@ Bundle-DocURL: http://www.co-ode.org
 Bundle-ClassPath: .,lib/jtreetable.jar
 Import-Package: org.osgi.framework,
  org.apache.log4j
-Bundle-Version: 1.0.9
+Bundle-Version: 1.0.10
 Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
 Require-Bundle: org.eclipse.equinox.registry,
  org.eclipse.equinox.common,
