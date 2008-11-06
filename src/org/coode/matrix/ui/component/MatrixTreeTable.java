@@ -82,6 +82,8 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
         // on a tableChanged() losing any width info columns are added manually in tableChanged()
         super(tree, model);
 
+        getTree().setBackground(Color.RED);
+        
         this.model = model;
 
         this.mngr = mngr;

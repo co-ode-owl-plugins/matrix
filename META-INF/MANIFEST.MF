@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Update-Url: http://www.co-ode-owl-plugins.googlecode.com/svn/trunk/matrix/update.properties
+Update-Url: http://co-ode-owl-plugins.googlecode.com/svn/trunk/matrix/update.properties
 Bundle-ManifestVersion: 2
 Bundle-Name: Matrix Views
 Bundle-SymbolicName: org.coode.matrix;singleton:=true
