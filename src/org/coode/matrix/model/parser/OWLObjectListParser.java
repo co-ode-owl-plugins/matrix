@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
  */
 public class OWLObjectListParser {
 
-    private static final String SEPERATOR = ",";
+    private static final String SEPARATOR = ",";
     public static final int DATATYPE = 0;
     public static final int CLASS = 1;
     public static final int OBJPROP = 2;
@@ -80,7 +80,7 @@ public class OWLObjectListParser {
         Set<OWLObject> values = new HashSet<OWLObject>();
         if (expression.length() > 0) {
             final OWLExpressionChecker<OWLDescription> checker = mngr.getOWLExpressionCheckerFactory().getOWLDescriptionChecker();
-            String[] strings = expression.split(SEPERATOR);
+            String[] strings = expression.split(SEPARATOR);
             for (String string : strings) {
                 string = string.trim();
                 if (isDescriptionParser()){
@@ -148,16 +148,18 @@ public class OWLObjectListParser {
                 }
             }
         }
-        throw new OWLExpressionParserException("Cannot match data " + string,
-                                               0,
-                                               1,
-                                               isClassParser(),
-                                               isObjectPropertyParser(),
-                                               isDatatypePropertyParser(),
-                                               isIndividualParser(),
-                                               isDatatypeParser(),
-                                               new HashSet<String>());
-
+        else{
+            return mngr.getOWLDataFactory().getOWLUntypedConstant(string);
+        }
+//            throw new OWLExpressionParserException("Cannot match data " + string,
+//                                               0,
+//                                               1,
+//                                               isClassParser(),
+//                                               isObjectPropertyParser(),
+//                                               isDatatypePropertyParser(),
+//                                               isIndividualParser(),
+//                                               isDatatypeParser(),
+//                                               new HashSet<String>());
     }
 
     public static void main(String[] args){

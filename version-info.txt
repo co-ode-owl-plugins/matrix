@@ -6,6 +6,9 @@ You can use drag and drop to add columns and values.
 Version info
 ------------
 
+v1.0.11 (17th Nov 2008)
+- added filters to annotation columns to allow easy translation tasks (add multiple label columns with different languages)
+
 v1.0.10 (4th Nov 2008)
 - tree is now searchable
 - auto-update activated

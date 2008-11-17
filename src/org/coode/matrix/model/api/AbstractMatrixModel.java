@@ -8,9 +8,10 @@ import org.semanticweb.owl.model.*;
 import uk.ac.manchester.cs.bhig.jtreetable.AbstractTreeTableModel;
 
 import javax.swing.tree.TreePath;
-import java.net.URI;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -50,8 +51,6 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
     protected AnnotatorHelper annotHelper;
 
-    private Map filterMap = new HashMap();
-
     private OWLObjectTree<R> tree;
 
     private OWLOntologyChangeListener ontChangeListener = new OWLOntologyChangeListener(){
@@ -82,27 +81,38 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
 
     public Object getMatrixValue(R rowObj, Object columnObj) {
-        if (rowObj instanceof OWLEntity && columnObj instanceof URI){
-            Object filter = getFilterForColumn(columnObj);
-            if (filter != null && filter instanceof String){
-                return annotHelper.getAnnotationValues((OWLEntity)rowObj, (URI)columnObj, (String)filter);
+        if (rowObj instanceof OWLEntity && columnObj instanceof AnnotationLangPair){
+            AnnotationLangPair pair = (AnnotationLangPair) columnObj;
+            String filter = pair.getFilterObject();
+            if (filter != null){
+                return annotHelper.getAnnotationValues((OWLEntity)rowObj, pair.getColumnObject(), filter);
             }
             else{
-                return annotHelper.getAnnotationValues((OWLEntity)rowObj, (URI)columnObj);
+                return annotHelper.getAnnotationValues((OWLEntity)rowObj, pair.getColumnObject());
             }
         }
-        else{
-            return null;
-        }
+        return null;
     }
 
 
     public List<OWLOntologyChange> setMatrixValue(R rowObj, Object columnObj, Object value) {
-        if (columnObj instanceof URI && rowObj instanceof OWLEntity && value instanceof Set){
-            return annotHelper.setAnnotationValues((OWLEntity)rowObj,
-                                                   (URI)columnObj,
-                                                   (Set<OWLObject>)value,
-                                                   mngr.getActiveOntology());
+        if (rowObj instanceof OWLEntity && value instanceof Set && columnObj instanceof AnnotationLangPair){
+            AnnotationLangPair pair = (AnnotationLangPair)columnObj;
+            if (pair.getColumnObject() != null){
+                if (pair.getFilterObject() != null){
+                    return annotHelper.setAnnotationValues((OWLEntity)rowObj,
+                                                           pair.getColumnObject(),
+                                                           (Set<OWLObject>)value,
+                                                           mngr.getActiveOntology(),
+                                                           pair.getFilterObject());
+                }
+                else{
+                    return annotHelper.setAnnotationValues((OWLEntity)rowObj,
+                                                           pair.getColumnObject(),
+                                                           (Set<OWLObject>)value,
+                                                           mngr.getActiveOntology());
+                }
+            }
         }
         throw new InvalidParameterException("Cannot set value (" + value + ") of " + rowObj + " on  column " + columnObj);
     }
@@ -142,19 +152,18 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
     protected String renderColumnTitle(Object columnObject) {
         String label;
-        if (columnObject instanceof URI){
-            label = ((URI)columnObject).getFragment();
+        if (columnObject instanceof AnnotationLangPair){
+            AnnotationLangPair pair = (AnnotationLangPair) columnObject;
+            label = pair.getColumnObject().getFragment();
+            if (pair.getFilterObject() != null){
+                label += " (" + pair.getFilterObject() + ")";
+            }
         }
         else if (columnObject instanceof OWLObject) {
             label = mngr.getRendering((OWLObject) columnObject);
         }
         else {
             label = columnObject.toString();
-        }
-
-        Object filter = getFilterForColumn(columnObject);
-        if (filter != null){
-            label += "(" + filter + ")";
         }
         return label;
     }
@@ -199,17 +208,5 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
             }
         }
         return false;
-    }
-
-////////////////// Filters
-
-
-    public void setFilterForColumn(Object colObj, Object filter) {
-        filterMap.put(colObj, filter);
-    }
-
-
-    public Object getFilterForColumn(Object obj) {
-        return filterMap.get(obj);
     }
 }

@@ -106,6 +106,46 @@ public class AnnotatorHelper {
         return changes;
     }
 
+    public List<OWLOntologyChange> setAnnotationValues(OWLEntity entity, URI uri,
+                                                       Set<OWLObject> values,
+                                                       OWLOntology activeOnt,
+                                                       String lang) {
+        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+
+        // create the set of axioms we want to end up with
+        Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
+        for (OWLObject value : values){
+            newAxioms.add(annotationAxiomCreator.getAxiom(entity, uri, value));
+        }
+
+        // remove any axioms on this property that don't match the new ones
+        // and filter existing ones out of the new axioms set
+        for (OWLOntology ont : mngr.getActiveOntologies()){
+            for (OWLEntityAnnotationAxiom ax : ont.getEntityAnnotationAxioms(entity)){
+                if (ax.getAnnotation().getAnnotationURI().equals(uri)){
+                    if (ax.getAnnotation().getAnnotationValue() instanceof OWLUntypedConstant){
+                        OWLUntypedConstant constant = (OWLUntypedConstant)ax.getAnnotation().getAnnotationValue();
+                        if (lang.equals(constant.getLang()) ||
+                            (lang.equals("!") && constant.getLang() == null)){
+                            if (newAxioms.contains(ax)){
+                                newAxioms.remove(ax); // don't need to create a new one
+                            }
+                            else {
+                                changes.add(new RemoveAxiom(ont, ax));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // add any new axioms that don't already exist in the ontology
+        for (OWLAxiom ax : newAxioms){
+            changes.add(new AddAxiom(activeOnt, ax));
+        }
+
+        return changes;
+    }
 
     public Set<OWLObject> getAnnotationValues(OWLEntity entity, URI uri, String lang) {
         Set<OWLObject> values = new HashSet<OWLObject>();
@@ -113,6 +153,9 @@ public class AnnotatorHelper {
             final OWLObject value = annot.getAnnotationValue();
             if (value instanceof OWLUntypedConstant){
                 if (lang.equals(((OWLUntypedConstant)value).getLang())){
+                    values.add(value);
+                }
+                else if (lang.equals("!") && ((OWLUntypedConstant)value).getLang() == null){
                     values.add(value);
                 }
             }

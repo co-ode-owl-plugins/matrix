@@ -1,5 +1,6 @@
 package org.coode.matrix.ui.view;
 
+import org.coode.matrix.model.api.AnnotationLangPair;
 import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddAnnotationAction;
@@ -8,8 +9,10 @@ import org.coode.matrix.ui.action.FitColumnsToWindowAction;
 import org.coode.matrix.ui.action.RemoveColumnAction;
 import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.coode.matrix.ui.editor.OWLObjectListEditor;
+import org.coode.matrix.ui.editor.SimpleStringListEditor;
 import org.coode.matrix.ui.renderer.OWLObjectListRenderer;
 import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
+import org.coode.matrix.ui.renderer.SimpleStringListRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.OWLEntityComparator;
 import org.protege.editor.owl.ui.tree.OWLModelManagerTree;
@@ -24,15 +27,10 @@ import uk.ac.manchester.cs.bhig.jtreetable.CellEditorFactory;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -69,31 +67,21 @@ import java.util.Comparator;
  */
 public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends AbstractOWLSelectionViewComponent implements CellEditorFactory {
 
-    private static final boolean FILTERS_SUPPORTED = false;
-
     private MatrixTreeTable<R> treeTable;
-
-//    private  tree;
 
     private OWLEntityComparator<R> comparator;
 
     private OWLObjectListRenderer objectListRen;
-
     private TableCellEditor objectListEditor;
+
+    private TableCellRenderer simpleStringListRenderer;
+    private SimpleStringListEditor simpleStringListEditor;
 
     private OWLObjectListParser parser;
 
     private TreeSelectionListener selectionlistener = new TreeSelectionListener() {
         public void valueChanged(TreeSelectionEvent e) {
             handleTreeSelectionChanged();
-        }
-    };
-
-
-    private MouseListener columnFilterMouseListener = new MouseAdapter(){
-        public void mouseClicked(MouseEvent mouseEvent) {
-            int col = treeTable.getTable().getColumnModel().getColumnIndexAtX(mouseEvent.getX());
-            handleColumnFilterRequest(col);
         }
     };
 
@@ -121,10 +109,10 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
         treeTable.setCellEditorFactory(this);
 
-        if (filtersSupported()){
-            JTableHeader header = treeTable.getTable().getTableHeader();
-            header.addMouseListener(columnFilterMouseListener);
-        }
+//        if (filtersSupported()){
+//            JTableHeader header = treeTable.getTable().getTableHeader();
+//            header.addMouseListener(columnFilterMouseListener);
+//        }
 
         add(treeTable, BorderLayout.CENTER);
 
@@ -146,8 +134,8 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
     public void disposeView() {
         treeTable.getTree().dispose();
         treeTable.getTree().removeTreeSelectionListener(selectionlistener);
-        JTableHeader header = treeTable.getTable().getTableHeader();
-        header.removeMouseListener(columnFilterMouseListener);
+//        JTableHeader header = treeTable.getTable().getTableHeader();
+//        header.removeMouseListener(columnFilterMouseListener);
         treeTable.dispose();
         selectionlistener = null;
     }
@@ -162,9 +150,9 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
     protected abstract void initialiseMatrixView() throws Exception;
 
 
-    protected boolean filtersSupported() {
-        return FILTERS_SUPPORTED;
-    }
+//    protected boolean filtersSupported() {
+//        return FILTERS_SUPPORTED;
+//    }
 
 
     protected final Comparator<R> getOWLEntityComparator() {
@@ -209,6 +197,9 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
 
     protected TableCellRenderer getCellRendererForColumn(Object columnObject) {
+        if (columnObject instanceof AnnotationLangPair && ((AnnotationLangPair)columnObject).getFilterObject() != null){
+            return simpleStringListRenderer;
+        }
         return objectListRen;
     }
 
@@ -220,6 +211,10 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
 
     protected TableCellEditor getCellEditor(R rowObject, Object columnObject) {
+        if (columnObject instanceof AnnotationLangPair && ((AnnotationLangPair)columnObject).getFilterObject() != null){
+            simpleStringListEditor.setFilter(((AnnotationLangPair)columnObject).getFilterObject());
+            return simpleStringListEditor;
+        }
         return objectListEditor;
     }
 
@@ -263,20 +258,10 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
         parser = new OWLObjectListParser(getOWLModelManager());
 
         objectListEditor = new OWLObjectListEditor(getOWLEditorKit(), objRen, parser);
+        simpleStringListEditor = new SimpleStringListEditor(getOWLModelManager());
+
         objectListRen = new OWLObjectListRenderer(objRen);
-    }
-
-
-    private void handleColumnFilterRequest(int col) {
-        final Object colObj = treeTable.getModel().getColumnModel().getColumn(col).getHeaderValue();
-        if (col >= 0 && colObj instanceof URI){
-            String lang = JOptionPane.showInputDialog("Enter a language filter (or leave blank for all)");
-            if (lang == null || lang.length() == 0){
-                lang = null;
-            }
-            treeTable.getModel().setFilterForColumn(colObj, lang);
-            treeTable.revalidate();
-        }
+        simpleStringListRenderer = new SimpleStringListRenderer();
     }
 
 

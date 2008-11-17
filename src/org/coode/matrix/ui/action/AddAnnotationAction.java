@@ -1,5 +1,6 @@
 package org.coode.matrix.ui.action;
 
+import org.coode.matrix.model.api.AnnotationLangPair;
 import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
@@ -8,6 +9,7 @@ import org.protege.editor.owl.ui.UIHelper;
 import org.protege.editor.owl.ui.frame.AnnotationURIList;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.net.URI;
 
@@ -51,25 +53,69 @@ public class AddAnnotationAction extends DisposableAction {
 
     private AnnotationURIList uriList;
 
+    private JComboBox langSelector;
+
+    private JPanel pane;
+
+
     public AddAnnotationAction(OWLEditorKit eKit, MatrixTreeTable table) {
         super(LABEL, OWLIcons.getIcon("property.annotation.add.png"));
         this.eKit = eKit;
-        uriList = new AnnotationURIList(eKit);
         this.table = table;
-    }
 
-    public void dispose() {
-    }
-
-    public void actionPerformed(ActionEvent actionEvent) {
         UIHelper helper = new UIHelper(eKit);
 
+        uriList = new AnnotationURIList(eKit);
+        JComponent uriScroller = new JScrollPane(uriList);
+        uriScroller.setAlignmentX(0.0f);
+        JComponent uriPanel = new Box(BoxLayout.PAGE_AXIS);
+        uriPanel.setAlignmentX(0.0f);
+        JLabel annotLabel = new JLabel("Annotation URI: ");
+        annotLabel.setAlignmentX(0.0f);
+        uriPanel.add(annotLabel);
+        uriPanel.add(Box.createVerticalStrut(6));
+        uriPanel.add(uriScroller);
+
+
+        langSelector = helper.getLanguageSelector();
+        langSelector.setAlignmentX(0.0f);
+        JComponent langPanel = new Box(BoxLayout.PAGE_AXIS);
+        langPanel.setAlignmentX(0.0f);
+        JLabel label = new JLabel("Language filter: ");
+        label.setAlignmentX(0.0f);
+        langPanel.add(label);
+        langPanel.add(Box.createVerticalStrut(6));
+        langPanel.add(langSelector);
+        langPanel.add(Box.createVerticalStrut(6));
+        final JLabel filterInstructions = new JLabel("<html>Leave the filter blank to show all annotations or use !" +
+                                                     " to display annotations with no language set." +
+                                                     "</html>");
+        filterInstructions.setForeground(new Color(50, 50, 50));
+        langPanel.add(filterInstructions);
+
+        pane = new JPanel(new BorderLayout(24, 24));
+        pane.setPreferredSize(new Dimension(400, 500));
+        pane.add(uriPanel, BorderLayout.CENTER);
+        pane.add(langPanel, BorderLayout.SOUTH);
+    }
+
+
+    public void dispose() {
+        // do nothing
+    }
+
+    
+    public void actionPerformed(ActionEvent actionEvent) {
         uriList.rebuildAnnotationURIList();
 
-        if (helper.showDialog("Pick an annotation URI", new JScrollPane(uriList)) == JOptionPane.OK_OPTION){
+        if (new UIHelper(eKit).showDialog(LABEL, pane, uriList) == JOptionPane.OK_OPTION){
             URI uri = uriList.getSelectedURI();
             if (uri != null){
-                table.addColumn(uri);
+                String lang = (String)langSelector.getSelectedItem();
+                if (lang.length() == 0){
+                    lang = null;
+                }
+                table.addColumn(new AnnotationLangPair(uri, lang));
             }
         }
     }

@@ -1,12 +1,8 @@
 package org.coode.matrix.model.api;
 
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntologyChange;
-import uk.ac.manchester.cs.bhig.jtreetable.TreeTableModel;
-
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -31,34 +27,39 @@ import java.util.Set;
 */
 
 /**
- * Author: Nick Drummond<br>
+ * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Jul 3, 2007<br><br>
+ * Date: Nov 17, 2008<br><br>
  */
-public interface MatrixModel<R extends OWLObject> extends TreeTableModel<R> {
+public class AnnotationLangPair implements ColumnFilterPair<URI, String> {
 
-    String getTreeColumnLabel();
+    private List pair = new ArrayList();
 
-    Object getMatrixValue(R rowObject, Object columnObject);
+    public AnnotationLangPair(URI uri, String lang) {
+        pair.add(uri);
+        pair.add(lang);
+    }
 
-    List<OWLOntologyChange> setMatrixValue(R rowObj, Object columnObj, Object value);
 
-    List<OWLOntologyChange> addMatrixValue(R rowObj, Object columnObj, Object value);
+    public URI getColumnObject() {
+        return (URI)pair.get(0);
+    }
 
-    boolean isSuitableCellValue(Object value, int row, int col);
 
-    boolean isSuitableColumnObject(Object columnObject);
+    public String getFilterObject() {
+        return (String)pair.get(1);
+    }
 
-    boolean isValueRestricted(R rowObject, Object columnObject);
 
-    Set getSuggestedFillers(R rowObject, Object columnObject, int threshold);
+    public int hashCode() {
+        return pair.hashCode();
+    }
 
-//    void setFilterForColumn(Object columnObject, Object filter);
-//
-//    Object getFilterForColumn(Object obj);
 
-    void dispose();
+    public boolean equals(Object o) {
+        return o instanceof AnnotationLangPair && pair.equals(o);
+    }
 }
