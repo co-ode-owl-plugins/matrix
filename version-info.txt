@@ -1,21 +1,24 @@
-The Matrix tab/views plug-ins provide several spreadsheet-style views of an ontology,
+<html>
+<body>
+<p>The Matrix tab/views plug-ins provide several spreadsheet-style views of an ontology,
 including existential fillers, individual relationships, and an object properties view.
 You can use drag and drop to add columns and values.
 
+<p><a href="http://code.google.com/p/co-ode-owl-plugins/wiki/MatrixViews">Documentation</a>
 
-Version info
-------------
+<h3>Version info</h3>
 
-v1.0.11 (17th Nov 2008)
-- added filters to annotation columns to allow easy translation tasks (add multiple label columns with different languages)
+<h4>v1.0.11 (17th Nov 2008)</h4>
+<ul><li>added filters to annotation columns to allow easy translation tasks
+ (add multiple label columns with different languages)</li></ul>
 
-v1.0.10 (4th Nov 2008)
-- tree is now searchable
-- auto-update activated
+<h4>v1.0.10 (4th Nov 2008)</h4>
+<ul><li>tree is now searchable</li>
+<li>auto-update activated</li></ul>
 
-v1.0.9 (15th Oct 2008)
-- Improved scroller behaviour in new JTreeTable implementation
-- Improved renderer clarity on selection
+<h4>v1.0.9 (15th Oct 2008)</h4>
+<ul><li>Improved scroller behaviour in new JTreeTable implementation</li>
+<li>Improved renderer clarity on selection</li></ul>
 
-
-See also: http://www.co-ode.org/downloads/protege-x/plugins/#matrix
+</body>
+</html>
