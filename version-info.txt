@@ -1,5 +1,6 @@
 <html>
 <body>
+<h2>Matrix</h2>
 <p>The Matrix tab/views plug-ins provide several spreadsheet-style views of an ontology,
 including existential fillers, individual relationships, and an object properties view.
 You can use drag and drop to add columns and values.
