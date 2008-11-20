@@ -2,7 +2,7 @@ package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.impl.ClassAnnotationTreeMatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser;
+import org.coode.matrix.model.parser.OWLObjectListParser2;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.view.Findable;
@@ -43,7 +43,7 @@ import java.util.List;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class ClassAnnotationTreeMatrixView extends AbstractTreeMatrixView<OWLClass> implements Findable<OWLClass> {
+public class ClassAnnotationMatrixView extends AbstractTreeMatrixView<OWLClass> implements Findable<OWLClass> {
 
     protected boolean isOWLClassView() {
         return true;
@@ -62,7 +62,7 @@ public class ClassAnnotationTreeMatrixView extends AbstractTreeMatrixView<OWLCla
 
 
     protected TableCellEditor getCellEditor(OWLClass rowObject, Object columnObject) {
-        setEditorType(OWLObjectListParser.DATATYPE);
+        setEditorType(OWLObjectListParser2.LITERAL);
         return super.getCellEditor(rowObject, columnObject);
     }
 

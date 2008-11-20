@@ -2,8 +2,9 @@ package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.hierarchy.ClassAndIndividualHierarchyProvider;
-import org.coode.matrix.model.impl.IndividualRelationsTreeMatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser;
+import org.coode.matrix.model.impl.PropertyAssertionsMatrixModel;
+import org.coode.matrix.model.parser.OWLObjectListParser2;
+import org.coode.matrix.ui.action.AddDataPropertyAction;
 import org.coode.matrix.ui.action.AddObjectPropertyAction;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
@@ -48,7 +49,7 @@ import java.util.List;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixView<OWLEntity> implements Findable<OWLClass> {
+public class PropertyAssertionsMatrixView extends AbstractTreeMatrixView<OWLEntity> implements Findable<OWLClass> {
 
     private OWLObjectHierarchyProvider<OWLEntity> hierarchyProvider;
 
@@ -58,6 +59,7 @@ public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixVie
 
     protected void initialiseMatrixView() throws Exception {
         addAction(new AddObjectPropertyAction(getOWLEditorKit(), getTreeTable()), "A", "B");
+        addAction(new AddDataPropertyAction(getOWLEditorKit(), getTreeTable()), "A", "C");
     }
 
     protected OWLObjectHierarchyProvider<OWLEntity> getHierarchyProvider() {
@@ -71,15 +73,15 @@ public class IndividualRelationshipsTreeMatrixView extends AbstractTreeMatrixVie
     }
 
     protected MatrixModel<OWLEntity> createMatrixModel(OWLObjectTree<OWLEntity> tree) {
-        return new IndividualRelationsTreeMatrixModel(tree, getOWLModelManager());
+        return new PropertyAssertionsMatrixModel(tree, getOWLModelManager());
     }
 
     protected TableCellEditor getCellEditor(OWLEntity rowObject, Object columnObject) {
         if (columnObject instanceof OWLObjectProperty){
-            setEditorType(OWLObjectListParser.INDIVIDUAL);
+            setEditorType(OWLObjectListParser2.INDIVIDUAL);
         }
         else{
-            setEditorType(OWLObjectListParser.DATATYPE);
+            setEditorType(OWLObjectListParser2.LITERAL);
         }
         return super.getCellEditor(rowObject, columnObject);
     }

@@ -31,9 +31,9 @@ import org.semanticweb.owl.model.OWLClass;
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Sep 17, 2008<br><br>
+ * Date: Nov 19, 2008<br><br>
  */
-public class InferredClassExistentialTreeMatrixView extends ClassExistentialTreeMatrixView {
+public class InferredClassMatrixView extends ClassMatrixView {
 
     protected OWLObjectHierarchyProvider<OWLClass> getHierarchyProvider() {
         return getOWLModelManager().getInferredOWLClassHierarchyProvider();

@@ -1,8 +1,8 @@
 package org.coode.matrix.ui.view;
 
-import org.coode.matrix.model.api.AnnotationLangPair;
+import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.api.MatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser;
+import org.coode.matrix.model.parser.OWLObjectListParser2;
 import org.coode.matrix.ui.action.AddAnnotationAction;
 import org.coode.matrix.ui.action.FitColumnsToContentAction;
 import org.coode.matrix.ui.action.FitColumnsToWindowAction;
@@ -77,7 +77,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
     private TableCellRenderer simpleStringListRenderer;
     private SimpleStringListEditor simpleStringListEditor;
 
-    private OWLObjectListParser parser;
+    private OWLObjectListParser2 parser;
 
     private TreeSelectionListener selectionlistener = new TreeSelectionListener() {
         public void valueChanged(TreeSelectionEvent e) {
@@ -109,11 +109,6 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
         treeTable.setCellEditorFactory(this);
 
-//        if (filtersSupported()){
-//            JTableHeader header = treeTable.getTable().getTableHeader();
-//            header.addMouseListener(columnFilterMouseListener);
-//        }
-
         add(treeTable, BorderLayout.CENTER);
 
         createDefaultCellRendererAndEditor();
@@ -134,8 +129,6 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
     public void disposeView() {
         treeTable.getTree().dispose();
         treeTable.getTree().removeTreeSelectionListener(selectionlistener);
-//        JTableHeader header = treeTable.getTable().getTableHeader();
-//        header.removeMouseListener(columnFilterMouseListener);
         treeTable.dispose();
         selectionlistener = null;
     }
@@ -148,11 +141,6 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
 
     protected abstract void initialiseMatrixView() throws Exception;
-
-
-//    protected boolean filtersSupported() {
-//        return FILTERS_SUPPORTED;
-//    }
 
 
     protected final Comparator<R> getOWLEntityComparator() {
@@ -197,23 +185,27 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
 
     protected TableCellRenderer getCellRendererForColumn(Object columnObject) {
-        if (columnObject instanceof AnnotationLangPair && ((AnnotationLangPair)columnObject).getFilterObject() != null){
+        if (columnObject instanceof AbstractMatrixModel.AnnotationLangPair && ((AbstractMatrixModel.AnnotationLangPair)columnObject).getFilterObject() != null){
             return simpleStringListRenderer;
         }
         return objectListRen;
     }
 
 
-    public TableCellEditor getEditor(int row, int col) {
+    public final TableCellEditor getEditor(int row, int col) {
         return getCellEditor(treeTable.getModel().getNodeForRow(row),
                              treeTable.getModel().getColumnObjectAtModelIndex(col));
     }
 
 
     protected TableCellEditor getCellEditor(R rowObject, Object columnObject) {
-        if (columnObject instanceof AnnotationLangPair && ((AnnotationLangPair)columnObject).getFilterObject() != null){
-            simpleStringListEditor.setFilter(((AnnotationLangPair)columnObject).getFilterObject());
-            return simpleStringListEditor;
+        if (columnObject instanceof AbstractMatrixModel.AnnotationLangPair){
+            AbstractMatrixModel.AnnotationLangPair pair = (AbstractMatrixModel.AnnotationLangPair) columnObject;
+            final String filter = pair.getFilterObject();
+            if (filter != null){
+                simpleStringListEditor.setFilter(filter);
+                return simpleStringListEditor;
+            }
         }
         return objectListEditor;
     }
@@ -255,7 +247,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
     private void createDefaultCellRendererAndEditor() {
         OWLObjectsRenderer objRen = new OWLObjectsRenderer(getOWLModelManager());
 
-        parser = new OWLObjectListParser(getOWLModelManager());
+        parser = new OWLObjectListParser2(getOWLModelManager());
 
         objectListEditor = new OWLObjectListEditor(getOWLEditorKit(), objRen, parser);
         simpleStringListEditor = new SimpleStringListEditor(getOWLModelManager());

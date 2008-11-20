@@ -1,9 +1,9 @@
 package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.MatrixModel;
-import org.coode.matrix.model.helper.ObjectPropertyHelper;
+import org.coode.matrix.model.helper.PropertyHelper;
 import org.coode.matrix.model.impl.ObjectPropertyTreeMatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser;
+import org.coode.matrix.model.parser.OWLObjectListParser2;
 import org.coode.matrix.ui.action.SelectPropertyFeaturesAction;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
@@ -48,11 +48,11 @@ import java.util.List;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProperty> implements Findable<OWLObjectProperty> {
+public class ObjectPropertyMatrixView extends AbstractTreeMatrixView<OWLObjectProperty> implements Findable<OWLObjectProperty> {
 
     protected void initialiseMatrixView() throws Exception {
 
-        addAction(new SelectPropertyFeaturesAction(getOWLEditorKit(), getTreeTable()), "A", "B");
+        addAction(new SelectPropertyFeaturesAction(OWLObjectProperty.class, getOWLEditorKit(), getTreeTable()), "A", "B");
 
         getTreeTable().getTable().setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     }
@@ -70,22 +70,22 @@ public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProp
     }
 
     protected TableCellEditor getCellEditor(OWLObjectProperty p, Object colObj) {
-        if (colObj instanceof ObjectPropertyHelper.Feature){
-            if (colObj instanceof ObjectPropertyHelper.Feature){
-                switch((ObjectPropertyHelper.Feature)colObj){
+        if (colObj instanceof PropertyHelper.OWLPropertyFeature){
+            if (colObj instanceof PropertyHelper.OWLPropertyFeature){
+                switch((PropertyHelper.OWLPropertyFeature)colObj){
                     case INVERSE:
-                        setEditorType(OWLObjectListParser.OBJPROP);
+                        setEditorType(OWLObjectListParser2.OBJPROP);
                         return super.getCellEditor(p, colObj);
                     case DOMAIN: // fallthrough
                     case RANGE:
-                        setEditorType(OWLObjectListParser.CLASS);
+                        setEditorType(OWLObjectListParser2.CLASS);
                         return super.getCellEditor(p, colObj);
 
                 }
             }
         }
         else if (colObj instanceof URI){
-            setEditorType(OWLObjectListParser.DATATYPE); // not sure why this is datatype for annotations?
+            setEditorType(OWLObjectListParser2.LITERAL);
             return super.getCellEditor(p, colObj);
         }
         // otherwise, this will be one of the boolean characteristics - so just use the table default
@@ -93,8 +93,8 @@ public class PropertyTreeMatrixView extends AbstractTreeMatrixView<OWLObjectProp
     }
 
     protected TableCellRenderer getCellRendererForColumn(Object colObj) {
-        if (colObj instanceof ObjectPropertyHelper.Feature){
-            switch((ObjectPropertyHelper.Feature)colObj){
+        if (colObj instanceof PropertyHelper.OWLPropertyFeature){
+            switch((PropertyHelper.OWLPropertyFeature)colObj){
                 case INVERSE: // fallthrough
                 case DOMAIN:
                 case RANGE:
