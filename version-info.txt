@@ -9,6 +9,15 @@ You can use drag and drop to add columns and values.
 
 <h3>Version info</h3>
 
+<h4>v1.0.12 (20th Nov 2008) - requires build 104</h4>
+<ul>
+<li>added data property matrix</li>
+<li>it is now possible to add data property columns in the class and property assertion matrix</li>
+<li>property columns can be filtered by restriction type (currently some or only)</li>
+<li>full OWL expression support in editors (instead of just named classes)</li>
+<li>renamed several matrix views to be more consistent</li>
+</ul>
+
 <h4>v1.0.11 (17th Nov 2008)</h4>
 <ul><li>added filters to annotation columns to allow easy translation tasks
  (add multiple label columns with different languages)</li></ul>
