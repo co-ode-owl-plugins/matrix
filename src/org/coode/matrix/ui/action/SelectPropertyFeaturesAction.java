@@ -1,11 +1,14 @@
 package org.coode.matrix.ui.action;
 
-import org.coode.matrix.model.helper.ObjectPropertyHelper;
+import org.coode.matrix.model.helper.PropertyHelper;
 import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.UIHelper;
+import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLProperty;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,8 +55,12 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
     private OWLEditorKit eKit;
     private MatrixTreeTable table;
 
-    public SelectPropertyFeaturesAction(OWLEditorKit eKit, MatrixTreeTable table) {
-        super(LABEL, OWLIcons.getIcon("property.object.png"));
+    private Class<? extends OWLProperty> type;
+
+
+    public SelectPropertyFeaturesAction(Class<? extends OWLProperty> type, OWLEditorKit eKit, MatrixTreeTable table) {
+        super(LABEL, (OWLObjectProperty.class.isAssignableFrom(type))? OWLIcons.getIcon("property.object.png") : OWLIcons.getIcon("property.data.png"));
+        this.type = type;
         this.eKit = eKit;
         this.table = table;
     }
@@ -64,15 +71,19 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
     public void actionPerformed(ActionEvent actionEvent) {
         UIHelper uihelper = new UIHelper(eKit);
 
-        PropertyFeaturesPanel featuresPanel = new PropertyFeaturesPanel();
+        PropertyFeaturesPanel featuresPanel = new PropertyFeaturesPanel(type);
 
         if (uihelper.showDialog("Pick which features you want to be visible", featuresPanel) == JOptionPane.OK_OPTION){
-            for (ObjectPropertyHelper.Characteristic c : ObjectPropertyHelper.Characteristic.values()) {
-                if (featuresPanel.isVisible(c)) {
-                    table.addColumn(c);
+            for (PropertyHelper.OWLPropertyCharacteristic c : featuresPanel.getCharacteristics()) {
+                if (table.getModel().getColumns().contains(c)){
+                    if (!featuresPanel.isVisible(c)) {
+                        table.removeColumn(c);
+                    }
                 }
                 else {
-                    table.getModel().removeColumn(c);
+                    if (featuresPanel.isVisible(c)){
+                        table.addColumn(c);
+                    }
                 }
             }
         }
@@ -80,25 +91,28 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
 
     class PropertyFeaturesPanel extends JPanel{
 
-        private Map<JCheckBox, ObjectPropertyHelper.Characteristic> checkMap = new HashMap<JCheckBox, ObjectPropertyHelper.Characteristic>();
+        private Map<JCheckBox, PropertyHelper.OWLPropertyCharacteristic> checkMap = new HashMap<JCheckBox, PropertyHelper.OWLPropertyCharacteristic>();
 
-        public PropertyFeaturesPanel() {
+        public PropertyFeaturesPanel(Class<? extends OWLProperty> type) {
             setLayout(new BorderLayout());
             Box box = new Box(BoxLayout.Y_AXIS);
 
-            for (ObjectPropertyHelper.Characteristic c : ObjectPropertyHelper.Characteristic.values()){
-                JCheckBox check = new JCheckBox(c.toString());
-                check.setSelected(table.getModel().getModelIndexOfColumn(c) != -1);
-                checkMap.put(check, c);
-                box.add(check);
-                box.add(Box.createVerticalStrut(7));
+            for (PropertyHelper.OWLPropertyCharacteristic c : PropertyHelper.OWLPropertyCharacteristic.values()){
+                if ((OWLObjectProperty.class.isAssignableFrom(type) && c.isObjectPropertyCharacteristic()) ||
+                    (OWLDataProperty.class.isAssignableFrom(type) && c.isDataPropertyCharacteristic())){
+                    JCheckBox check = new JCheckBox(c.toString());
+                    check.setSelected(table.getModel().getModelIndexOfColumn(c) != -1);
+                    checkMap.put(check, c);
+                    box.add(check);
+                    box.add(Box.createVerticalStrut(7));
+                }
             }
 
             add(box);
         }
 
-        public Set<ObjectPropertyHelper.Characteristic> getVisible(){
-            Set<ObjectPropertyHelper.Characteristic> visible = new HashSet<ObjectPropertyHelper.Characteristic>();
+        public Set<PropertyHelper.OWLPropertyCharacteristic> getVisible(){
+            Set<PropertyHelper.OWLPropertyCharacteristic> visible = new HashSet<PropertyHelper.OWLPropertyCharacteristic>();
             for (JCheckBox cb : checkMap.keySet()){
                 if (cb.isSelected()){
                     visible.add(checkMap.get(cb));
@@ -107,13 +121,17 @@ public class SelectPropertyFeaturesAction extends DisposableAction {
             return visible;
         }
 
-        public boolean isVisible(ObjectPropertyHelper.Characteristic c){
+        public boolean isVisible(PropertyHelper.OWLPropertyCharacteristic c){
             for (JCheckBox cb : checkMap.keySet()){
                 if (checkMap.get(cb).equals(c)){
                     return cb.isSelected();
                 }
             }
             return false;
+        }
+
+        public Set<PropertyHelper.OWLPropertyCharacteristic> getCharacteristics(){
+            return new HashSet<PropertyHelper.OWLPropertyCharacteristic>(checkMap.values());
         }
     }
 }

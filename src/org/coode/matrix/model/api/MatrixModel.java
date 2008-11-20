@@ -50,7 +50,7 @@ public interface MatrixModel<R extends OWLObject> extends TreeTableModel<R> {
 
     boolean isSuitableCellValue(Object value, int row, int col);
 
-    boolean isSuitableColumnObject(Object columnObject);
+    Object getSuitableColumnObject(Object columnObject);
 
     boolean isValueRestricted(R rowObject, Object columnObject);
 

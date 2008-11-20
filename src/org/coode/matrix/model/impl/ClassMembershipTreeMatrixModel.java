@@ -8,6 +8,7 @@ import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntologyChange;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -54,9 +55,11 @@ public class ClassMembershipTreeMatrixModel extends AbstractMatrixModel<OWLClass
         addColumn(COLUMN_NAME);
     }
 
+
     public String getTreeColumnLabel() {
         return "Class";
     }
+
 
     public Object getMatrixValue(OWLClass rowObject, Object columnObject) {
         if (columnObject instanceof String){
@@ -67,6 +70,7 @@ public class ClassMembershipTreeMatrixModel extends AbstractMatrixModel<OWLClass
         }
     }
 
+
     public List<OWLOntologyChange> setMatrixValue(OWLClass cls, Object col, Object value) {
         if (col instanceof String){
             return helper.setMembers(cls, (Set<OWLIndividual>) value, mngr.getActiveOntology());
@@ -76,17 +80,24 @@ public class ClassMembershipTreeMatrixModel extends AbstractMatrixModel<OWLClass
         }
     }
 
+
     public boolean isSuitableCellValue(Object value, int row, int col) {
         return value instanceof OWLIndividual; // can only drop individuals
     }
 
-    public boolean isSuitableColumnObject(Object columnObject) {
-        return false;  // cannot add more columns
-    }
+
+    public Object getSuitableColumnObject(Object columnObject) {
+        if (columnObject instanceof URI){
+            return columnObject;
+        }
+        return null;
+    }    
+
 
     public boolean isValueRestricted(OWLClass rowObject, Object columnObject) {
         return false;
     }
+
 
     public Set getSuggestedFillers(OWLClass rowObject, Object columnObject, int threshold) {
         return Collections.EMPTY_SET;

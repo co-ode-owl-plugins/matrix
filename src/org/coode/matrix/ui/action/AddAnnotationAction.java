@@ -1,6 +1,6 @@
 package org.coode.matrix.ui.action;
 
-import org.coode.matrix.model.api.AnnotationLangPair;
+import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.ui.component.MatrixTreeTable;
 import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
@@ -112,10 +112,10 @@ public class AddAnnotationAction extends DisposableAction {
             URI uri = uriList.getSelectedURI();
             if (uri != null){
                 String lang = (String)langSelector.getSelectedItem();
-                if (lang.length() == 0){
+                if (lang == null || lang.length() == 0){
                     lang = null;
                 }
-                table.addColumn(new AnnotationLangPair(uri, lang));
+                table.addColumn(new AbstractMatrixModel.AnnotationLangPair(uri, lang));
             }
         }
     }

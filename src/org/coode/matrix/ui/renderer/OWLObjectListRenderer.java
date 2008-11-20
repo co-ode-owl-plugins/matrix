@@ -2,7 +2,6 @@ package org.coode.matrix.ui.renderer;
 
 import org.coode.matrix.model.impl.FillerModel;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
-import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObject;
 
 import javax.swing.*;
@@ -108,7 +107,7 @@ public class OWLObjectListRenderer implements TableCellRenderer {
     }
 
 
-    private void addFillers(Set<OWLDescription> fillers, Color color, Color background, int style, boolean isSelected) {
+    private void addFillers(Set<OWLObject> fillers, Color color, Color background, int style, boolean isSelected) {
         if (!fillers.isEmpty()){
             String labelString = ren.render(fillers);
             if (NOT_EDITABLE_COLOUR.equals(color)){

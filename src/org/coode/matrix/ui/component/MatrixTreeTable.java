@@ -169,13 +169,13 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
     }
 
 
-    protected boolean dropOWLObject(OWLObject owlObject, int dropColumn, int dropRow) {
+    protected boolean dropOWLObject(OWLObject dropObject, int dropColumn, int dropRow) {
 
         boolean result = false;
 
         int modelColumn = getTable().convertColumnIndexToModel(dropColumn);
 
-        if (dropRow >= 0 && model.isSuitableCellValue(owlObject, dropRow, modelColumn)) {
+        if (dropRow >= 0 && model.isSuitableCellValue(dropObject, dropRow, modelColumn)) {
 
             // droppedInSelection is true when more than one row is selected and one of the selected rows is dropped on
             boolean droppedInSelection = false;
@@ -191,21 +191,24 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
 
             if (droppedInSelection) {
                 for (int selectedRow : selectedRows) {
-                    if (addValue(owlObject, selectedRow, modelColumn)){
+                    if (addValue(dropObject, selectedRow, modelColumn)){
                         result = true;
                     }
                 }
             }
             else {
-                result = addValue(owlObject, dropRow, modelColumn);
+                result = addValue(dropObject, dropRow, modelColumn);
             }
 
             if (result){
                 repaint(getTable().getCellRect(dropRow, modelColumn, true));
             }
         }
-        else if (model.isSuitableColumnObject(owlObject)) {
-            result = addColumn(owlObject);
+        else{
+            Object colObj = model.getSuitableColumnObject(dropObject);
+            if (colObj != null) {
+                result = addColumn(colObj);
+        }
         }
         return result;
     }
@@ -225,6 +228,12 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
         }
 
         return success;
+    }
+
+    
+    public boolean removeColumn(Object object){
+        model.removeColumn(object);
+        return true;
     }
 
 

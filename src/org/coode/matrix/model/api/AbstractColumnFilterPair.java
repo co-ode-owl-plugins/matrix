@@ -1,6 +1,5 @@
 package org.coode.matrix.model.api;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 /*
@@ -32,25 +31,25 @@ import java.util.List;
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Nov 17, 2008<br><br>
+ * Date: Nov 20, 2008<br><br>
  */
-public class AnnotationLangPair implements ColumnFilterPair<URI, String> {
+public class AbstractColumnFilterPair<C, F> implements ColumnFilterPair<C, F> {
 
     private List pair = new ArrayList();
 
-    public AnnotationLangPair(URI uri, String lang) {
-        pair.add(uri);
-        pair.add(lang);
+    public AbstractColumnFilterPair(C object, F filter) {
+        pair.add(object);
+        pair.add(filter);
     }
 
 
-    public URI getColumnObject() {
-        return (URI)pair.get(0);
+    public C getColumnObject() {
+        return (C)pair.get(0);
     }
 
 
-    public String getFilterObject() {
-        return (String)pair.get(1);
+    public F getFilterObject() {
+        return (F)pair.get(1);
     }
 
 
@@ -60,6 +59,11 @@ public class AnnotationLangPair implements ColumnFilterPair<URI, String> {
 
 
     public boolean equals(Object o) {
-        return o instanceof AnnotationLangPair && pair.equals(o);
+        return getClass().equals(o.getClass()) && pair.equals(o);
+    }
+
+
+    public String toString() {
+        return getColumnObject() + " (" + getFilterObject() + ")";
     }
 }

@@ -81,8 +81,8 @@ public class TestMatrixTreeTable {
                     return false;
                 }
 
-                public boolean isSuitableColumnObject(Object columnObject) {
-                    return false;
+                public Object getSuitableColumnObject(Object columnObject) {
+                    return null;
                 }
 
                 public boolean isValueRestricted(OWLClass rowObject, Object columnObject) {

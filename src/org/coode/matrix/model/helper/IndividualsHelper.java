@@ -65,6 +65,21 @@ public class IndividualsHelper {
     }
 
 
+    public Set<OWLConstant> getRelationships(OWLIndividual ind, OWLDataProperty prop) {
+        Set<OWLConstant> values = null;
+        Map<OWLDataPropertyExpression, Set<OWLConstant>> relationships = new HashMap<OWLDataPropertyExpression, Set<OWLConstant>>();
+        for (OWLOntology ont : onts){
+            relationships.putAll(ind.getDataPropertyValues(ont));
+        }
+        if (!relationships.isEmpty()) {
+            values = relationships.get(prop);
+        }
+        if (values == null) {
+            values = Collections.emptySet();
+        }
+        return values;
+    }
+
     public List<OWLOntologyChange> setRelationships(OWLIndividual subject, OWLObjectProperty p,
                                                     Set<OWLIndividual> objects, OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
@@ -104,6 +119,46 @@ public class IndividualsHelper {
         return changes;
     }
 
+
+        public List<OWLOntologyChange> setRelationships(OWLIndividual subject, OWLDataProperty p,
+                                                    Set<OWLConstant> objects, OWLOntology activeOnt) {
+        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+
+        // generate the axioms that should be in the ontology after this has completed
+        Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+        for (OWLConstant object : objects){
+            OWLDataPropertyAssertionAxiom relationAxiom =
+                    mngr.getOWLDataFactory().getOWLDataPropertyAssertionAxiom(subject, p, object);
+            axioms.add(relationAxiom);
+        }
+
+        // go through the ontologies removing appropriate relations not in this set
+        for (OWLOntology ont : onts){
+            for (OWLAxiom ax : ont.getReferencingAxioms(subject)){
+                if (ax instanceof OWLDataPropertyAssertionAxiom &&
+                    ((OWLDataPropertyAssertionAxiom)ax).getSubject().equals(subject)){
+                    if (axioms.contains(ax)){
+                        axioms.remove(ax); // we're satisfied this axiom is already in the ontologies, no need to create or check against it
+                    }
+                    else{
+                        if (((OWLDataPropertyAssertionAxiom)ax).getProperty().equals(p)){
+                            // we already know the object does not match otherwise it would be in the "axioms" set
+                            changes.add(new RemoveAxiom(ont, ax));
+                        }
+                    }
+
+                }
+            }
+        }
+
+        // add all remaining new axioms to the active ontology
+        for (OWLAxiom ax : axioms){
+            changes.add(new AddAxiom(activeOnt, ax));
+        }
+
+        return changes;
+    }
+
     public List<OWLOntologyChange> addRelationships(OWLIndividual subject, OWLObjectProperty p,
                                                     Set<OWLIndividual> objects, OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
@@ -113,6 +168,25 @@ public class IndividualsHelper {
         for (OWLIndividual object : objects){
             OWLObjectPropertyAssertionAxiom relationAxiom =
                     mngr.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(subject, p, object);
+            axioms.add(relationAxiom);
+        }
+        // add all remaining new axioms to the active ontology
+        for (OWLAxiom ax : axioms){
+            changes.add(new AddAxiom(activeOnt, ax));
+        }
+        return changes;
+    }
+
+
+    public List<OWLOntologyChange> addRelationships(OWLIndividual subject, OWLDataProperty p,
+                                                    Set<OWLConstant> objects, OWLOntology activeOnt) {
+        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+
+        // generate the axioms that should be in the ontology after this has completed
+        Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+        for (OWLConstant object : objects){
+            OWLDataPropertyAssertionAxiom relationAxiom =
+                    mngr.getOWLDataFactory().getOWLDataPropertyAssertionAxiom(subject, p, object);
             axioms.add(relationAxiom);
         }
         // add all remaining new axioms to the active ontology

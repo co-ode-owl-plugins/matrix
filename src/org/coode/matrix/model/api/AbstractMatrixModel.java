@@ -8,6 +8,7 @@ import org.semanticweb.owl.model.*;
 import uk.ac.manchester.cs.bhig.jtreetable.AbstractTreeTableModel;
 
 import javax.swing.tree.TreePath;
+import java.net.URI;
 import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.List;
@@ -76,12 +77,13 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
 
     public final String getColumnName(int column) {
-        return renderColumnTitle(getColumnObjectAtModelIndex(column));
+        final Object colObj = getColumnObjectAtModelIndex(column);
+        return renderColumnTitle(colObj);
     }
 
 
     public Object getMatrixValue(R rowObj, Object columnObj) {
-        if (rowObj instanceof OWLEntity && columnObj instanceof AnnotationLangPair){
+        if (rowObj instanceof OWLEntity && columnObj instanceof AbstractMatrixModel.AnnotationLangPair){
             AnnotationLangPair pair = (AnnotationLangPair) columnObj;
             String filter = pair.getFilterObject();
             if (filter != null){
@@ -96,7 +98,7 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
 
     public List<OWLOntologyChange> setMatrixValue(R rowObj, Object columnObj, Object value) {
-        if (rowObj instanceof OWLEntity && value instanceof Set && columnObj instanceof AnnotationLangPair){
+        if (rowObj instanceof OWLEntity && value instanceof Set && columnObj instanceof AbstractMatrixModel.AnnotationLangPair){
             AnnotationLangPair pair = (AnnotationLangPair)columnObj;
             if (pair.getColumnObject() != null){
                 if (pair.getFilterObject() != null){
@@ -152,7 +154,7 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
     protected String renderColumnTitle(Object columnObject) {
         String label;
-        if (columnObject instanceof AnnotationLangPair){
+        if (columnObject instanceof AbstractMatrixModel.AnnotationLangPair){
             AnnotationLangPair pair = (AnnotationLangPair) columnObject;
             label = pair.getColumnObject().getFragment();
             if (pair.getFilterObject() != null){
@@ -208,5 +210,12 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
             }
         }
         return false;
+    }
+
+    public static class AnnotationLangPair extends AbstractColumnFilterPair<URI, String> {
+
+        public AnnotationLangPair(URI object, String filter) {
+            super(object, filter);
+        }
     }
 }

@@ -2,14 +2,13 @@ package org.coode.matrix.ui.editor;
 
 import org.apache.log4j.Logger;
 import org.coode.matrix.model.impl.FillerModel;
-import org.coode.matrix.model.parser.OWLObjectListParser;
+import org.coode.matrix.model.parser.OWLObjectListParser2;
 import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.description.OWLExpressionParserException;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionAutoCompleter;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
-import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLObject;
 
 import javax.swing.*;
@@ -60,9 +59,9 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
 
     private JTextField editor;
 
-    private Set<OWLDescription> originalFillers;
+    private Set<OWLObject> originalFillers;
 
-    private OWLObjectListParser parser;
+    private OWLObjectListParser2 parser;
 
     private OWLDescriptionAutoCompleter ac;
 
@@ -79,7 +78,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
     };
 
 
-    public OWLObjectListEditor(OWLEditorKit eKit, OWLObjectsRenderer ren, OWLObjectListParser parser) {
+    public OWLObjectListEditor(OWLEditorKit eKit, OWLObjectsRenderer ren, OWLObjectListParser2 parser) {
         super();
 
         this.eKit = eKit;
@@ -128,7 +127,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
             originalFillers = ((FillerModel)value).getAssertedFillersFromSupers();
         }
         else{
-            originalFillers = (Set<OWLDescription>) value;
+            originalFillers = (Set<OWLObject>) value;
         }
 
         editor.setFont(OWLRendererPreferences.getInstance().getFont());

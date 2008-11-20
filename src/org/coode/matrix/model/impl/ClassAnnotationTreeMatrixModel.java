@@ -57,9 +57,14 @@ public class ClassAnnotationTreeMatrixModel extends AbstractMatrixModel<OWLClass
         return value instanceof String;
     }
 
-    public boolean isSuitableColumnObject(Object columnObject) {
-        return columnObject instanceof URI;
+
+    public Object getSuitableColumnObject(Object columnObject) {
+        if (columnObject instanceof URI){
+            return columnObject;
+        }
+        return null;
     }
+
 
     public boolean isValueRestricted(OWLClass cls, Object annot) {
         return false;

@@ -13,17 +13,18 @@
 
     <extension id="org.coode.ExistentialMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Class Existential Matrix"/>
-        <class value="org.coode.matrix.ui.view.ClassExistentialTreeMatrixView"/>
+        <label value="Class Matrix"/>
+        <class value="org.coode.matrix.ui.view.ClassMatrixView"/>
         <headerColor value="@org.protege.classcolor"/>
         <category value="@org.protege.classcategory"/>
         <navigates value="@org.protege.classcategory"/>
     </extension>
 
+
     <extension id="org.coode.InferredExistentialMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Class Existential Matrix (Inferred Hierarchy)"/>
-        <class value="org.coode.matrix.ui.view.InferredClassExistentialTreeMatrixView"/>
+        <label value="Class Matrix (Inferred Hierarchy)"/>
+        <class value="org.coode.matrix.ui.view.InferredClassMatrixView"/>
         <headerColor value="@org.protege.classcolor"/>
         <category value="@org.protege.classcategory"/>
         <navigates value="@org.protege.classcategory"/>
@@ -32,7 +33,7 @@
     <extension id="org.coode.AnnotationMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
         <label value="Class Annotations Matrix"/>
-        <class value="org.coode.matrix.ui.view.ClassAnnotationTreeMatrixView"/>
+        <class value="org.coode.matrix.ui.view.ClassAnnotationMatrixView"/>
         <headerColor value="@org.protege.classcolor"/>
         <category value="@org.protege.classcategory"/>
         <navigates value="@org.protege.classcategory"/>
@@ -40,8 +41,8 @@
 
     <extension id="org.coode.IndividualMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Individual Relationships Matrix"/>
-        <class value="org.coode.matrix.ui.view.IndividualRelationshipsTreeMatrixView"/>
+        <label value="Property Assertions Matrix"/>
+        <class value="org.coode.matrix.ui.view.PropertyAssertionsMatrixView"/>
         <headerColor value="@org.protege.individualcolor"/>
         <category value="@org.protege.individualcategory"/>
         <navigates value="@org.protege.individualcategory"/>
@@ -51,7 +52,7 @@
     <extension id="org.coode.ClassMembersMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
         <label value="Class Members Matrix"/>
-        <class value="org.coode.matrix.ui.view.ClassMembershipTreeMatrixView"/>
+        <class value="org.coode.matrix.ui.view.MembersMatrixView"/>
         <headerColor value="@org.protege.individualcolor"/>
         <category value="@org.protege.individualcategory"/>
         <navigates value="@org.protege.individualcategory"/>
@@ -104,11 +105,20 @@
 
     <extension id="org.coode.PropertyMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Object Property Features Matrix"/>
-        <class value="org.coode.matrix.ui.view.PropertyTreeMatrixView"/>
+        <label value="Object Property Matrix"/>
+        <class value="org.coode.matrix.ui.view.ObjectPropertyMatrixView"/>
         <headerColor value="@org.protege.objectpropertycolor"/>
         <category value="@org.protege.objectpropertycategory"/>
         <navigates value="@org.protege.objectpropertycategory"/>
+    </extension>
+
+        <extension id="org.coode.DataPropertyMatrixView"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Data Property Matrix"/>
+        <class value="org.coode.matrix.ui.view.DataPropertyMatrixView"/>
+        <headerColor value="@org.protege.datapropertycolor"/>
+        <category value="@org.protege.datapropertycategory"/>
+        <navigates value="@org.protege.datapropertycategory"/>
     </extension>
 
 </plugin>

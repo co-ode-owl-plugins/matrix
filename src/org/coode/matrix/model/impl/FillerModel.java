@@ -2,8 +2,9 @@ package org.coode.matrix.model.impl;
 
 import org.coode.matrix.model.helper.FillerHelper;
 import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owl.model.OWLPropertyExpression;
+import org.semanticweb.owl.model.OWLPropertyRange;
+import org.semanticweb.owl.model.OWLQuantifiedRestriction;
 
 import java.util.Set;
 /*
@@ -37,34 +38,39 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Nov 1, 2007<br><br>
  */
-public class FillerModel {
+public class FillerModel<P extends OWLPropertyExpression, R extends OWLPropertyRange> {
 
     private OWLClass cls;
-    private OWLObjectProperty p;
+    private P p;
     private FillerHelper helper;
 
-    public FillerModel(OWLClass cls, OWLObjectProperty p, FillerHelper helper){
+    private Class<? extends OWLQuantifiedRestriction<P, R>> restrictionType;
+
+
+    public FillerModel(OWLClass cls, RestrictionTreeMatrixModel.PropertyRestrictionPair<P, R> pair, FillerHelper helper) {
         this.cls = cls;
-        this.p = p;
+        this.p = pair.getColumnObject();
         this.helper = helper;
+        this.restrictionType = pair.getFilterObject();
     }
 
-    public Set<OWLDescription> getAssertedFillersFromSupers(){
-        return helper.getAssertedNamedFillers(cls, p);
+
+    public Set<R> getAssertedFillersFromSupers(){
+        return helper.getAssertedFillers(cls, p, restrictionType);
     }
 
-    public Set<OWLDescription> getInheritedFillers(){
-        return helper.getInheritedNamedFillers(cls, p);
+    public Set<R> getInheritedFillers(){
+        return helper.getInheritedNamedFillers(cls, p, restrictionType);
     }
 
-    public Set<OWLDescription> getAssertedFillersFromEquiv(){
-        return helper.getAssertedNamedFillersFromEquivs(cls, p);
+    public Set<R> getAssertedFillersFromEquiv(){
+        return helper.getAssertedNamedFillersFromEquivs(cls, p, restrictionType);
     }
 
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for(OWLDescription descr : getAssertedFillersFromSupers()){
+        for(R descr : getAssertedFillersFromSupers()){
             if (sb.length() != 0){
                 sb.append(", ");
             }

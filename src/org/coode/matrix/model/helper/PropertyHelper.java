@@ -36,23 +36,111 @@ import java.util.*;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class ObjectPropertyHelper {
+public class PropertyHelper {
 
-    public static enum Characteristic {FUNCTIONAL, SYMMETRIC, INVERSE_FUNCTIONAL, TRANSITIVE, ANTI_SYMMETRIC, REFLEXIVE, IRREFLEXIVE};
+    public static enum OWLPropertyCharacteristic {
 
-    public static enum Feature {DOMAIN, RANGE, INVERSE}
+        FUNCTIONAL("Func", true),
+        SYMMETRIC("Sym", false),
+        INVERSE_FUNCTIONAL("Inv Func", false),
+        TRANSITIVE("Trans", false),
+        ASYMMETRIC("ASym", false),
+        REFLEXIVE("Refl", false),
+        IRREFLEXIVE("Irrefl", false);
+
+        private String label;
+
+        private boolean isDataPropertyCharacteristic;
+
+
+        OWLPropertyCharacteristic(String label, boolean isDataPropertyCharacteristic) {
+            this.label = label;
+            this.isDataPropertyCharacteristic = isDataPropertyCharacteristic;
+        }
+
+
+        public final OWLAxiom createAxiomOfType(OWLProperty p, OWLDataFactory df){
+            if (p instanceof OWLObjectProperty){
+                switch (this) {
+                    case FUNCTIONAL:
+                        return df.getOWLFunctionalObjectPropertyAxiom((OWLObjectProperty)p);
+                    case INVERSE_FUNCTIONAL:
+                        return df.getOWLInverseFunctionalObjectPropertyAxiom((OWLObjectProperty)p);
+                    case SYMMETRIC:
+                        return df.getOWLSymmetricObjectPropertyAxiom((OWLObjectProperty)p);
+                    case TRANSITIVE:
+                        return df.getOWLTransitiveObjectPropertyAxiom((OWLObjectProperty)p);
+                    case ASYMMETRIC:
+                        return df.getOWLAntiSymmetricObjectPropertyAxiom((OWLObjectProperty)p);
+                    case REFLEXIVE:
+                        return df.getOWLReflexiveObjectPropertyAxiom((OWLObjectProperty)p);
+                    case IRREFLEXIVE:
+                        return df.getOWLIrreflexiveObjectPropertyAxiom((OWLObjectProperty)p);
+                }
+            }
+            else if (p instanceof OWLDataProperty){
+                if (this.equals(FUNCTIONAL)){
+                    return df.getOWLFunctionalDataPropertyAxiom((OWLDataProperty)p);
+                }
+            }
+            return null;
+        }
+
+
+        public boolean isDataPropertyCharacteristic() {
+            return isDataPropertyCharacteristic;
+        }
+
+        public boolean isObjectPropertyCharacteristic() {
+            return true;
+        }
+
+        public String toString() {
+            return label;
+        }
+    }
+
+    public static enum OWLPropertyFeature {
+
+        DOMAIN("Domain", true),
+        RANGE("Range", true),
+        INVERSE("Inverse", false);
+
+        private String label;
+
+        private boolean isDataPropertyFeature;
+
+
+        OWLPropertyFeature(String label, boolean isDataPropertyFeature) {
+            this.label = label;
+            this.isDataPropertyFeature = isDataPropertyFeature;
+        }
+
+        public boolean isDataPropertyFeature() {
+            return isDataPropertyFeature;
+        }
+
+        public boolean isObjectPropertyFeature() {
+            return true;
+        }
+
+        public String toString() {
+            return label;
+        }
+    }
+
 
     private OWLModelManager mngr;
 
 
-    public ObjectPropertyHelper(OWLModelManager mngr) {
+    public PropertyHelper(OWLModelManager mngr) {
         this.mngr = mngr;
     }
 
 
-    public final boolean getPropertyCharacteristic(OWLObjectProperty p, Characteristic characteristic) {
+    public final boolean getPropertyCharacteristic(OWLProperty p, OWLPropertyCharacteristic OWLPropertyCharacteristic) {
 
-        OWLAxiom searchAxiom = createAxiomOfType(p, characteristic);
+        OWLAxiom searchAxiom = OWLPropertyCharacteristic.createAxiomOfType(p, mngr.getOWLDataFactory());
 
         for (OWLOntology ont : mngr.getActiveOntologies()){
             if (ont.getReferencingAxioms(p).contains(searchAxiom)){
@@ -62,34 +150,18 @@ public class ObjectPropertyHelper {
         return false;
     }
 
-    private final OWLAxiom createAxiomOfType(OWLObjectProperty p, Characteristic type){
-        switch (type) {
-            case FUNCTIONAL:
-                return mngr.getOWLDataFactory().getOWLFunctionalObjectPropertyAxiom(p);
-            case INVERSE_FUNCTIONAL:
-                return mngr.getOWLDataFactory().getOWLInverseFunctionalObjectPropertyAxiom(p);
-            case SYMMETRIC:
-                return mngr.getOWLDataFactory().getOWLSymmetricObjectPropertyAxiom(p);
-            case TRANSITIVE:
-                return mngr.getOWLDataFactory().getOWLTransitiveObjectPropertyAxiom(p);
-            case ANTI_SYMMETRIC:
-                return mngr.getOWLDataFactory().getOWLAntiSymmetricObjectPropertyAxiom(p);
-            case REFLEXIVE:
-                return mngr.getOWLDataFactory().getOWLReflexiveObjectPropertyAxiom(p);
-            case IRREFLEXIVE:
-                return mngr.getOWLDataFactory().getOWLIrreflexiveObjectPropertyAxiom(p);
-        }
-        return null;
-    }
 
-    public List<OWLOntologyChange> setPropertyCharacteristic(boolean value, OWLObjectProperty p,
-                                                             Characteristic characteristic, OWLOntology activeOnt) {
+
+    public List<OWLOntologyChange> setPropertyCharacteristic(boolean value,
+                                                             OWLProperty p,
+                                                             OWLPropertyCharacteristic characteristic,
+                                                             OWLOntology activeOnt) {
 
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
-        OWLAxiom newAxiom = createAxiomOfType(p, characteristic);
+        OWLAxiom newAxiom = characteristic.createAxiomOfType(p, mngr.getOWLDataFactory());
 
-        if (value){ // if the characteristic is set, make sure the axiom exists
+        if (value){ // if the OWLPropertyCharacteristic is set, make sure the axiom exists
             for (OWLOntology ont : mngr.getActiveOntologies()){
                 if (ont.getReferencingAxioms(p).contains(newAxiom)){
                     return Collections.EMPTY_LIST; // its OK, one of the ontologies already has this value set
@@ -108,7 +180,8 @@ public class ObjectPropertyHelper {
         return changes;
     }
 
-    public List<OWLOntologyChange> setInverses(OWLObjectProperty property, Set<OWLObjectProperty> inverses,
+    public List<OWLOntologyChange> setInverses(OWLObjectProperty property,
+                                               Set<OWLObjectProperty> inverses,
                                                OWLOntology activeOnt) {
 
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
@@ -143,22 +216,28 @@ public class ObjectPropertyHelper {
         return changes;
     }
 
-    public List<OWLOntologyChange> setDomains(OWLObjectProperty property, Set<OWLDescription> domains,
+    public List<OWLOntologyChange> setDomains(OWLProperty property,
+                                              Set<OWLDescription> domains,
                                               OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
         // create the set of axioms we want to end up with
         Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
         for (OWLDescription domain : domains){
-            newAxioms.add(mngr.getOWLDataFactory().getOWLObjectPropertyDomainAxiom(property, domain));
+            if (property instanceof OWLObjectProperty){
+                newAxioms.add(mngr.getOWLDataFactory().getOWLObjectPropertyDomainAxiom((OWLObjectProperty)property, domain));
+            }
+            else if (property instanceof OWLDataProperty){
+                newAxioms.add(mngr.getOWLDataFactory().getOWLDataPropertyDomainAxiom((OWLDataProperty)property, domain));
+            }
         }
 
         // remove any domain axioms on this property that don't match the new ones
         // and filter existing ones out of the new axioms set
         for (OWLOntology ont : mngr.getActiveOntologies()){
             for (OWLAxiom ax : ont.getReferencingAxioms(property)){
-                if (ax instanceof OWLObjectPropertyDomainAxiom &&
-                    ((OWLObjectPropertyDomainAxiom)ax).getProperty().equals(property)){
+                if (ax instanceof OWLPropertyDomainAxiom &&
+                    ((OWLPropertyDomainAxiom)ax).getProperty().equals(property)){
                     if (newAxioms.contains(ax)){
                         newAxioms.remove(ax); // don't need to create a new one
                     }
@@ -177,21 +256,26 @@ public class ObjectPropertyHelper {
         return changes;
     }
 
-    public List<OWLOntologyChange> setRanges(OWLObjectProperty property, Set<OWLDescription> ranges, OWLOntology activeOnt) {
+    public List<OWLOntologyChange> setRanges(OWLProperty property, Set<OWLPropertyRange> ranges, OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
         // create the set of axioms we want to end up with
         Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
-        for (OWLDescription range : ranges){
-            newAxioms.add(mngr.getOWLDataFactory().getOWLObjectPropertyRangeAxiom(property, range));
+        for (OWLPropertyRange range : ranges){
+            if (property instanceof OWLObjectProperty){
+                newAxioms.add(mngr.getOWLDataFactory().getOWLObjectPropertyRangeAxiom((OWLObjectProperty)property, (OWLDescription)range));
+            }
+            else if (property instanceof OWLDataProperty){
+                newAxioms.add(mngr.getOWLDataFactory().getOWLDataPropertyRangeAxiom((OWLDataProperty)property, (OWLDataRange)range));
+            }
         }
 
         // remove any range axioms on this property that don't match the new ones
         // and filter existing ones out of the new axioms set
         for (OWLOntology ont : mngr.getActiveOntologies()){
             for (OWLAxiom ax : ont.getReferencingAxioms(property)){
-                if (ax instanceof OWLObjectPropertyRangeAxiom &&
-                    ((OWLObjectPropertyRangeAxiom)ax).getProperty().equals(property)){
+                if (ax instanceof OWLPropertyRangeAxiom &&
+                    ((OWLPropertyRangeAxiom)ax).getProperty().equals(property)){
                     if (newAxioms.contains(ax)){
                         newAxioms.remove(ax); // don't need to create a new one
                     }
@@ -211,15 +295,15 @@ public class ObjectPropertyHelper {
     }
 
 
-    public Set<OWLDescription> getRanges(OWLObjectProperty p) {
-        Set<OWLDescription> ranges = new HashSet<OWLDescription>();
+    public Set<OWLPropertyRange> getRanges(OWLProperty p) {
+        Set<OWLPropertyRange> ranges = new HashSet<OWLPropertyRange>();
         for (OWLOntology ont : mngr.getActiveOntologies()){
             ranges.addAll(p.getRanges(ont));
         }
         return ranges;
     }
 
-    public Set<OWLDescription> getDomains(OWLObjectProperty p) {
+    public Set<OWLDescription> getDomains(OWLPropertyExpression p) {
         Set<OWLDescription> domains = new HashSet<OWLDescription>();
         for (OWLOntology ont : mngr.getActiveOntologies()){
             domains.addAll(p.getDomains(ont));
@@ -239,7 +323,12 @@ public class ObjectPropertyHelper {
         return inverses;
     }
 
-    public boolean isFunctional(OWLObjectProperty prop) {
-        return getPropertyCharacteristic(prop, Characteristic.FUNCTIONAL);
+    public boolean isFunctional(OWLPropertyExpression p) {
+        for (OWLOntology ont : mngr.getActiveOntologies()){
+            if (p.isFunctional(ont)){
+                return true;
+            }
+        }
+        return false;
     }
 }

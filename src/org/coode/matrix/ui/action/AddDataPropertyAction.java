@@ -6,7 +6,7 @@ import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.UIHelper;
-import org.protege.editor.owl.ui.selector.OWLObjectPropertySelectorPanel;
+import org.protege.editor.owl.ui.selector.OWLDataPropertySelectorPanel;
 import org.semanticweb.owl.model.*;
 
 import javax.swing.*;
@@ -44,14 +44,14 @@ import java.awt.event.ActionEvent;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class AddObjectPropertyAction extends DisposableAction {
+public class AddDataPropertyAction extends DisposableAction {
 
-    private static final String LABEL = "Add object property column to matrix";
+    private static final String LABEL = "Add data property column to matrix";
 
     private OWLEditorKit eKit;
     private MatrixTreeTable table;
 
-    private OWLObjectPropertySelectorPanel propSelector;
+    private OWLDataPropertySelectorPanel propSelector;
 
     private JComboBox typeSelector;
 
@@ -60,22 +60,23 @@ public class AddObjectPropertyAction extends DisposableAction {
     private boolean showRestrictionType;
 
 
-    public AddObjectPropertyAction(OWLEditorKit eKit, MatrixTreeTable table) {
+    public AddDataPropertyAction(OWLEditorKit eKit, MatrixTreeTable table){
         this(eKit, table, false);
     }
 
-    public AddObjectPropertyAction(OWLEditorKit eKit, MatrixTreeTable table, boolean showRestrictionType) {
-        super(LABEL, OWLIcons.getIcon("property.object.add.png"));
+
+    public AddDataPropertyAction(OWLEditorKit eKit, MatrixTreeTable table, boolean showRestrictionType) {
+        super(LABEL, OWLIcons.getIcon("property.data.add.png"));
         this.eKit = eKit;
         this.table = table;
         this.showRestrictionType = showRestrictionType;
 
-        propSelector = new OWLObjectPropertySelectorPanel(eKit);
+        propSelector = new OWLDataPropertySelectorPanel(eKit);
         JComponent uriScroller = new JScrollPane(propSelector);
         uriScroller.setAlignmentX(0.0f);
         JComponent uriPanel = new Box(BoxLayout.PAGE_AXIS);
         uriPanel.setAlignmentX(0.0f);
-        JLabel annotLabel = new JLabel("Object property: ");
+        JLabel annotLabel = new JLabel("Data property: ");
         annotLabel.setAlignmentX(0.0f);
         uriPanel.add(annotLabel);
         uriPanel.add(Box.createVerticalStrut(6));
@@ -101,7 +102,7 @@ public class AddObjectPropertyAction extends DisposableAction {
 
 
     private JComboBox createTypeSelector() {
-        Class[] types = {OWLObjectSomeRestriction.class, OWLObjectAllRestriction.class};
+        Class[] types = {OWLDataSomeRestriction.class, OWLDataAllRestriction.class};
         JComboBox c = new JComboBox(types);
         c.setRenderer(new DefaultListCellRenderer(){
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
@@ -120,11 +121,12 @@ public class AddObjectPropertyAction extends DisposableAction {
 
     public void actionPerformed(ActionEvent actionEvent) {
         if (new UIHelper(eKit).showDialog(LABEL, pane, propSelector) == JOptionPane.OK_OPTION){
-            for (OWLObjectProperty p : propSelector.getSelectedObjects()){
+            for (OWLDataProperty p : propSelector.getSelectedObjects()){
                 if (showRestrictionType){
-                    Class<? extends OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLDescription>> type;
-                    type = (Class<? extends OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLDescription>>) typeSelector.getSelectedItem();
-                    final RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLObjectPropertyExpression, OWLDescription> pair = new RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLObjectPropertyExpression, OWLDescription>(p, type);
+                    Class<? extends OWLQuantifiedRestriction<OWLDataPropertyExpression, OWLDataRange>> type;
+                    type = (Class<? extends OWLQuantifiedRestriction<OWLDataPropertyExpression, OWLDataRange>>) typeSelector.getSelectedItem();
+                    final RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange> pair;
+                    pair = new RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange>(p, type);
                     table.addColumn(pair);
                 }
                 else{
