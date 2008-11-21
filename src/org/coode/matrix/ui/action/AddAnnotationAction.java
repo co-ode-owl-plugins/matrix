@@ -62,9 +62,33 @@ public class AddAnnotationAction extends DisposableAction {
         super(LABEL, OWLIcons.getIcon("property.annotation.add.png"));
         this.eKit = eKit;
         this.table = table;
+    }
 
-        UIHelper helper = new UIHelper(eKit);
 
+    public void dispose() {
+    }
+
+    
+    public void actionPerformed(ActionEvent actionEvent) {
+        if (pane == null){
+            createUI();
+        }
+        uriList.rebuildAnnotationURIList();
+
+        if (new UIHelper(eKit).showDialog(LABEL, pane, uriList) == JOptionPane.OK_OPTION){
+            URI uri = uriList.getSelectedURI();
+            if (uri != null){
+                String lang = (String)langSelector.getSelectedItem();
+                if (lang == null || lang.length() == 0){
+                    lang = null;
+                }
+                table.addColumn(new AbstractMatrixModel.AnnotationLangPair(uri, lang));
+            }
+        }
+    }
+
+
+    private void createUI() {
         uriList = new AnnotationURIList(eKit);
         JComponent uriScroller = new JScrollPane(uriList);
         uriScroller.setAlignmentX(0.0f);
@@ -76,6 +100,7 @@ public class AddAnnotationAction extends DisposableAction {
         uriPanel.add(Box.createVerticalStrut(6));
         uriPanel.add(uriScroller);
 
+        UIHelper helper = new UIHelper(eKit);
 
         langSelector = helper.getLanguageSelector();
         langSelector.setAlignmentX(0.0f);
@@ -97,26 +122,5 @@ public class AddAnnotationAction extends DisposableAction {
         pane.setPreferredSize(new Dimension(400, 500));
         pane.add(uriPanel, BorderLayout.CENTER);
         pane.add(langPanel, BorderLayout.SOUTH);
-    }
-
-
-    public void dispose() {
-        // do nothing
-    }
-
-    
-    public void actionPerformed(ActionEvent actionEvent) {
-        uriList.rebuildAnnotationURIList();
-
-        if (new UIHelper(eKit).showDialog(LABEL, pane, uriList) == JOptionPane.OK_OPTION){
-            URI uri = uriList.getSelectedURI();
-            if (uri != null){
-                String lang = (String)langSelector.getSelectedItem();
-                if (lang == null || lang.length() == 0){
-                    lang = null;
-                }
-                table.addColumn(new AbstractMatrixModel.AnnotationLangPair(uri, lang));
-            }
-        }
     }
 }

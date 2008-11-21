@@ -70,7 +70,51 @@ public class AddDataPropertyAction extends DisposableAction {
         this.eKit = eKit;
         this.table = table;
         this.showRestrictionType = showRestrictionType;
+    }
 
+
+    private JComboBox createTypeSelector() {
+        Class[] types = {OWLDataSomeRestriction.class, OWLDataAllRestriction.class};
+        JComboBox c = new JComboBox(types);
+        c.setRenderer(new DefaultListCellRenderer(){
+            public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
+                o = RestrictionTreeMatrixModel.PropertyRestrictionPair.render((Class)o);
+                return super.getListCellRendererComponent(jList, o, i, b, b1);
+            }
+        });
+        return c;
+    }
+
+
+    public void dispose() {
+        if (propSelector != null){
+            propSelector.dispose();
+        }
+    }
+
+
+    public void actionPerformed(ActionEvent actionEvent) {
+        if (pane == null){
+            createUI();
+        }
+        if (new UIHelper(eKit).showDialog(LABEL, pane, propSelector) == JOptionPane.OK_OPTION){
+            for (OWLDataProperty p : propSelector.getSelectedObjects()){
+                if (showRestrictionType){
+                    Class<? extends OWLQuantifiedRestriction<OWLDataPropertyExpression, OWLDataRange>> type;
+                    type = (Class<? extends OWLQuantifiedRestriction<OWLDataPropertyExpression, OWLDataRange>>) typeSelector.getSelectedItem();
+                    final RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange> pair;
+                    pair = new RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange>(p, type);
+                    table.addColumn(pair);
+                }
+                else{
+                    table.addColumn(p);
+                }
+            }
+        }
+    }
+
+
+    private void createUI() {
         propSelector = new OWLDataPropertySelectorPanel(eKit);
         JComponent uriScroller = new JScrollPane(propSelector);
         uriScroller.setAlignmentX(0.0f);
@@ -97,42 +141,6 @@ public class AddDataPropertyAction extends DisposableAction {
             langPanel.add(Box.createVerticalStrut(6));
             langPanel.add(typeSelector);
             pane.add(langPanel, BorderLayout.SOUTH);
-        }
-    }
-
-
-    private JComboBox createTypeSelector() {
-        Class[] types = {OWLDataSomeRestriction.class, OWLDataAllRestriction.class};
-        JComboBox c = new JComboBox(types);
-        c.setRenderer(new DefaultListCellRenderer(){
-            public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
-                o = RestrictionTreeMatrixModel.PropertyRestrictionPair.render((Class)o);
-                return super.getListCellRendererComponent(jList, o, i, b, b1);
-            }
-        });
-        return c;
-    }
-
-
-    public void dispose() {
-        // do nothing
-    }
-
-
-    public void actionPerformed(ActionEvent actionEvent) {
-        if (new UIHelper(eKit).showDialog(LABEL, pane, propSelector) == JOptionPane.OK_OPTION){
-            for (OWLDataProperty p : propSelector.getSelectedObjects()){
-                if (showRestrictionType){
-                    Class<? extends OWLQuantifiedRestriction<OWLDataPropertyExpression, OWLDataRange>> type;
-                    type = (Class<? extends OWLQuantifiedRestriction<OWLDataPropertyExpression, OWLDataRange>>) typeSelector.getSelectedItem();
-                    final RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange> pair;
-                    pair = new RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange>(p, type);
-                    table.addColumn(pair);
-                }
-                else{
-                    table.addColumn(p);
-                }
-            }
         }
     }
 }
