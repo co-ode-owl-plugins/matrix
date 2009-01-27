@@ -103,6 +103,9 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
                 int modelIndex = treeTable.getTable().convertColumnIndexToModel(col);
                 final Object colObj = treeTable.getModel().getColumnObjectAtModelIndex(modelIndex);
                 TableCellRenderer delegate = getCellRendererForColumn(colObj);
+                if (delegate == null){
+                    System.out.println("delegate = " + delegate);
+                }
                 return delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
             }
         });

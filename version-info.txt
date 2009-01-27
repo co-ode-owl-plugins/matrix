@@ -9,6 +9,11 @@ You can use drag and drop to add columns and values.
 
 <h3>Version info</h3>
 
+<h4>v1.0.13 (27th Jan 2009)</h4>
+<ul>
+<li>Fixed a bug where adding annotation columns to property matrices was causing a crash</li>
+</ul>
+
 <h4>v1.0.12 (20th Nov 2008) - requires build 104</h4>
 <ul>
 <li>added data property matrix</li>

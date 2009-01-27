@@ -99,10 +99,7 @@ public class DataPropertyMatrixView extends AbstractTreeMatrixView<OWLDataProper
                     return super.getCellRendererForColumn(colObj);
             }
         }
-        else if (colObj instanceof URI){
-            return super.getCellRendererForColumn(colObj);
-        }
-        return null;
+        return super.getCellRendererForColumn(colObj);
     }
 
 
