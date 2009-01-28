@@ -58,7 +58,7 @@ public class DataPropertyMatrixView extends AbstractTreeMatrixView<OWLDataProper
     }
 
     protected OWLObjectHierarchyProvider<OWLDataProperty> getHierarchyProvider() {
-        return getOWLModelManager().getOWLDataPropertyHierarchyProvider();
+        return getOWLModelManager().getOWLHierarchyManager().getOWLDataPropertyHierarchyProvider();
     }
 
     protected MatrixModel<OWLDataProperty> createMatrixModel(OWLObjectTree<OWLDataProperty> tree) {

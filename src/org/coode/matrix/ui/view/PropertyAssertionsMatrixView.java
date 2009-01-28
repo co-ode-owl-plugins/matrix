@@ -1,17 +1,18 @@
 package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.MatrixModel;
-import org.coode.matrix.model.hierarchy.ClassAndIndividualHierarchyProvider;
 import org.coode.matrix.model.impl.PropertyAssertionsMatrixModel;
 import org.coode.matrix.model.parser.OWLObjectListParser2;
 import org.coode.matrix.ui.action.AddDataPropertyAction;
 import org.coode.matrix.ui.action.AddObjectPropertyAction;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.hierarchy.IndividualsByTypeHierarchyProvider;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
+import org.protege.editor.owl.ui.tree.OWLObjectTreeCellRenderer;
 import org.protege.editor.owl.ui.view.Findable;
 import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
 import javax.swing.table.TableCellEditor;
@@ -49,9 +50,9 @@ import java.util.List;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class PropertyAssertionsMatrixView extends AbstractTreeMatrixView<OWLEntity> implements Findable<OWLClass> {
+public class PropertyAssertionsMatrixView extends AbstractTreeMatrixView<OWLObject> implements Findable<OWLClass> {
 
-    private OWLObjectHierarchyProvider<OWLEntity> hierarchyProvider;
+    private IndividualsByTypeHierarchyProvider hierarchyProvider;
 
     protected boolean isOWLIndividualView() {
         return true;
@@ -60,23 +61,36 @@ public class PropertyAssertionsMatrixView extends AbstractTreeMatrixView<OWLEnti
     protected void initialiseMatrixView() throws Exception {
         addAction(new AddObjectPropertyAction(getOWLEditorKit(), getTreeTable()), "A", "B");
         addAction(new AddDataPropertyAction(getOWLEditorKit(), getTreeTable()), "A", "C");
+
+        getTreeTable().getTree().setCellRenderer(new OWLObjectTreeCellRenderer(getOWLEditorKit()){
+            protected String getRendering(Object object) {
+                StringBuilder label = new StringBuilder(super.getRendering(object));
+                if (object instanceof OWLClass){
+                    int size = getHierarchyProvider().getChildren((OWLClass)object).size();
+                    label.append(" (");
+                    label.append(size);
+                    label.append(")");
+                }
+                return label.toString();
+            }
+        });
+
     }
 
-    protected OWLObjectHierarchyProvider<OWLEntity> getHierarchyProvider() {
+    protected OWLObjectHierarchyProvider<OWLObject> getHierarchyProvider() {
         if (hierarchyProvider == null){
             final OWLModelManager mngr = getOWLModelManager();
-            hierarchyProvider = new ClassAndIndividualHierarchyProvider(mngr.getOWLOntologyManager(),
-                                                                        mngr.getOWLClassHierarchyProvider(),
-                                                                        mngr.getActiveOntologies());
+            hierarchyProvider = new IndividualsByTypeHierarchyProvider(mngr.getOWLOntologyManager());
+            hierarchyProvider.setOntologies(mngr.getActiveOntologies());
         }
         return hierarchyProvider;
     }
 
-    protected MatrixModel<OWLEntity> createMatrixModel(OWLObjectTree<OWLEntity> tree) {
+    protected MatrixModel<OWLObject> createMatrixModel(OWLObjectTree<OWLObject> tree) {
         return new PropertyAssertionsMatrixModel(tree, getOWLModelManager());
     }
 
-    protected TableCellEditor getCellEditor(OWLEntity rowObject, Object columnObject) {
+    protected TableCellEditor getCellEditor(OWLObject rowObject, Object columnObject) {
         if (columnObject instanceof OWLObjectProperty){
             setEditorType(OWLObjectListParser2.INDIVIDUAL);
         }
@@ -91,7 +105,7 @@ public class PropertyAssertionsMatrixView extends AbstractTreeMatrixView<OWLEnti
         super.disposeView();
     }
 
-        public List<OWLClass> find(String match) {
+    public List<OWLClass> find(String match) {
         return new ArrayList<OWLClass>(getOWLModelManager().getEntityFinder().getMatchingOWLClasses(match));
     }
 

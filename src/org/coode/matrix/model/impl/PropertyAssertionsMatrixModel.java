@@ -41,11 +41,11 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Jul 4, 2007<br><br>
  */
-public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLEntity> {
+public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLObject> {
 
     private IndividualsHelper helper;
 
-    public PropertyAssertionsMatrixModel(OWLObjectTree<OWLEntity> tree, OWLModelManager mngr) {
+    public PropertyAssertionsMatrixModel(OWLObjectTree<OWLObject> tree, OWLModelManager mngr) {
         super(tree, mngr);
         helper = new IndividualsHelper(mngr.getOWLOntologyManager(), mngr.getActiveOntologies());
     }
@@ -56,7 +56,7 @@ public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLEntity
     }
 
 
-    public Object getMatrixValue(OWLEntity entity, Object prop) {
+    public Object getMatrixValue(OWLObject entity, Object prop) {
         if (entity instanceof OWLIndividual){
             if (prop instanceof OWLObjectProperty) {
                 return helper.getRelationships((OWLIndividual) entity, (OWLObjectProperty)prop);
@@ -72,7 +72,7 @@ public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLEntity
     }
 
 
-    public List<OWLOntologyChange> setMatrixValue(OWLEntity ind, Object prop, Object value) {
+    public List<OWLOntologyChange> setMatrixValue(OWLObject ind, Object prop, Object value) {
         if (prop instanceof OWLObjectProperty){
             return helper.setRelationships((OWLIndividual) ind,
                                            (OWLObjectProperty) prop,
@@ -91,7 +91,7 @@ public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLEntity
     }
 
 
-    public List<OWLOntologyChange> addMatrixValue(OWLEntity rowObj, Object columnObj, Object value) {
+    public List<OWLOntologyChange> addMatrixValue(OWLObject rowObj, Object columnObj, Object value) {
         if (columnObj instanceof OWLObjectProperty){
             Set<OWLIndividual> values = null;
             if (value instanceof OWLIndividual){
@@ -150,17 +150,17 @@ public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLEntity
     }
 
 
-    public boolean isValueRestricted(OWLEntity rowObject, Object columnObject) {
+    public boolean isValueRestricted(OWLObject rowObject, Object columnObject) {
         return false;
     }
 
 
-    public Set getSuggestedFillers(OWLEntity rowObject, Object columnObject, int threshold) {
+    public Set getSuggestedFillers(OWLObject rowObject, Object columnObject, int threshold) {
         return Collections.EMPTY_SET;
     }
 
 
-    public boolean isCellEditable(OWLEntity rowObject, int column) {
+    public boolean isCellEditable(OWLObject rowObject, int column) {
         return rowObject instanceof OWLIndividual;
     }
 }

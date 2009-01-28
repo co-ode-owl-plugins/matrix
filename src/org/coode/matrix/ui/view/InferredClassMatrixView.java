@@ -36,6 +36,6 @@ import org.semanticweb.owl.model.OWLClass;
 public class InferredClassMatrixView extends ClassMatrixView {
 
     protected OWLObjectHierarchyProvider<OWLClass> getHierarchyProvider() {
-        return getOWLModelManager().getInferredOWLClassHierarchyProvider();
+        return getOWLModelManager().getOWLHierarchyManager().getInferredOWLClassHierarchyProvider();
     }
 }

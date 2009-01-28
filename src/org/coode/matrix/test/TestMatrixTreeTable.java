@@ -62,7 +62,7 @@ public class TestMatrixTreeTable {
         OWLModelManager mngr = new OWLModelManagerImpl();
         try {
             mngr.getOWLOntologyManager().loadOntologyFromPhysicalURI(new URI("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl"));
-            OWLObjectHierarchyProvider<OWLClass> provider = mngr.getOWLClassHierarchyProvider();
+            OWLObjectHierarchyProvider<OWLClass> provider = mngr.getOWLHierarchyManager().getOWLClassHierarchyProvider();
 
             Comparator<OWLClass> comp = new OWLEntityComparator<OWLClass>(mngr);
             OWLObjectTree<OWLClass> tree = new OWLObjectTree<OWLClass>(eKit, provider, comp);

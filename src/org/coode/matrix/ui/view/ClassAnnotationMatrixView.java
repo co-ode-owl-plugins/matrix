@@ -50,7 +50,7 @@ public class ClassAnnotationMatrixView extends AbstractTreeMatrixView<OWLClass> 
     }
 
     protected OWLObjectHierarchyProvider<OWLClass> getHierarchyProvider() {
-        return getOWLModelManager().getOWLClassHierarchyProvider();
+        return getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider();
     }
 
     protected MatrixModel<OWLClass> createMatrixModel(OWLObjectTree<OWLClass> tree) {

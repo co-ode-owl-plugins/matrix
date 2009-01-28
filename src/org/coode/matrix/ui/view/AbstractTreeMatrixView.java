@@ -14,14 +14,12 @@ import org.coode.matrix.ui.renderer.OWLObjectListRenderer;
 import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
 import org.coode.matrix.ui.renderer.SimpleStringListRenderer;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
-import org.protege.editor.owl.ui.OWLEntityComparator;
 import org.protege.editor.owl.ui.tree.OWLModelManagerTree;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
 import org.protege.editor.owl.ui.view.AbstractOWLSelectionViewComponent;
-import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLIndividual;
+import org.semanticweb.owl.model.OWLObject;
 import uk.ac.manchester.cs.bhig.jtreetable.CellEditorFactory;
 
 import javax.swing.*;
@@ -32,7 +30,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.Collections;
-import java.util.Comparator;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -65,11 +62,9 @@ import java.util.Comparator;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends AbstractOWLSelectionViewComponent implements CellEditorFactory {
+public abstract class AbstractTreeMatrixView<R extends OWLObject> extends AbstractOWLSelectionViewComponent implements CellEditorFactory {
 
     private MatrixTreeTable<R> treeTable;
-
-    private OWLEntityComparator<R> comparator;
 
     private OWLObjectListRenderer objectListRen;
     private TableCellEditor objectListEditor;
@@ -84,6 +79,9 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
             handleTreeSelectionChanged();
         }
     };
+
+    private boolean updatingSelection = false;
+    private R lastSelectedOWLObject = null;
 
 
     public final void initialiseView() throws Exception {
@@ -103,9 +101,6 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
                 int modelIndex = treeTable.getTable().convertColumnIndexToModel(col);
                 final Object colObj = treeTable.getModel().getColumnObjectAtModelIndex(modelIndex);
                 TableCellRenderer delegate = getCellRendererForColumn(colObj);
-                if (delegate == null){
-                    System.out.println("delegate = " + delegate);
-                }
                 return delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
             }
         });
@@ -146,44 +141,32 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
     protected abstract void initialiseMatrixView() throws Exception;
 
 
-    protected final Comparator<R> getOWLEntityComparator() {
-        if (comparator == null){
-            comparator = new OWLEntityComparator<R>(getOWLModelManager()){
-
-                public int compare(R o1, R o2) {
-                    if (o1 instanceof OWLIndividual && o2 instanceof OWLClass){
-                        return -1;
-                    }
-                    else if (o2 instanceof OWLIndividual && o1 instanceof OWLClass){
-                        return 1;
-                    }
-                    return super.compare(o1, o2);
-                }
-            };
-        }
-        return comparator;
-    }
-
-
     protected R updateView() {
-        R selectedOWLObject = getSelectedOWLEntity();
-        if (selectedOWLObject == null) {
-            return null;
-        }
-        final OWLObjectTree<R> tree = treeTable.getTree();
-        R treeSelCls = tree.getSelectedOWLObject();
-        if (treeSelCls != null) {
-            if (selectedOWLObject.equals(treeSelCls)) {
-                return selectedOWLObject;
+        if (!updatingSelection){
+            lastSelectedOWLObject = getSelectedOWLEntity();
+            if (lastSelectedOWLObject == null) {
+                return null;
+            }
+            final OWLObjectTree<R> tree = treeTable.getTree();
+            R treeSel = tree.getSelectedOWLObject();
+            if (treeSel != null) {
+                if (lastSelectedOWLObject.equals(treeSel)) {
+                    return lastSelectedOWLObject;
+                }
+            }
+            try{
+            tree.setSelectedOWLObject(lastSelectedOWLObject);
+            TreePath treePath = tree.getSelectionPath();
+            if (treePath != null) {
+                tree.scrollPathToVisible(treePath);
+                lastSelectedOWLObject = ((OWLObjectTreeNode<R>) treePath.getLastPathComponent()).getOWLObject();
+            }
+            }
+            catch(ClassCastException e){
+                // @@TODO this is a hack to solve an issue with the IndByTypeProvider that will be fixed in build109
             }
         }
-        tree.setSelectedOWLObject(selectedOWLObject);
-        TreePath treePath = tree.getSelectionPath();
-        if (treePath != null) {
-            tree.scrollPathToVisible(treePath);
-            return ((OWLObjectTreeNode<R>) treePath.getLastPathComponent()).getOWLObject();
-        }
-        return selectedOWLObject;
+        return lastSelectedOWLObject;
     }
 
 
@@ -261,16 +244,20 @@ public abstract class AbstractTreeMatrixView<R extends OWLEntity> extends Abstra
 
 
     private void handleTreeSelectionChanged() {
+        updatingSelection = true;
         if (!isPinned()) {
             TreePath path = treeTable.getTree().getSelectionPath();
             if (path != null) {
                 R owlObject = ((OWLObjectTreeNode<R>) path.getLastPathComponent()).getOWLObject();
-                setSelectedEntity(owlObject);
+                if (owlObject instanceof OWLEntity){
+                    setSelectedEntity((OWLEntity)owlObject);
+                }
             }
             else {
                 // Update from OWL selection model
                 updateViewContentAndHeader();
             }
         }
+        updatingSelection = false;
     }
 }
