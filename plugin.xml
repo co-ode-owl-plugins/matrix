@@ -4,7 +4,7 @@
 
     <extension id="org.coode.MatrixTab"
             point="org.protege.editor.core.application.WorkspaceTab">
-        <label value="Matrix"/>
+        <label value="Class Matrix"/>
         <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
         <editorKitId value="OWLEditorKit"/>
         <index value="F"/>
@@ -20,7 +20,6 @@
         <navigates value="@org.protege.classcategory"/>
     </extension>
 
-
     <extension id="org.coode.InferredExistentialMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
         <label value="Class Matrix (Inferred Hierarchy)"/>
@@ -30,14 +29,14 @@
         <navigates value="@org.protege.classcategory"/>
     </extension>
 
-    <extension id="org.coode.AnnotationMatrixView"
+    <!--extension id="org.coode.AnnotationMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
         <label value="Class Annotations Matrix"/>
         <class value="org.coode.matrix.ui.view.ClassAnnotationMatrixView"/>
         <headerColor value="@org.protege.classcolor"/>
         <category value="@org.protege.classcategory"/>
         <navigates value="@org.protege.classcategory"/>
-    </extension>
+    </extension-->
 
     <extension id="org.coode.IndividualMatrixView"
             point="org.protege.editor.core.application.ViewComponent">

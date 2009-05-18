@@ -92,7 +92,12 @@ public class OWLObjectListParser2 {
                 String[] strings = expression.split(SEPARATOR);
                 for (String string : strings) {
                     string = string.trim();
-                    results.add(createParser(string).parseConstant());
+                    try{
+                        results.add(createParser(string).parseConstant());
+                    }
+                    catch (ParserException e) {
+                        results.add(mngr.getOWLDataFactory().getOWLUntypedConstant(string));
+                    }
                 }
             }
         }

@@ -39,6 +39,8 @@ import java.util.Set;
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
+ *
+ * @deprecated - just use the <code>RestrictionTreeMatrixModel</code>. This is broken anyway
  */
 public class ClassAnnotationTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 

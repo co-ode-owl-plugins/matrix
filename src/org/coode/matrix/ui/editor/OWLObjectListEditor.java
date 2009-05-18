@@ -17,6 +17,7 @@ import javax.swing.event.AncestorListener;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.Set;
 
@@ -139,6 +140,9 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
 
 
     public Object getCellEditorValue() {
+        if (editor.getText().trim().length() == 0){
+            return Collections.emptySet();
+        }
         try {
             return parser.getValues(editor.getText());
         }

@@ -70,7 +70,12 @@ public class SimpleStringListEditor  extends AbstractCellEditor implements Table
         String value = textField.getText();
         if (value.length() > 0){
             for (String s : parseStringsList(value)){
-                constants.add(mngr.getOWLDataFactory().getOWLUntypedConstant(s, filter));
+                if (filter == null || filter.equals("!")){
+                    constants.add(mngr.getOWLDataFactory().getOWLUntypedConstant(s));
+                }
+                else{
+                    constants.add(mngr.getOWLDataFactory().getOWLUntypedConstant(s, filter));
+                }
             }
         }
         return constants;

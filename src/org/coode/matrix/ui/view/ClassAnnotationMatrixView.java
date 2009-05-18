@@ -42,6 +42,8 @@ import java.util.List;
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
+ *
+ * @deprecated - just use the <code>ClassMatrixView</code>
  */
 public class ClassAnnotationMatrixView extends AbstractTreeMatrixView<OWLClass> implements Findable<OWLClass> {
 
