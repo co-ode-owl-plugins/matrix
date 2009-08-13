@@ -1,6 +1,6 @@
 package org.coode.matrix.model.helper;
 
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.*;
 
@@ -65,9 +65,9 @@ public class IndividualsHelper {
     }
 
 
-    public Set<OWLConstant> getRelationships(OWLIndividual ind, OWLDataProperty prop) {
-        Set<OWLConstant> values = null;
-        Map<OWLDataPropertyExpression, Set<OWLConstant>> relationships = new HashMap<OWLDataPropertyExpression, Set<OWLConstant>>();
+    public Set<OWLLiteral> getRelationships(OWLIndividual ind, OWLDataProperty prop) {
+        Set<OWLLiteral> values = null;
+        Map<OWLDataPropertyExpression, Set<OWLLiteral>> relationships = new HashMap<OWLDataPropertyExpression, Set<OWLLiteral>>();
         for (OWLOntology ont : onts){
             relationships.putAll(ind.getDataPropertyValues(ont));
         }
@@ -80,15 +80,15 @@ public class IndividualsHelper {
         return values;
     }
 
-    public List<OWLOntologyChange> setRelationships(OWLIndividual subject, OWLObjectProperty p,
-                                                    Set<OWLIndividual> objects, OWLOntology activeOnt) {
+    public List<OWLOntologyChange> setRelationships(OWLNamedIndividual subject, OWLObjectProperty p,
+                                                    Set<OWLNamedIndividual> objects, OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
         // generate the axioms that should be in the ontology after this has completed
         Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
         for (OWLIndividual object : objects){
             OWLObjectPropertyAssertionAxiom relationAxiom =
-                    mngr.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(subject, p, object);
+                    mngr.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(p, subject, object);
             axioms.add(relationAxiom);
         }
 
@@ -120,15 +120,15 @@ public class IndividualsHelper {
     }
 
 
-        public List<OWLOntologyChange> setRelationships(OWLIndividual subject, OWLDataProperty p,
-                                                    Set<OWLConstant> objects, OWLOntology activeOnt) {
+        public List<OWLOntologyChange> setRelationships(OWLNamedIndividual subject, OWLDataProperty p,
+                                                    Set<OWLLiteral> objects, OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
         // generate the axioms that should be in the ontology after this has completed
         Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-        for (OWLConstant object : objects){
+        for (OWLLiteral object : objects){
             OWLDataPropertyAssertionAxiom relationAxiom =
-                    mngr.getOWLDataFactory().getOWLDataPropertyAssertionAxiom(subject, p, object);
+                    mngr.getOWLDataFactory().getOWLDataPropertyAssertionAxiom(p, subject, object);
             axioms.add(relationAxiom);
         }
 
@@ -159,63 +159,54 @@ public class IndividualsHelper {
         return changes;
     }
 
-    public List<OWLOntologyChange> addRelationships(OWLIndividual subject, OWLObjectProperty p,
-                                                    Set<OWLIndividual> objects, OWLOntology activeOnt) {
+    public List<OWLOntologyChange> addRelationships(OWLNamedIndividual subject, OWLObjectProperty p,
+                                                    Set<OWLNamedIndividual> objects, OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
-        // generate the axioms that should be in the ontology after this has completed
-        Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
         for (OWLIndividual object : objects){
-            OWLObjectPropertyAssertionAxiom relationAxiom =
-                    mngr.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(subject, p, object);
-            axioms.add(relationAxiom);
-        }
-        // add all remaining new axioms to the active ontology
-        for (OWLAxiom ax : axioms){
+            OWLObjectPropertyAssertionAxiom ax =
+                    mngr.getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(p, subject, object);
+            if (!activeOnt.containsAxiom(ax)){
             changes.add(new AddAxiom(activeOnt, ax));
+            }
         }
         return changes;
     }
 
 
-    public List<OWLOntologyChange> addRelationships(OWLIndividual subject, OWLDataProperty p,
-                                                    Set<OWLConstant> objects, OWLOntology activeOnt) {
+    public List<OWLOntologyChange> addRelationships(OWLNamedIndividual subject, OWLDataProperty p,
+                                                    Set<OWLLiteral> objects, OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
-        // generate the axioms that should be in the ontology after this has completed
-        Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-        for (OWLConstant object : objects){
-            OWLDataPropertyAssertionAxiom relationAxiom =
-                    mngr.getOWLDataFactory().getOWLDataPropertyAssertionAxiom(subject, p, object);
-            axioms.add(relationAxiom);
-        }
-        // add all remaining new axioms to the active ontology
-        for (OWLAxiom ax : axioms){
+        for (OWLLiteral object : objects){
+            OWLDataPropertyAssertionAxiom ax = mngr.getOWLDataFactory().getOWLDataPropertyAssertionAxiom(p, subject, object);
+            if (!activeOnt.containsAxiom(ax)){
             changes.add(new AddAxiom(activeOnt, ax));
+            }
         }
         return changes;
     }
 
 
-    public Set<OWLIndividual> getMembers(OWLClass cls) {
-        Set<OWLIndividual> instances = new HashSet<OWLIndividual>();
+    public Set<OWLNamedIndividual> getMembers(OWLClass cls) {
+        Set<OWLNamedIndividual> instances = new HashSet<OWLNamedIndividual>();
 
         final OWLClass thing = mngr.getOWLDataFactory().getOWLThing();
         if (cls.equals(thing)){
             for (OWLOntology ont : onts){
                 for (OWLIndividual ind : ont.getReferencedIndividuals()){
-                    if (ind.getTypes(ont).isEmpty() || ind.getTypes(ont).contains(thing)){
-                        instances.add(ind);
+                    if (!ind.isAnonymous() &&
+                        (ind.getTypes(ont).isEmpty() || ind.getTypes(ont).contains(thing))){
+                        instances.add(ind.asNamedIndividual());
                     }
                 }
             }
         }
         else{
             for (OWLOntology ont : onts){
-                for (OWLAxiom ax : ont.getReferencingAxioms(cls)){
-                    if (ax instanceof OWLClassAssertionAxiom &&
-                        ((OWLClassAssertionAxiom)ax).getDescription().equals(cls)){
-                        instances.add(((OWLClassAssertionAxiom)ax).getIndividual());
+                for (OWLClassAssertionAxiom ax : ont.getClassAssertionAxioms(cls)){
+                    if (!ax.getIndividual().isAnonymous()){
+                        instances.add(ax.getIndividual().asNamedIndividual());
                     }
                 }
             }
@@ -223,13 +214,27 @@ public class IndividualsHelper {
         return instances;
     }
 
+
+    public List<OWLOntologyChange> addMembers(OWLClass cls, Set<OWLIndividual> members, OWLOntology activeOnt) {
+        List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
+
+        for (OWLIndividual member : members){
+            OWLClassAssertionAxiom axiom = mngr.getOWLDataFactory().getOWLClassAssertionAxiom(cls, member);
+            if (!activeOnt.containsAxiom(axiom)){
+                changes.add(new AddAxiom(activeOnt, axiom));
+            }
+        }
+        return changes;
+    }
+
+    
     public List<OWLOntologyChange> setMembers(OWLClass cls, Set<OWLIndividual> members, OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
         // generate the axioms that should be in the ontology after this has completed
         Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
         for (OWLIndividual member : members){
-            OWLClassAssertionAxiom axiom = mngr.getOWLDataFactory().getOWLClassAssertionAxiom(member, cls);
+            OWLClassAssertionAxiom axiom = mngr.getOWLDataFactory().getOWLClassAssertionAxiom(cls, member);
             axioms.add(axiom);
         }
 
@@ -237,7 +242,7 @@ public class IndividualsHelper {
         for (OWLOntology ont : onts){
             for (OWLAxiom ax : ont.getReferencingAxioms(cls)){
                 if (ax instanceof OWLClassAssertionAxiom &&
-                    ((OWLClassAssertionAxiom)ax).getDescription().equals(cls)){
+                    ((OWLClassAssertionAxiom)ax).getClassExpression().equals(cls)){
                     if (axioms.contains(ax)){
                         axioms.remove(ax); // we're satisfied this axiom is already in the ontologies, no need to create or check against it
                     }
@@ -259,8 +264,8 @@ public class IndividualsHelper {
     }
 
 
-    public Set<OWLDescription> getTypes(OWLIndividual individual) {
-        Set<OWLDescription> types = new HashSet<OWLDescription>();
+    public Set<OWLClassExpression> getTypes(OWLIndividual individual) {
+        Set<OWLClassExpression> types = new HashSet<OWLClassExpression>();
         for (OWLOntology ont : onts){
             types.addAll(individual.getTypes(ont));
         }
@@ -269,10 +274,10 @@ public class IndividualsHelper {
 
     public Set<OWLClass> getNamedTypes(OWLIndividual individual) {
         Set<OWLClass>parents = Collections.emptySet();
-        Set<OWLDescription> types = getTypes(individual);
+        Set<OWLClassExpression> types = getTypes(individual);
         if (types.size() > 0) {
             parents = new HashSet<OWLClass>();
-            for (OWLDescription type : types) {
+            for (OWLClassExpression type : types) {
                 if (type instanceof OWLClass) {
                     parents.add((OWLClass) type);
                 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+    <VSNode splits="0.8 0.2">
+        <CNode>
+            <Component label="Class matrix">
+                <Property id="pluginId" value="org.coode.matrix.ClassMatrixView"/>
+            </Component>
+            <Component label="Class matrix (inferred hierarchy)">
+                <Property id="pluginId" value="org.coode.matrix.InferredClassMatrixView"/>
+            </Component>
+        </CNode>
+        <HSNode splits="0.25 0.25">
+            <CNode>
+                <Component label="Object properties">
+                    <Property id="pluginId" value="org.coode.matrix.ObjPropsPalette"/>
+                </Component>
+                <Component label="Data properties">
+                    <Property id="pluginId" value="org.coode.matrix.DataPropsPalette"/>
+                </Component>
+            </CNode>
+            <CNode>
+                <Component label="Classes palette">
+                    <Property id="pluginId" value="org.coode.matrix.ClassPalette"/>
+                </Component>
+                <Component label="Individuals By class">
+                    <Property id="pluginId" value="org.coode.matrix.IndividualsPalette"/>
+                </Component>
+            </CNode>
+        </HSNode>
+    </VSNode>
+</layout>

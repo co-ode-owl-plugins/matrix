@@ -4,11 +4,11 @@ import org.coode.matrix.model.helper.AnnotatorHelper;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.OWLOntologyChangeVisitorAdapter;
 import uk.ac.manchester.cs.bhig.jtreetable.AbstractTreeTableModel;
 
 import javax.swing.tree.TreePath;
-import java.net.URI;
 import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.List;
@@ -104,14 +104,14 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
                 if (pair.getFilterObject() != null){
                     return annotHelper.setAnnotationValues((OWLEntity)rowObj,
                                                            pair.getColumnObject(),
-                                                           (Set<OWLObject>)value,
+                                                           (Set<OWLAnnotationValue>)value,
                                                            mngr.getActiveOntology(),
                                                            pair.getFilterObject());
                 }
                 else{
                     return annotHelper.setAnnotationValues((OWLEntity)rowObj,
                                                            pair.getColumnObject(),
-                                                           (Set<OWLObject>)value,
+                                                           (Set<OWLAnnotationValue>)value,
                                                            mngr.getActiveOntology());
                 }
             }
@@ -156,7 +156,7 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
         String label;
         if (columnObject instanceof AbstractMatrixModel.AnnotationLangPair){
             AnnotationLangPair pair = (AnnotationLangPair) columnObject;
-            label = pair.getColumnObject().getFragment();
+            label = mngr.getRendering(pair.getColumnObject());
             if (pair.getFilterObject() != null){
                 label += " (" + pair.getFilterObject() + ")";
             }
@@ -174,19 +174,9 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
     private void handleOntologyChanges(List<? extends OWLOntologyChange> changes) {
         final Set<OWLEntity> entitiesReferencedByRemoveAxioms = new HashSet<OWLEntity>();
-        OWLOntologyChangeVisitor visitor = new OWLOntologyChangeVisitor() {
-
-            public void visit(AddAxiom addAxiom) {
-            }
-
-
+        OWLOntologyChangeVisitor visitor = new OWLOntologyChangeVisitorAdapter() {
             public void visit(RemoveAxiom removeAxiom) {
                 entitiesReferencedByRemoveAxioms.addAll(removeAxiom.getEntities());
-            }
-
-
-            public void visit(SetOntologyURI setOntologyURI) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
         };
         for (OWLOntologyChange change : changes){
@@ -212,9 +202,9 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
         return false;
     }
 
-    public static class AnnotationLangPair extends AbstractColumnFilterPair<URI, String> {
+    public static class AnnotationLangPair extends AbstractColumnFilterPair<OWLAnnotationProperty, String> {
 
-        public AnnotationLangPair(URI object, String filter) {
+        public AnnotationLangPair(OWLAnnotationProperty object, String filter) {
             super(object, filter);
         }
     }

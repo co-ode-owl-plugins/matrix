@@ -1,12 +1,9 @@
 package org.coode.matrix.model.helper;
 
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.vocab.OWLRDFVocabulary;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /*

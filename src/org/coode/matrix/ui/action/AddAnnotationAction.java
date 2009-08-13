@@ -6,12 +6,12 @@ import org.protege.editor.core.ui.view.DisposableAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.UIHelper;
-import org.protege.editor.owl.ui.frame.AnnotationURIList;
+import org.protege.editor.owl.ui.selector.OWLAnnotationPropertySelectorPanel;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.net.URI;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -51,7 +51,7 @@ public class AddAnnotationAction extends DisposableAction {
     private OWLEditorKit eKit;
     private MatrixTreeTable table;
 
-    private AnnotationURIList uriList;
+    private OWLAnnotationPropertySelectorPanel uriList;
 
     private JComboBox langSelector;
 
@@ -73,23 +73,22 @@ public class AddAnnotationAction extends DisposableAction {
         if (pane == null){
             createUI();
         }
-        uriList.rebuildAnnotationURIList();
 
         if (new UIHelper(eKit).showDialog(LABEL, pane, uriList) == JOptionPane.OK_OPTION){
-            URI uri = uriList.getSelectedURI();
-            if (uri != null){
+            OWLAnnotationProperty property = uriList.getSelectedObject();
+            if (property != null){
                 String lang = (String)langSelector.getSelectedItem();
                 if (lang == null || lang.length() == 0){
                     lang = null;
                 }
-                table.addColumn(new AbstractMatrixModel.AnnotationLangPair(uri, lang));
+                table.addColumn(new AbstractMatrixModel.AnnotationLangPair(property, lang));
             }
         }
     }
 
 
     private void createUI() {
-        uriList = new AnnotationURIList(eKit);
+        uriList = new OWLAnnotationPropertySelectorPanel(eKit);
         JComponent uriScroller = new JScrollPane(uriList);
         uriScroller.setAlignmentX(0.0f);
         JComponent uriPanel = new Box(BoxLayout.PAGE_AXIS);

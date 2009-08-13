@@ -2,14 +2,14 @@ package org.coode.matrix.ui.editor;
 
 import org.apache.log4j.Logger;
 import org.coode.matrix.model.impl.FillerModel;
-import org.coode.matrix.model.parser.OWLObjectListParser2;
+import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.renderer.OWLObjectsRenderer;
 import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.model.description.OWLExpressionParserException;
-import org.protege.editor.owl.ui.clsdescriptioneditor.OWLDescriptionAutoCompleter;
+import org.protege.editor.owl.model.classexpression.OWLExpressionParserException;
+import org.protege.editor.owl.ui.clsdescriptioneditor.OWLAutoCompleter;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
@@ -62,9 +62,9 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
 
     private Set<OWLObject> originalFillers;
 
-    private OWLObjectListParser2 parser;
+    private OWLObjectListParser parser;
 
-    private OWLDescriptionAutoCompleter ac;
+    private OWLAutoCompleter ac;
 
     private OWLEditorKit eKit;
 
@@ -79,7 +79,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
     };
 
 
-    public OWLObjectListEditor(OWLEditorKit eKit, OWLObjectsRenderer ren, OWLObjectListParser2 parser) {
+    public OWLObjectListEditor(OWLEditorKit eKit, OWLObjectsRenderer ren, OWLObjectListParser parser) {
         super();
 
         this.eKit = eKit;
@@ -133,7 +133,7 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
 
         editor.setFont(OWLRendererPreferences.getInstance().getFont());
         editor.setText((value != null) ? ren.render(originalFillers) : "");
-        ac = new OWLDescriptionAutoCompleter(eKit, editor, checker);
+        ac = new OWLAutoCompleter(eKit, editor, checker);
 
         return editor;
     }

@@ -1,6 +1,6 @@
 package org.coode.matrix.ui.palette;
 
-import org.protege.editor.owl.ui.view.OWLObjectPropertyHierarchyViewComponent;
+import org.protege.editor.owl.ui.view.objectproperty.OWLObjectPropertyHierarchyViewComponent;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -34,9 +34,9 @@ import org.protege.editor.owl.ui.view.OWLObjectPropertyHierarchyViewComponent;
  */
 public class ObjectPropertyPalette extends OWLObjectPropertyHierarchyViewComponent{
 
-    public void initialiseView() throws Exception {
-        super.initialiseView();
+    protected void performExtraInitialisation() throws Exception {
+        super.performExtraInitialisation();
         getView().setPinned(true);
-        getView().setSyncronizing(false);
+        getView().setSyncronizing(false);        
     }
 }

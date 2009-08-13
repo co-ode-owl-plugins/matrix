@@ -3,12 +3,12 @@ package org.coode.matrix.ui.view;
 import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.helper.PropertyHelper;
 import org.coode.matrix.model.impl.DataPropertyTreeMatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser2;
+import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.SelectPropertyFeaturesAction;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.view.Findable;
-import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -74,17 +74,17 @@ public class DataPropertyMatrixView extends AbstractTreeMatrixView<OWLDataProper
             if (colObj instanceof PropertyHelper.OWLPropertyFeature){
                 switch((PropertyHelper.OWLPropertyFeature)colObj){
                     case DOMAIN:
-                        setEditorType(OWLObjectListParser2.CLASS);
+                        setEditorType(OWLObjectListParser.ParseType.CLASS);
                         return super.getCellEditor(p, colObj);
                     case RANGE:
-                        setEditorType(OWLObjectListParser2.DATARANGE);
+                        setEditorType(OWLObjectListParser.ParseType.DATARANGE);
                         return super.getCellEditor(p, colObj);
 
                 }
             }
         }
         else if (colObj instanceof URI){
-            setEditorType(OWLObjectListParser2.LITERAL);
+            setEditorType(OWLObjectListParser.ParseType.LITERAL);
             return super.getCellEditor(p, colObj);
         }
         // otherwise, this will be one of the boolean characteristics - so just use the table default
@@ -104,7 +104,7 @@ public class DataPropertyMatrixView extends AbstractTreeMatrixView<OWLDataProper
 
 
     public List<OWLDataProperty> find(String match) {
-        return new ArrayList<OWLDataProperty>(getOWLModelManager().getEntityFinder().getMatchingOWLDataProperties(match));
+        return new ArrayList<OWLDataProperty>(getOWLModelManager().getOWLEntityFinder().getMatchingOWLDataProperties(match));
     }
 
 

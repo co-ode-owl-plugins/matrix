@@ -1,12 +1,12 @@
 package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.MatrixModel;
-import org.coode.matrix.model.impl.ClassAnnotationTreeMatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser2;
+import org.coode.matrix.model.impl.ClassMembershipTreeMatrixModel;
+import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.view.Findable;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 
 import javax.swing.table.TableCellEditor;
 import java.util.ArrayList;
@@ -42,13 +42,10 @@ import java.util.List;
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
- *
- * @deprecated - just use the <code>ClassMatrixView</code>
  */
-public class ClassAnnotationMatrixView extends AbstractTreeMatrixView<OWLClass> implements Findable<OWLClass> {
+public class IndividualTypesMatrixView extends AbstractTreeMatrixView<OWLClass> implements Findable<OWLClass> {
 
-    protected boolean isOWLClassView() {
-        return true;
+    protected void initialiseMatrixView() throws Exception {
     }
 
     protected OWLObjectHierarchyProvider<OWLClass> getHierarchyProvider() {
@@ -56,20 +53,22 @@ public class ClassAnnotationMatrixView extends AbstractTreeMatrixView<OWLClass> 
     }
 
     protected MatrixModel<OWLClass> createMatrixModel(OWLObjectTree<OWLClass> tree) {
-        return new ClassAnnotationTreeMatrixModel(tree, getOWLModelManager());
+        return new ClassMembershipTreeMatrixModel(tree, getOWLModelManager());
     }
-
-    protected void initialiseMatrixView() throws Exception {
-    }
-
 
     protected TableCellEditor getCellEditor(OWLClass rowObject, Object columnObject) {
-        setEditorType(OWLObjectListParser2.LITERAL);
-        return super.getCellEditor(rowObject, columnObject);
+        TableCellEditor editor = super.getCellEditor(rowObject, columnObject);
+        if (columnObject instanceof String){
+            setEditorType(OWLObjectListParser.ParseType.INDIVIDUAL);
+        }
+        else{
+            setEditorType(OWLObjectListParser.ParseType.LITERAL);
+        }
+        return editor;
     }
 
         public List<OWLClass> find(String match) {
-        return new ArrayList<OWLClass>(getOWLModelManager().getEntityFinder().getMatchingOWLClasses(match));
+        return new ArrayList<OWLClass>(getOWLModelManager().getOWLEntityFinder().getMatchingOWLClasses(match));
     }
 
 

@@ -4,9 +4,8 @@ import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.helper.IndividualsHelper;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -74,15 +73,15 @@ public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLObject
 
     public List<OWLOntologyChange> setMatrixValue(OWLObject ind, Object prop, Object value) {
         if (prop instanceof OWLObjectProperty){
-            return helper.setRelationships((OWLIndividual) ind,
+            return helper.setRelationships((OWLNamedIndividual) ind,
                                            (OWLObjectProperty) prop,
-                                           (Set<OWLIndividual>) value,
+                                           (Set<OWLNamedIndividual>) value,
                                            mngr.getActiveOntology());
         }
         else if (prop instanceof OWLDataProperty){
-            return helper.setRelationships((OWLIndividual) ind,
+            return helper.setRelationships((OWLNamedIndividual) ind,
                                            (OWLDataProperty) prop,
-                                           (Set<OWLConstant>) value,
+                                           (Set<OWLLiteral>) value,
                                            mngr.getActiveOntology());
         }
         else{
@@ -93,32 +92,32 @@ public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLObject
 
     public List<OWLOntologyChange> addMatrixValue(OWLObject rowObj, Object columnObj, Object value) {
         if (columnObj instanceof OWLObjectProperty){
-            Set<OWLIndividual> values = null;
-            if (value instanceof OWLIndividual){
-                values = Collections.singleton((OWLIndividual)value);
+            Set<OWLNamedIndividual> values = null;
+            if (value instanceof OWLNamedIndividual){
+                values = Collections.singleton((OWLNamedIndividual)value);
             }
             else if (value instanceof Set){
                 // @@TODO check the contents of the set
-                values = (Set<OWLIndividual>)value;
+                values = (Set<OWLNamedIndividual>)value;
             }
             if (values != null){
-                return helper.addRelationships((OWLIndividual) rowObj,
+                return helper.addRelationships((OWLNamedIndividual) rowObj,
                                                (OWLObjectProperty) columnObj,
                                                values,
                                                mngr.getActiveOntology());
             }
         }
         else if (columnObj instanceof OWLDataProperty){
-            Set<OWLConstant> values = null;
-            if (value instanceof OWLConstant){
-                values = Collections.singleton((OWLConstant)value);
+            Set<OWLLiteral> values = null;
+            if (value instanceof OWLLiteral){
+                values = Collections.singleton((OWLLiteral)value);
             }
             else if (value instanceof Set){
                 // @@TODO check the contents of the set
-                values = (Set<OWLConstant>)value;
+                values = (Set<OWLLiteral>)value;
             }
             if (values != null){
-                return helper.addRelationships((OWLIndividual) rowObj,
+                return helper.addRelationships((OWLNamedIndividual) rowObj,
                                                (OWLDataProperty) columnObj,
                                                values,
                                                mngr.getActiveOntology());
@@ -135,7 +134,7 @@ public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLObject
                 return value instanceof OWLIndividual;
             }
             else if (colObj instanceof OWLDataProperty){
-                return value instanceof OWLConstant;
+                return value instanceof OWLLiteral;
             }
         }
         return false;
@@ -143,7 +142,9 @@ public class PropertyAssertionsMatrixModel extends AbstractMatrixModel<OWLObject
 
 
     public Object getSuitableColumnObject(Object columnObject) {
-        if (columnObject instanceof OWLObjectProperty || columnObject instanceof OWLDataProperty || columnObject instanceof URI){
+        if (columnObject instanceof OWLObjectProperty ||
+            columnObject instanceof OWLDataProperty ||
+            columnObject instanceof OWLAnnotationProperty){
             return columnObject;
         }
         return null;

@@ -1,7 +1,7 @@
 package org.coode.matrix.ui.editor;
 
 import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owl.model.OWLUntypedConstant;
+import org.semanticweb.owlapi.model.OWLStringLiteral;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -66,15 +66,15 @@ public class SimpleStringListEditor  extends AbstractCellEditor implements Table
 
 
     public Object getCellEditorValue() {
-        Set<OWLUntypedConstant> constants = new HashSet<OWLUntypedConstant>();
+        Set<OWLStringLiteral> constants = new HashSet<OWLStringLiteral>();
         String value = textField.getText();
         if (value.length() > 0){
             for (String s : parseStringsList(value)){
                 if (filter == null || filter.equals("!")){
-                    constants.add(mngr.getOWLDataFactory().getOWLUntypedConstant(s));
+                    constants.add(mngr.getOWLDataFactory().getOWLStringLiteral(s));
                 }
                 else{
-                    constants.add(mngr.getOWLDataFactory().getOWLUntypedConstant(s, filter));
+                    constants.add(mngr.getOWLDataFactory().getOWLStringLiteral(s, filter));
                 }
             }
         }
@@ -84,7 +84,7 @@ public class SimpleStringListEditor  extends AbstractCellEditor implements Table
 
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         StringBuilder str = new StringBuilder();
-        for (OWLUntypedConstant constant : (Set<OWLUntypedConstant>)value){
+        for (OWLStringLiteral constant : (Set<OWLStringLiteral>)value){
             if (str.length() > 0){
                 str.append(", ");
             }

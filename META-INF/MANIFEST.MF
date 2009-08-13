@@ -10,10 +10,10 @@ Bundle-DocURL: http://www.co-ode.org
 Bundle-ClassPath: .,lib/jtreetable.jar
 Import-Package: org.osgi.framework,
  org.apache.log4j
-Bundle-Version: 1.0.15
+Bundle-Version: 1.1.0
 Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
 Require-Bundle: org.eclipse.equinox.registry,
  org.eclipse.equinox.common,
- org.protege.editor.core.application,
- org.protege.editor.owl,
- org.semanticweb.owl.owlapi
+ org.protege.editor.core.application;bundle-version="4.1",
+ org.protege.editor.owl;bundle-version="4.1",
+ org.semanticweb.owl.owlapi;bundle-version="3.0"

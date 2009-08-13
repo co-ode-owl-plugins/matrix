@@ -1,6 +1,6 @@
 package org.coode.matrix.ui.palette;
 
-import org.protege.editor.owl.ui.clshierarchy.ToldOWLClassHierarchyViewComponent;
+import org.protege.editor.owl.ui.view.cls.ToldOWLClassHierarchyViewComponent;
 
 /*
 * Copyright (C) 2007, University of Manchester

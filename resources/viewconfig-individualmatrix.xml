@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
-    <VSNode splits="0.7407079646017699 0.2592920353982301">
+    <VSNode splits="0.8 0.2">
         <CNode>
-            <Component label="Class Existential Matrix">
-                <Property id="pluginId" value="org.coode.matrix.org.coode.ExistentialMatrixView"/>
+            <Component label="Individual matrix">
+                <Property id="pluginId" value="org.coode.matrix.IndividualMatrixView"/>
+            </Component>
+            <Component label="Types matrix">
+                <Property id="pluginId" value="org.coode.matrix.ClassMembersMatrixView"/>
             </Component>
         </CNode>
         <HSNode splits="0.25 0.25">
             <CNode>
-                <Component label="Object Properties">
+                <Component label="Object properties">
                     <Property id="pluginId" value="org.coode.matrix.ObjPropsPalette"/>
                 </Component>
-                <Component label="Data Properties">
+                <Component label="Data properties">
                     <Property id="pluginId" value="org.coode.matrix.DataPropsPalette"/>
                 </Component>
             </CNode>
             <CNode>
-                <Component label="Classes Palette">
-                    <Property id="pluginId" value="org.coode.matrix.org.coode.ClassPalette"/>
-                </Component>
-                <Component label="Individuals By Class">
+                <Component label="Individuals By class">
                     <Property id="pluginId" value="org.coode.matrix.IndividualsPalette"/>
                 </Component>
             </CNode>

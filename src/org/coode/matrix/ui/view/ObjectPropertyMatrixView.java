@@ -3,12 +3,12 @@ package org.coode.matrix.ui.view;
 import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.helper.PropertyHelper;
 import org.coode.matrix.model.impl.ObjectPropertyTreeMatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser2;
+import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.SelectPropertyFeaturesAction;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.view.Findable;
-import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -74,18 +74,18 @@ public class ObjectPropertyMatrixView extends AbstractTreeMatrixView<OWLObjectPr
             if (colObj instanceof PropertyHelper.OWLPropertyFeature){
                 switch((PropertyHelper.OWLPropertyFeature)colObj){
                     case INVERSE:
-                        setEditorType(OWLObjectListParser2.OBJPROP);
+                        setEditorType(OWLObjectListParser.ParseType.OBJPROP);
                         return super.getCellEditor(p, colObj);
                     case DOMAIN: // fallthrough
                     case RANGE:
-                        setEditorType(OWLObjectListParser2.CLASS);
+                        setEditorType(OWLObjectListParser.ParseType.CLASS);
                         return super.getCellEditor(p, colObj);
 
                 }
             }
         }
         else if (colObj instanceof URI){
-            setEditorType(OWLObjectListParser2.LITERAL);
+            setEditorType(OWLObjectListParser.ParseType.LITERAL);
             return super.getCellEditor(p, colObj);
         }
         // otherwise, this will be one of the boolean characteristics - so just use the table default
@@ -105,7 +105,7 @@ public class ObjectPropertyMatrixView extends AbstractTreeMatrixView<OWLObjectPr
     }
 
         public List<OWLObjectProperty> find(String match) {
-        return new ArrayList<OWLObjectProperty>(getOWLModelManager().getEntityFinder().getMatchingOWLObjectProperties(match));
+        return new ArrayList<OWLObjectProperty>(getOWLModelManager().getOWLEntityFinder().getMatchingOWLObjectProperties(match));
     }
 
 

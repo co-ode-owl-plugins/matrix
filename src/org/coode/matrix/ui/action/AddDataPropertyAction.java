@@ -7,7 +7,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.UIHelper;
 import org.protege.editor.owl.ui.selector.OWLDataPropertySelectorPanel;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -74,7 +74,7 @@ public class AddDataPropertyAction extends DisposableAction {
 
 
     private JComboBox createTypeSelector() {
-        Class[] types = {OWLDataSomeRestriction.class, OWLDataAllRestriction.class};
+        Class[] types = {OWLDataSomeValuesFrom.class, OWLDataAllValuesFrom.class};
         JComboBox c = new JComboBox(types);
         c.setRenderer(new DefaultListCellRenderer(){
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {

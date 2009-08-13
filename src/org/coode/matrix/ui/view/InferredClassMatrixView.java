@@ -1,7 +1,7 @@
 package org.coode.matrix.ui.view;
 
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 /*
 * Copyright (C) 2007, University of Manchester
 *

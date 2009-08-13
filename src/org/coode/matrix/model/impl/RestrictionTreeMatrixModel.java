@@ -7,7 +7,7 @@ import org.coode.matrix.model.helper.PropertyHelper;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.net.URI;
 import java.util.*;
@@ -176,10 +176,10 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 
     public Object getSuitableColumnObject(Object columnObject) {
         if (columnObject instanceof OWLObjectProperty){
-            return new PropertyRestrictionPair<OWLObjectPropertyExpression, OWLDescription>((OWLObjectProperty)columnObject, OWLObjectSomeRestriction.class);
+            return new PropertyRestrictionPair<OWLObjectPropertyExpression, OWLClassExpression>((OWLObjectProperty)columnObject, OWLObjectSomeValuesFrom.class);
         }
         else if (columnObject instanceof OWLDataProperty){
-            return new PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange>((OWLDataProperty)columnObject, OWLDataSomeRestriction.class);
+            return new PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange>((OWLDataProperty)columnObject, OWLDataSomeValuesFrom.class);
         }
         else if (columnObject instanceof URI){
             return columnObject;
@@ -204,10 +204,10 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 
         private static Map<Class, String> renderMap = new HashMap<Class, String>();
         static {
-            renderMap.put(OWLObjectSomeRestriction.class, "some");
-            renderMap.put(OWLObjectAllRestriction.class, "only");
-            renderMap.put(OWLDataSomeRestriction.class, "some");
-            renderMap.put(OWLDataAllRestriction.class, "only");
+            renderMap.put(OWLObjectSomeValuesFrom.class, "some");
+            renderMap.put(OWLObjectAllValuesFrom.class, "only");
+            renderMap.put(OWLDataSomeValuesFrom.class, "some");
+            renderMap.put(OWLDataAllValuesFrom.class, "only");
         }
 
         public PropertyRestrictionPair(P object, Class<? extends OWLQuantifiedRestriction<P, R>> filter) {

@@ -1,7 +1,7 @@
 package org.coode.matrix.model.helper;
 
-import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.util.OWLObjectVisitorAdapter;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.OWLObjectVisitorAdapter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,7 +49,7 @@ public abstract class AbstractExistentialVisitorAdapter extends OWLObjectVisitor
         if (!visitedObjects.contains(cls)){
             visitedObjects.add(cls); // prevent cycles
             for (OWLOntology ont : onts){
-                for (OWLAxiom subcls : ont.getSubClassAxiomsForLHS(cls)){
+                for (OWLAxiom subcls : ont.getSubClassAxiomsForSubClass(cls)){
                     subcls.accept(this);
                 }
                 for (OWLAxiom equivAxiom : ont.getEquivalentClassesAxioms(cls)){
@@ -59,7 +59,7 @@ public abstract class AbstractExistentialVisitorAdapter extends OWLObjectVisitor
         }
     }
 
-//    public void visit(OWLSubClassAxiom owlSubClassAxiom) {
+//    public void visit(OWLSubClassOfAxiom owlSubClassAxiom) {
 //        if (!visitedObjects.contains(owlSubClassAxiom)){
 //            visitedObjects.add(owlSubClassAxiom); // prevent cycles
 //            owlSubClassAxiom.getSuperClass().accept(this);
@@ -69,8 +69,8 @@ public abstract class AbstractExistentialVisitorAdapter extends OWLObjectVisitor
 //    public void visit(OWLEquivalentClassesAxiom owlEquivalentClassesAxiom) {
 //        if (!visitedObjects.contains(owlEquivalentClassesAxiom)){
 //            visitedObjects.add(owlEquivalentClassesAxiom); // prevent cycles
-//            Set<OWLDescription> equivs = owlEquivalentClassesAxiom.getDescriptions();
-//            for (OWLDescription equiv : equivs){
+//            Set<OWLClassExpression> equivs = owlEquivalentClassesAxiom.getDescriptions();
+//            for (OWLClassExpression equiv : equivs){
 //                if (!equiv.equals(base)){
 //                    equiv.accept(this);
 //                }
@@ -78,22 +78,22 @@ public abstract class AbstractExistentialVisitorAdapter extends OWLObjectVisitor
 //        }
 //    }
 
-    public void visit(OWLObjectSomeRestriction restriction) {
+    public void visit(OWLObjectSomeValuesFrom restriction) {
         handleRestriction(restriction);
     }
 
-    public void visit(OWLObjectMinCardinalityRestriction restriction) {
+    public void visit(OWLObjectMinCardinality restriction) {
         handleCardinality(restriction);
     }
 
-    public void visit(OWLObjectExactCardinalityRestriction restriction) {
+    public void visit(OWLObjectExactCardinality restriction) {
         handleCardinality(restriction);
     }
 
     public void visit(OWLObjectIntersectionOf owlObjectIntersectionOf) {
         if (!visitedObjects.contains(owlObjectIntersectionOf)){
             visitedObjects.add(owlObjectIntersectionOf);
-            for (OWLDescription desc : owlObjectIntersectionOf.getOperands()) {
+            for (OWLClassExpression desc : owlObjectIntersectionOf.getOperands()) {
                 desc.accept(this);
             }
         }
@@ -109,5 +109,5 @@ public abstract class AbstractExistentialVisitorAdapter extends OWLObjectVisitor
     }
 
     protected abstract void handleRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression,
-            OWLDescription> restriction);
+            OWLClassExpression> restriction);
 }

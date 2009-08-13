@@ -2,122 +2,131 @@
 
 <plugin>
 
+    <!-- Classes Matrix -->
+
     <extension id="org.coode.MatrixTab"
             point="org.protege.editor.core.application.WorkspaceTab">
-        <label value="Class Matrix"/>
+        <label value="Class matrix"/>
         <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
         <editorKitId value="OWLEditorKit"/>
         <index value="F"/>
-        <defaultViewConfigFileName value="org.coode.MatrixTab.xml"/>
+        <defaultViewConfigFileName value="viewconfig-classmatrix.xml"/>
     </extension>
 
-    <extension id="org.coode.ExistentialMatrixView"
+    <extension id="ClassMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Class Matrix"/>
+        <label value="Class matrix"/>
         <class value="org.coode.matrix.ui.view.ClassMatrixView"/>
         <headerColor value="@org.protege.classcolor"/>
         <category value="@org.protege.classcategory"/>
         <navigates value="@org.protege.classcategory"/>
     </extension>
 
-    <extension id="org.coode.InferredExistentialMatrixView"
+    <extension id="InferredClassMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Class Matrix (Inferred Hierarchy)"/>
+        <label value="Class matrix (inferred hierarchy)"/>
         <class value="org.coode.matrix.ui.view.InferredClassMatrixView"/>
         <headerColor value="@org.protege.classcolor"/>
         <category value="@org.protege.classcategory"/>
         <navigates value="@org.protege.classcategory"/>
     </extension>
 
-    <!--extension id="org.coode.AnnotationMatrixView"
-            point="org.protege.editor.core.application.ViewComponent">
-        <label value="Class Annotations Matrix"/>
-        <class value="org.coode.matrix.ui.view.ClassAnnotationMatrixView"/>
-        <headerColor value="@org.protege.classcolor"/>
-        <category value="@org.protege.classcategory"/>
-        <navigates value="@org.protege.classcategory"/>
-    </extension-->
-
-    <extension id="org.coode.IndividualMatrixView"
-            point="org.protege.editor.core.application.ViewComponent">
-        <label value="Property Assertions Matrix"/>
-        <class value="org.coode.matrix.ui.view.PropertyAssertionsMatrixView"/>
-        <headerColor value="@org.protege.individualcolor"/>
-        <category value="@org.protege.individualcategory"/>
-        <navigates value="@org.protege.individualcategory"/>
-        <navigates value="@org.protege.classcategory"/>
-    </extension>
-
-    <extension id="org.coode.ClassMembersMatrixView"
-            point="org.protege.editor.core.application.ViewComponent">
-        <label value="Class Members Matrix"/>
-        <class value="org.coode.matrix.ui.view.MembersMatrixView"/>
-        <headerColor value="@org.protege.individualcolor"/>
-        <category value="@org.protege.individualcategory"/>
-        <navigates value="@org.protege.individualcategory"/>
-    </extension>
-
-    <extension id="ObjPropsPalette"
-            point="org.protege.editor.core.application.ViewComponent">
-        <label value="Object Properties Palette"/>
-        <class value="org.coode.matrix.ui.palette.ObjectPropertyPalette"/>
-        <headerColor value="@org.protege.objectpropertycolor"/>
-    </extension>
-
-    <extension id="DataPropsPalette"
-            point="org.protege.editor.core.application.ViewComponent">
-        <label value="Data Properties Palette"/>
-        <class value="org.coode.matrix.ui.palette.DataPropertyPalette"/>
-        <headerColor value="@org.protege.datapropertycolor"/>
-    </extension>
-
-    <extension id="org.coode.ClassPalette"
-            point="org.protege.editor.core.application.ViewComponent">
-        <label value="Classes Palette"/>
-        <class value="org.coode.matrix.ui.palette.ClassPalette"/>
-        <headerColor value="@org.protege.classcolor"/>
-    </extension>
-
-    <extension id="IndividualsPalette"
-            point="org.protege.editor.core.application.ViewComponent">
-        <label value="Individuals Palette"/>
-        <class value="org.coode.matrix.ui.palette.IndividualsPalette"/>
-        <headerColor value="@org.protege.individualcolor"/>
-    </extension>
-
-    <extension id="AnnotationURIPalette"
-            point="org.protege.editor.core.application.ViewComponent">
-        <label value="Annotation URI Palette"/>
-        <class value="org.coode.matrix.ui.palette.AnnotationURIPalette"/>
-    </extension>
 
     <!-- Properties Matrix -->
 
-    <extension id="org.coode.PropertyMatrixTab"
+    <extension id="PropertyMatrixTab"
             point="org.protege.editor.core.application.WorkspaceTab">
-        <label value="Property Matrix"/>
+        <label value="Property matrix"/>
         <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
         <editorKitId value="OWLEditorKit"/>
         <index value="G"/>
-        <defaultViewConfigFileName value="org.coode.PropertyMatrixTab.xml"/>
+        <defaultViewConfigFileName value="viewconfig-propertymatrix.xml"/>
     </extension>
 
-    <extension id="org.coode.PropertyMatrixView"
+    <extension id="ObjectPropertyMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Object Property Matrix"/>
+        <label value="Object property matrix"/>
         <class value="org.coode.matrix.ui.view.ObjectPropertyMatrixView"/>
         <headerColor value="@org.protege.objectpropertycolor"/>
         <category value="@org.protege.objectpropertycategory"/>
         <navigates value="@org.protege.objectpropertycategory"/>
     </extension>
 
-        <extension id="org.coode.DataPropertyMatrixView"
+        <extension id="DataPropertyMatrixView"
             point="org.protege.editor.core.application.ViewComponent">
-        <label value="Data Property Matrix"/>
+        <label value="Data property matrix"/>
         <class value="org.coode.matrix.ui.view.DataPropertyMatrixView"/>
         <headerColor value="@org.protege.datapropertycolor"/>
         <category value="@org.protege.datapropertycategory"/>
         <navigates value="@org.protege.datapropertycategory"/>
+    </extension>
+
+
+    <!-- Individuals Matrix -->
+
+    <extension id="IndividualsMatrixTab"
+            point="org.protege.editor.core.application.WorkspaceTab">
+        <label value="Individuals matrix"/>
+        <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
+        <editorKitId value="OWLEditorKit"/>
+        <index value="H"/>
+        <defaultViewConfigFileName value="viewconfig-individualmatrix.xml"/>
+    </extension>
+
+    <extension id="IndividualMatrixView"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Individuals matrix"/>
+        <class value="org.coode.matrix.ui.view.IndividualsMatrixView"/>
+        <headerColor value="@org.protege.individualcolor"/>
+        <category value="@org.protege.individualcategory"/>
+        <navigates value="@org.protege.individualcategory"/>
+        <navigates value="@org.protege.classcategory"/>
+    </extension>
+
+    <extension id="ClassMembersMatrixView"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Types matrix"/>
+        <class value="org.coode.matrix.ui.view.IndividualTypesMatrixView"/>
+        <headerColor value="@org.protege.individualcolor"/>
+        <category value="@org.protege.individualcategory"/>
+        <navigates value="@org.protege.individualcategory"/>
+    </extension>
+
+
+    <!-- Entity selection palettes -->
+
+    <extension id="ObjPropsPalette"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Object properties palette"/>
+        <class value="org.coode.matrix.ui.palette.ObjectPropertyPalette"/>
+        <headerColor value="@org.protege.objectpropertycolor"/>
+    </extension>
+
+    <extension id="DataPropsPalette"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Data properties palette"/>
+        <class value="org.coode.matrix.ui.palette.DataPropertyPalette"/>
+        <headerColor value="@org.protege.datapropertycolor"/>
+    </extension>
+
+    <extension id="ClassPalette"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Classes palette"/>
+        <class value="org.coode.matrix.ui.palette.ClassPalette"/>
+        <headerColor value="@org.protege.classcolor"/>
+    </extension>
+
+    <extension id="IndividualsPalette"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Individuals palette"/>
+        <class value="org.coode.matrix.ui.palette.IndividualsPalette"/>
+        <headerColor value="@org.protege.individualcolor"/>
+    </extension>
+
+    <extension id="AnnotationURIPalette"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label value="Annotation properties palette"/>
+        <class value="org.coode.matrix.ui.palette.AnnotationURIPalette"/>
     </extension>
 
 </plugin>

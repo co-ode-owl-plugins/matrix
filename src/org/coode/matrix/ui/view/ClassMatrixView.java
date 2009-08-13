@@ -2,14 +2,14 @@ package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.MatrixModel;
 import org.coode.matrix.model.impl.RestrictionTreeMatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser2;
+import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddDataPropertyAction;
 import org.coode.matrix.ui.action.AddObjectPropertyAction;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.view.Findable;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import javax.swing.table.TableCellEditor;
 import java.util.ArrayList;
@@ -75,10 +75,10 @@ public class ClassMatrixView extends AbstractTreeMatrixView<OWLClass> implements
 
             // make sure the editor only shows the appropriate type
             if (pair.getColumnObject() instanceof OWLObjectProperty){
-                setEditorType(OWLObjectListParser2.DESCRIPTION);
+                setEditorType(OWLObjectListParser.ParseType.DESCRIPTION);
             }
             else{
-                setEditorType(OWLObjectListParser2.DATARANGE);
+                setEditorType(OWLObjectListParser.ParseType.DATARANGE);
             }
 
             TableCellEditor editor = getQuickEditor(cls, pair);
@@ -87,7 +87,7 @@ public class ClassMatrixView extends AbstractTreeMatrixView<OWLClass> implements
             }
         }
         else{
-            setEditorType(OWLObjectListParser2.LITERAL);
+            setEditorType(OWLObjectListParser.ParseType.LITERAL);
         }
 
         return super.getCellEditor(cls, columnObject);
@@ -95,7 +95,7 @@ public class ClassMatrixView extends AbstractTreeMatrixView<OWLClass> implements
 
 
     public List<OWLClass> find(String match) {
-        return new ArrayList<OWLClass>(getOWLModelManager().getEntityFinder().getMatchingOWLClasses(match));
+        return new ArrayList<OWLClass>(getOWLModelManager().getOWLEntityFinder().getMatchingOWLClasses(match));
     }
 
 

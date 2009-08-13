@@ -1,10 +1,10 @@
 package org.coode.matrix.model.impl;
 
 import org.coode.matrix.model.helper.FillerHelper;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLPropertyExpression;
-import org.semanticweb.owl.model.OWLPropertyRange;
-import org.semanticweb.owl.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
+import org.semanticweb.owlapi.model.OWLPropertyRange;
+import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 
 import java.util.Set;
 /*

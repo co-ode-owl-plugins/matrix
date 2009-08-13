@@ -1,6 +1,9 @@
-package org.coode.matrix.ui.palette;
+package org.coode.matrix.ui.renderer;
 
-import org.protege.editor.owl.ui.view.annotationproperty.OWLAnnotationPropertyHierarchyViewComponent;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import java.awt.*;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -25,18 +28,30 @@ import org.protege.editor.owl.ui.view.annotationproperty.OWLAnnotationPropertyHi
 */
 
 /**
- * Author: Nick Drummond<br>
+ * Author: drummond<br>
  * http://www.cs.man.ac.uk/~drummond/<br><br>
  * <p/>
  * The University Of Manchester<br>
  * Bio Health Informatics Group<br>
- * Date: Jul 5, 2007<br><br>
+ * Date: Jul 27, 2009<br><br>
  */
-public class AnnotationURIPalette extends OWLAnnotationPropertyHierarchyViewComponent {
+public class MatrixHeaderCellRenderer extends DefaultTableCellRenderer {
 
-    protected void performExtraInitialisation() throws Exception {
-        super.performExtraInitialisation();
-        getView().setPinned(true);
-        getView().setSyncronizing(false);
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+        // use getColumnName from the model
+        col = table.convertColumnIndexToModel(col);
+        value = table.getModel().getColumnName(col);
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+        // Inherit the colors and font from the header component
+        JTableHeader header = table.getTableHeader();
+        if (header != null) {
+            setForeground(header.getForeground());
+            setBackground(header.getBackground());
+            setFont(header.getFont());
+        }
+
+        setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+        setHorizontalAlignment(JLabel.CENTER);
+        return this;
     }
 }

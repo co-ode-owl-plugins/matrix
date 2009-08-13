@@ -7,7 +7,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.OWLIcons;
 import org.protege.editor.owl.ui.UIHelper;
 import org.protege.editor.owl.ui.selector.OWLObjectPropertySelectorPanel;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,7 +73,7 @@ public class AddObjectPropertyAction extends DisposableAction {
 
 
     private JComboBox createTypeSelector() {
-        Class[] types = {OWLObjectSomeRestriction.class, OWLObjectAllRestriction.class};
+        Class[] types = {OWLObjectSomeValuesFrom.class, OWLObjectAllValuesFrom.class};
         JComboBox c = new JComboBox(types);
         c.setRenderer(new DefaultListCellRenderer(){
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
@@ -99,9 +99,9 @@ public class AddObjectPropertyAction extends DisposableAction {
         if (new UIHelper(eKit).showDialog(LABEL, pane, propSelector) == JOptionPane.OK_OPTION){
             for (OWLObjectProperty p : propSelector.getSelectedObjects()){
                 if (showRestrictionType){
-                    Class<? extends OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLDescription>> type;
-                    type = (Class<? extends OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLDescription>>) typeSelector.getSelectedItem();
-                    final RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLObjectPropertyExpression, OWLDescription> pair = new RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLObjectPropertyExpression, OWLDescription>(p, type);
+                    Class<? extends OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression>> type;
+                    type = (Class<? extends OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression>>) typeSelector.getSelectedItem();
+                    final RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLObjectPropertyExpression, OWLClassExpression> pair = new RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLObjectPropertyExpression, OWLClassExpression>(p, type);
                     table.addColumn(pair);
                 }
                 else{

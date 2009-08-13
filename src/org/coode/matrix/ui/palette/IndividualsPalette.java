@@ -1,6 +1,6 @@
 package org.coode.matrix.ui.palette;
 
-import org.protege.editor.owl.ui.view.OWLIndividualsByClassViewComponent;
+import org.protege.editor.owl.ui.view.individual.OWLIndividualsByTypeViewComponent;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -33,10 +33,10 @@ import org.protege.editor.owl.ui.view.OWLIndividualsByClassViewComponent;
  * Bio Health Informatics Group<br>
  * Date: Jul 3, 2007<br><br>
  */
-public class IndividualsPalette extends OWLIndividualsByClassViewComponent {
+public class IndividualsPalette extends OWLIndividualsByTypeViewComponent {
 
-    public void initialiseIndividualsView() throws Exception {
-        super.initialiseIndividualsView();
+    public void initialiseView() throws Exception {
+        super.initialiseView();
         getView().setPinned(true);
         getView().setSyncronizing(false);
     }

@@ -1,7 +1,7 @@
 package org.coode.matrix.model.api;
 
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 import uk.ac.manchester.cs.bhig.jtreetable.TreeTableModel;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package org.coode.matrix.model.helper;
 
-import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.util.OWLObjectVisitorAdapter;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.OWLObjectVisitorAdapter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,7 +49,7 @@ public abstract class AbstractQuantifiedRestrictionVisitorAdapter extends OWLObj
         if (!visitedObjects.contains(cls)){
             visitedObjects.add(cls); // prevent cycles
             for (OWLOntology ont : onts){
-                for (OWLAxiom subcls : ont.getSubClassAxiomsForLHS(cls)){
+                for (OWLAxiom subcls : ont.getSubClassAxiomsForSubClass(cls)){
                     subcls.accept(this);
                 }
                 for (OWLAxiom equivAxiom : ont.getEquivalentClassesAxioms(cls)){
@@ -59,15 +59,15 @@ public abstract class AbstractQuantifiedRestrictionVisitorAdapter extends OWLObj
         }
     }
 
-    public void visit(OWLObjectSomeRestriction restriction) {
+    public void visit(OWLObjectSomeValuesFrom restriction) {
         handleObjectRestriction(restriction);
     }
 
-    public void visit(OWLObjectMinCardinalityRestriction restriction) {
+    public void visit(OWLObjectMinCardinality restriction) {
         handleCardinality(restriction);
     }
 
-    public void visit(OWLObjectExactCardinalityRestriction restriction) {
+    public void visit(OWLObjectExactCardinality restriction) {
         handleCardinality(restriction);
     }
 
@@ -75,7 +75,7 @@ public abstract class AbstractQuantifiedRestrictionVisitorAdapter extends OWLObj
     public void visit(OWLObjectIntersectionOf owlObjectIntersectionOf) {
         if (!visitedObjects.contains(owlObjectIntersectionOf)){
             visitedObjects.add(owlObjectIntersectionOf);
-            for (OWLDescription desc : owlObjectIntersectionOf.getOperands()) {
+            for (OWLClassExpression desc : owlObjectIntersectionOf.getOperands()) {
                 desc.accept(this);
             }
         }
@@ -90,5 +90,5 @@ public abstract class AbstractQuantifiedRestrictionVisitorAdapter extends OWLObj
         }
     }
 
-    protected abstract void handleObjectRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLDescription> restriction);
+    protected abstract void handleObjectRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression> restriction);
 }

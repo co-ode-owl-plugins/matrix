@@ -1,7 +1,7 @@
 package org.coode.matrix.model.helper;
 
 import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.*;
 
@@ -60,27 +60,27 @@ public class PropertyHelper {
 
 
         public final OWLAxiom createAxiomOfType(OWLProperty p, OWLDataFactory df){
-            if (p instanceof OWLObjectProperty){
+            if (p.isOWLObjectProperty()){
                 switch (this) {
                     case FUNCTIONAL:
-                        return df.getOWLFunctionalObjectPropertyAxiom((OWLObjectProperty)p);
+                        return df.getOWLFunctionalObjectPropertyAxiom(p.asOWLObjectProperty());
                     case INVERSE_FUNCTIONAL:
-                        return df.getOWLInverseFunctionalObjectPropertyAxiom((OWLObjectProperty)p);
+                        return df.getOWLInverseFunctionalObjectPropertyAxiom(p.asOWLObjectProperty());
                     case SYMMETRIC:
-                        return df.getOWLSymmetricObjectPropertyAxiom((OWLObjectProperty)p);
+                        return df.getOWLSymmetricObjectPropertyAxiom(p.asOWLObjectProperty());
                     case TRANSITIVE:
-                        return df.getOWLTransitiveObjectPropertyAxiom((OWLObjectProperty)p);
+                        return df.getOWLTransitiveObjectPropertyAxiom(p.asOWLObjectProperty());
                     case ASYMMETRIC:
-                        return df.getOWLAntiSymmetricObjectPropertyAxiom((OWLObjectProperty)p);
+                        return df.getOWLAsymmetricObjectPropertyAxiom(p.asOWLObjectProperty());
                     case REFLEXIVE:
-                        return df.getOWLReflexiveObjectPropertyAxiom((OWLObjectProperty)p);
+                        return df.getOWLReflexiveObjectPropertyAxiom(p.asOWLObjectProperty());
                     case IRREFLEXIVE:
-                        return df.getOWLIrreflexiveObjectPropertyAxiom((OWLObjectProperty)p);
+                        return df.getOWLIrreflexiveObjectPropertyAxiom(p.asOWLObjectProperty());
                 }
             }
-            else if (p instanceof OWLDataProperty){
+            else if (p.isOWLDataProperty()){
                 if (this.equals(FUNCTIONAL)){
-                    return df.getOWLFunctionalDataPropertyAxiom((OWLDataProperty)p);
+                    return df.getOWLFunctionalDataPropertyAxiom(p.asOWLDataProperty());
                 }
             }
             return null;
@@ -217,13 +217,13 @@ public class PropertyHelper {
     }
 
     public List<OWLOntologyChange> setDomains(OWLProperty property,
-                                              Set<OWLDescription> domains,
+                                              Set<OWLClassExpression> domains,
                                               OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
         // create the set of axioms we want to end up with
         Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
-        for (OWLDescription domain : domains){
+        for (OWLClassExpression domain : domains){
             if (property instanceof OWLObjectProperty){
                 newAxioms.add(mngr.getOWLDataFactory().getOWLObjectPropertyDomainAxiom((OWLObjectProperty)property, domain));
             }
@@ -263,7 +263,7 @@ public class PropertyHelper {
         Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
         for (OWLPropertyRange range : ranges){
             if (property instanceof OWLObjectProperty){
-                newAxioms.add(mngr.getOWLDataFactory().getOWLObjectPropertyRangeAxiom((OWLObjectProperty)property, (OWLDescription)range));
+                newAxioms.add(mngr.getOWLDataFactory().getOWLObjectPropertyRangeAxiom((OWLObjectProperty)property, (OWLClassExpression)range));
             }
             else if (property instanceof OWLDataProperty){
                 newAxioms.add(mngr.getOWLDataFactory().getOWLDataPropertyRangeAxiom((OWLDataProperty)property, (OWLDataRange)range));
@@ -303,8 +303,8 @@ public class PropertyHelper {
         return ranges;
     }
 
-    public Set<OWLDescription> getDomains(OWLPropertyExpression p) {
-        Set<OWLDescription> domains = new HashSet<OWLDescription>();
+    public Set<OWLClassExpression> getDomains(OWLPropertyExpression p) {
+        Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
         for (OWLOntology ont : mngr.getActiveOntologies()){
             domains.addAll(p.getDomains(ont));
         }

@@ -4,11 +4,8 @@ import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.helper.IndividualsHelper;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.*;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -71,6 +68,16 @@ public class ClassMembershipTreeMatrixModel extends AbstractMatrixModel<OWLClass
     }
 
 
+    public List<OWLOntologyChange> addMatrixValue(OWLClass cls, Object col, Object value) {
+        if (col instanceof String){
+            return helper.addMembers(cls, (Set<OWLIndividual>) value, mngr.getActiveOntology());
+        }
+        else{
+            return super.addMatrixValue(cls, col, value);
+        }
+    }
+
+
     public List<OWLOntologyChange> setMatrixValue(OWLClass cls, Object col, Object value) {
         if (col instanceof String){
             return helper.setMembers(cls, (Set<OWLIndividual>) value, mngr.getActiveOntology());
@@ -82,12 +89,12 @@ public class ClassMembershipTreeMatrixModel extends AbstractMatrixModel<OWLClass
 
 
     public boolean isSuitableCellValue(Object value, int row, int col) {
-        return value instanceof OWLIndividual; // can only drop individuals
+        return value instanceof OWLNamedIndividual; // can only drop individuals
     }
 
 
     public Object getSuitableColumnObject(Object columnObject) {
-        if (columnObject instanceof URI){
+        if (columnObject instanceof OWLAnnotationProperty){
             return columnObject;
         }
         return null;

@@ -2,7 +2,7 @@ package org.coode.matrix.ui.view;
 
 import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.api.MatrixModel;
-import org.coode.matrix.model.parser.OWLObjectListParser2;
+import org.coode.matrix.model.parser.OWLObjectListParser;
 import org.coode.matrix.ui.action.AddAnnotationAction;
 import org.coode.matrix.ui.action.FitColumnsToContentAction;
 import org.coode.matrix.ui.action.FitColumnsToWindowAction;
@@ -18,8 +18,8 @@ import org.protege.editor.owl.ui.tree.OWLModelManagerTree;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
 import org.protege.editor.owl.ui.view.AbstractOWLSelectionViewComponent;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
 import uk.ac.manchester.cs.bhig.jtreetable.CellEditorFactory;
 
 import javax.swing.*;
@@ -72,7 +72,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLObject> extends Abstra
     private TableCellRenderer simpleStringListRenderer;
     private SimpleStringListEditor simpleStringListEditor;
 
-    private OWLObjectListParser2 parser;
+    private OWLObjectListParser parser;
 
     private TreeSelectionListener selectionlistener = new TreeSelectionListener() {
         public void valueChanged(TreeSelectionEvent e) {
@@ -202,11 +202,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLObject> extends Abstra
     }
 
 
-    /**
-     *
-     * @param type - one of "CLASS, OBJPROP, DATAPROP, INDIVIDUAL, DATATYPE" constants from OWLObjectListParser
-     */
-    protected final void setEditorType(int type) {
+    protected final void setEditorType(OWLObjectListParser.ParseType type) {
         parser.setTypes(Collections.singleton(type));
     }
 
@@ -233,7 +229,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLObject> extends Abstra
     private void createDefaultCellRendererAndEditor() {
         OWLObjectsRenderer objRen = new OWLObjectsRenderer(getOWLModelManager());
 
-        parser = new OWLObjectListParser2(getOWLModelManager());
+        parser = new OWLObjectListParser(getOWLModelManager());
 
         objectListEditor = new OWLObjectListEditor(getOWLEditorKit(), objRen, parser);
         simpleStringListEditor = new SimpleStringListEditor(getOWLModelManager());
@@ -250,7 +246,7 @@ public abstract class AbstractTreeMatrixView<R extends OWLObject> extends Abstra
             if (path != null) {
                 R owlObject = ((OWLObjectTreeNode<R>) path.getLastPathComponent()).getOWLObject();
                 if (owlObject instanceof OWLEntity){
-                    setSelectedEntity((OWLEntity)owlObject);
+                    setGlobalSelection((OWLEntity)owlObject);
                 }
             }
             else {

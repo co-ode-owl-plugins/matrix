@@ -1,6 +1,6 @@
 package org.coode.matrix.ui.palette;
 
-import org.protege.editor.owl.ui.view.OWLDataPropertyHierarchyViewComponent;
+import org.protege.editor.owl.ui.view.dataproperty.OWLDataPropertyHierarchyViewComponent;
 /*
 * Copyright (C) 2007, University of Manchester
 *
@@ -34,8 +34,8 @@ import org.protege.editor.owl.ui.view.OWLDataPropertyHierarchyViewComponent;
  */
 public class DataPropertyPalette extends OWLDataPropertyHierarchyViewComponent {
 
-    public void initialiseView() throws Exception {
-        super.initialiseView();
+    protected void performExtraInitialisation() throws Exception {
+        super.performExtraInitialisation();
         getView().setPinned(true);
         getView().setSyncronizing(false);
     }

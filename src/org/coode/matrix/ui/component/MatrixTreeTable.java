@@ -4,6 +4,7 @@
 package org.coode.matrix.ui.component;
 
 import org.coode.matrix.model.api.MatrixModel;
+import org.coode.matrix.ui.renderer.MatrixHeaderCellRenderer;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
@@ -13,13 +14,15 @@ import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.protege.editor.owl.ui.table.OWLObjectDropTargetListener;
 import org.protege.editor.owl.ui.transfer.OWLObjectDropTarget;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
 import uk.ac.manchester.cs.bhig.jtreetable.JTreeTable;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
@@ -46,27 +49,7 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
 
     private Cursor defaultCursor;
 
-    private TableCellRenderer headerRenderer = new DefaultTableCellRenderer(){
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
-            // use getColumnName from the model
-            col = getTable().convertColumnIndexToModel(col);
-            value = getModel().getColumnName(col);
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-            // Inherit the colors and font from the header component
-            if (table != null) {
-                JTableHeader header = table.getTableHeader();
-                if (header != null) {
-                    setForeground(header.getForeground());
-                    setBackground(header.getBackground());
-                    setFont(header.getFont());
-                }
-            }
-
-            setBorder(UIManager.getBorder("TableHeader.cellBorder"));
-            setHorizontalAlignment(JLabel.CENTER);
-            return this;
-        }
-    };
+    private TableCellRenderer headerRenderer;
 
     private OWLModelManagerListener l = new OWLModelManagerListener(){
 
@@ -85,6 +68,8 @@ public class MatrixTreeTable<R extends OWLObject> extends JTreeTable<R>
         this.model = model;
 
         this.mngr = mngr;
+
+        headerRenderer = new MatrixHeaderCellRenderer();
 
         defaultCursor = getCursor();
 

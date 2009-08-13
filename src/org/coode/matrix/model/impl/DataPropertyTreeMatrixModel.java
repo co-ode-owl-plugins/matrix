@@ -4,7 +4,7 @@ import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.helper.PropertyHelper;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.net.URI;
 import java.util.Collections;
@@ -92,7 +92,7 @@ public class DataPropertyTreeMatrixModel extends AbstractMatrixModel<OWLDataProp
         }
         else if (colObj instanceof PropertyHelper.OWLPropertyFeature){
             switch((PropertyHelper.OWLPropertyFeature)colObj){
-                case DOMAIN: return helper.setDomains(prop, (Set<OWLDescription>)value, mngr.getActiveOntology());
+                case DOMAIN: return helper.setDomains(prop, (Set<OWLClassExpression>)value, mngr.getActiveOntology());
                 case RANGE: return helper.setRanges(prop, (Set<OWLPropertyRange>)value, mngr.getActiveOntology());
             }
             return Collections.emptyList();
@@ -105,8 +105,8 @@ public class DataPropertyTreeMatrixModel extends AbstractMatrixModel<OWLDataProp
         if (colObj instanceof PropertyHelper.OWLPropertyFeature){
             switch((PropertyHelper.OWLPropertyFeature)colObj){
                 case DOMAIN:
-                    Set<OWLDescription> domains = helper.getDomains(prop);
-                    domains.add((OWLDescription)value);
+                    Set<OWLClassExpression> domains = helper.getDomains(prop);
+                    domains.add((OWLClassExpression)value);
                     return helper.setDomains(prop, domains, mngr.getActiveOntology());
 
                 case RANGE:

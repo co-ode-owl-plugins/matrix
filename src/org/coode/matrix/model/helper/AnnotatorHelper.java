@@ -1,10 +1,8 @@
 package org.coode.matrix.model.helper;
 
 import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owl.model.*;
-import org.semanticweb.owl.util.OWLObjectVisitorAdapter;
+import org.semanticweb.owlapi.model.*;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,16 +43,13 @@ public class AnnotatorHelper {
 
     private OWLModelManager mngr;
 
-    private AnnotationAxiomCreator annotationAxiomCreator;
-
 
     public AnnotatorHelper(OWLModelManager mngr) {
         this.mngr = mngr;
-        this.annotationAxiomCreator = new AnnotationAxiomCreator();
     }
 
 
-    public Set<OWLAnnotation> getAnnotations(OWLEntity entity, URI prop) {
+    public Set<OWLAnnotation> getAnnotations(OWLEntity entity, OWLAnnotationProperty prop) {
         Set<OWLAnnotation> annots = new HashSet<OWLAnnotation>();
         for (OWLOntology ont : mngr.getActiveOntologies()) {
             annots.addAll(entity.getAnnotations(ont, prop));
@@ -63,31 +58,32 @@ public class AnnotatorHelper {
     }
 
 
-    public Set<OWLObject> getAnnotationValues(OWLEntity entity, URI uri) {
+    public Set<OWLObject> getAnnotationValues(OWLEntity entity, OWLAnnotationProperty prop) {
         Set<OWLObject> values = new HashSet<OWLObject>();
-        for (OWLAnnotation annot : getAnnotations(entity, uri)){
-            values.add(annot.getAnnotationValue());
+        for (OWLAnnotation annot : getAnnotations(entity, prop)){
+            values.add(annot.getValue());
         }
         return values;
     }
 
 
-    public List<OWLOntologyChange> setAnnotationValues(OWLEntity entity, URI uri,
-                                                       Set<OWLObject> values,
+    public List<OWLOntologyChange> setAnnotationValues(OWLEntity entity,
+                                                       OWLAnnotationProperty property,
+                                                       Set<OWLAnnotationValue> values,
                                                        OWLOntology activeOnt) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
         // create the set of axioms we want to end up with
         Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
-        for (OWLObject value : values){
-            newAxioms.add(annotationAxiomCreator.getAxiom(entity, uri, value));
+        for (OWLAnnotationValue value : values){
+            newAxioms.add(createAnnotationAxiom(entity, property, value));
         }
 
         // remove any axioms on this property that don't match the new ones
         // and filter existing ones out of the new axioms set
         for (OWLOntology ont : mngr.getActiveOntologies()){
-            for (OWLEntityAnnotationAxiom ax : ont.getEntityAnnotationAxioms(entity)){
-                if (ax.getAnnotation().getAnnotationURI().equals(uri)){
+            for (OWLAnnotationAssertionAxiom ax : ont.getAnnotationAssertionAxioms(entity.getIRI())){
+                if (ax.getAnnotation().getProperty().equals(property)){
                     if (newAxioms.contains(ax)){
                         newAxioms.remove(ax); // don't need to create a new one
                     }
@@ -106,25 +102,27 @@ public class AnnotatorHelper {
         return changes;
     }
 
-    public List<OWLOntologyChange> setAnnotationValues(OWLEntity entity, URI uri,
-                                                       Set<OWLObject> values,
+
+    public List<OWLOntologyChange> setAnnotationValues(OWLEntity entity,
+                                                       OWLAnnotationProperty property,
+                                                       Set<OWLAnnotationValue> values,
                                                        OWLOntology activeOnt,
                                                        String lang) {
         List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
 
         // create the set of axioms we want to end up with
         Set<OWLAxiom> newAxioms = new HashSet<OWLAxiom>();
-        for (OWLObject value : values){
-            newAxioms.add(annotationAxiomCreator.getAxiom(entity, uri, value));
+        for (OWLAnnotationValue value : values){
+            newAxioms.add(createAnnotationAxiom(entity, property, value));
         }
 
         // remove any axioms on this property that don't match the new ones
         // and filter existing ones out of the new axioms set
         for (OWLOntology ont : mngr.getActiveOntologies()){
-            for (OWLEntityAnnotationAxiom ax : ont.getEntityAnnotationAxioms(entity)){
-                if (ax.getAnnotation().getAnnotationURI().equals(uri)){
-                    if (ax.getAnnotation().getAnnotationValue() instanceof OWLUntypedConstant){
-                        OWLUntypedConstant constant = (OWLUntypedConstant)ax.getAnnotation().getAnnotationValue();
+            for (OWLAnnotationAssertionAxiom ax : ont.getAnnotationAssertionAxioms(entity.getIRI())){
+                if (ax.getAnnotation().getProperty().equals(property)){
+                    if (ax.getAnnotation().getValue() instanceof OWLStringLiteral){
+                        OWLStringLiteral constant = (OWLStringLiteral)ax.getAnnotation().getValue();
                         if (lang.equals(constant.getLang()) ||
                             (lang.equals("!") && constant.getLang() == null)){
                             if (newAxioms.contains(ax)){
@@ -147,15 +145,15 @@ public class AnnotatorHelper {
         return changes;
     }
 
-    public Set<OWLObject> getAnnotationValues(OWLEntity entity, URI uri, String lang) {
+    public Set<OWLObject> getAnnotationValues(OWLEntity entity, OWLAnnotationProperty property, String lang) {
         Set<OWLObject> values = new HashSet<OWLObject>();
-        for (OWLAnnotation annot : getAnnotations(entity, uri)){
-            final OWLObject value = annot.getAnnotationValue();
-            if (value instanceof OWLUntypedConstant){
-                if (lang.equals(((OWLUntypedConstant)value).getLang())){
+        for (OWLAnnotation annot : getAnnotations(entity, property)){
+            final OWLAnnotationValue value = annot.getValue();
+            if (value instanceof OWLStringLiteral){
+                if (lang.equals(((OWLStringLiteral)value).getLang())){
                     values.add(value);
                 }
-                else if (lang.equals("!") && ((OWLUntypedConstant)value).getLang() == null){
+                else if (lang.equals("!") && ((OWLStringLiteral)value).getLang() == null){
                     values.add(value);
                 }
             }
@@ -164,26 +162,10 @@ public class AnnotatorHelper {
     }
 
 
-    class AnnotationAxiomCreator extends OWLObjectVisitorAdapter{
-        private OWLEntity entity;
-        private URI annotURI;
-        private OWLAxiom axiom;
-
-        public OWLAxiom getAxiom(OWLEntity entity, URI annotURI, OWLObject value){
-            this.entity = entity;
-            this.annotURI = annotURI;
-            value.accept(this);
-            return axiom;
-        }
-
-        public void visit(OWLTypedConstant owlTypedConstant) {
-            OWLAnnotation annot = mngr.getOWLDataFactory().getOWLConstantAnnotation(annotURI, owlTypedConstant);
-            axiom = mngr.getOWLDataFactory().getOWLEntityAnnotationAxiom(entity, annot);
-        }
-
-        public void visit(OWLUntypedConstant owlUntypedConstant) {
-            OWLAnnotation annot = mngr.getOWLDataFactory().getOWLConstantAnnotation(annotURI, owlUntypedConstant);
-            axiom = mngr.getOWLDataFactory().getOWLEntityAnnotationAxiom(entity, annot);
-        }
+    private OWLAnnotationAssertionAxiom createAnnotationAxiom(OWLEntity entity,
+                                                              OWLAnnotationProperty prop,
+                                                              OWLAnnotationValue value) {
+        OWLAnnotation annot = mngr.getOWLDataFactory().getOWLAnnotation(prop, value);
+        return mngr.getOWLDataFactory().getOWLAnnotationAssertionAxiom(entity.getIRI(), annot);
     }
 }

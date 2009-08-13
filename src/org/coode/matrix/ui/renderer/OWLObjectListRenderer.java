@@ -2,7 +2,7 @@ package org.coode.matrix.ui.renderer;
 
 import org.coode.matrix.model.impl.FillerModel;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObject;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

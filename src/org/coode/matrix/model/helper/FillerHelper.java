@@ -2,7 +2,7 @@ package org.coode.matrix.model.helper;
 
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,8 +60,8 @@ public class FillerHelper {
         Set<R> namedFillers = new HashSet<R>();
 
         for (OWLOntology ont : mngr.getActiveOntologies()){
-            for (OWLSubClassAxiom ax : ont.getSubClassAxiomsForLHS(cls)){
-                final OWLDescription superCls = ax.getSuperClass();
+            for (OWLSubClassOfAxiom ax : ont.getSubClassAxiomsForSubClass(cls)){
+                final OWLClassExpression superCls = ax.getSuperClass();
                 if (type.isAssignableFrom(superCls.getClass())){
                     OWLQuantifiedRestriction<P, R> restr = type.cast(superCls);
                     if (restr.getProperty().equals(prop)){
@@ -92,9 +92,9 @@ public class FillerHelper {
     public <P extends OWLPropertyExpression, R extends OWLPropertyRange> Set<R> getAssertedNamedFillersFromEquivs(OWLClass cls, P prop, Class<? extends OWLQuantifiedRestriction<P, R>> type) {
         Set<R> namedFillers = new HashSet<R>();
 
-        for (OWLDescription equiv : cls.getEquivalentClasses(mngr.getActiveOntologies())){
+        for (OWLClassExpression equiv : cls.getEquivalentClasses(mngr.getActiveOntologies())){
             if (equiv instanceof OWLObjectIntersectionOf){
-                for (OWLDescription descr : ((OWLObjectIntersectionOf)equiv).getOperands()){
+                for (OWLClassExpression descr : ((OWLObjectIntersectionOf)equiv).getOperands()){
                     if (type.isAssignableFrom(descr.getClass())){
                         OWLQuantifiedRestriction<P, R> restr = type.cast(descr);
                         if (restr.getProperty().equals(prop)){
@@ -129,19 +129,19 @@ public class FillerHelper {
         Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
         for (R filler : fillers){
             OWLRestriction restr = createRestriction(p, filler, type);
-            OWLSubClassAxiom subclassAxiom = mngr.getOWLDataFactory().getOWLSubClassAxiom(cls, restr);
+            OWLSubClassOfAxiom subclassAxiom = mngr.getOWLDataFactory().getOWLSubClassOfAxiom(cls, restr);
             axioms.add(subclassAxiom);
         }
 
         // go through the ontologies looking for restrictions if the given type that are not in the new axioms set that we can delete
         for (OWLOntology ont : mngr.getActiveOntologies()){
             for (OWLAxiom ax : ont.getReferencingAxioms(cls)){
-                if (ax instanceof OWLSubClassAxiom && ((OWLSubClassAxiom)ax).getSubClass().equals(cls)){
+                if (ax instanceof OWLSubClassOfAxiom && ((OWLSubClassOfAxiom)ax).getSubClass().equals(cls)){
                     if (axioms.contains(ax)){
                         axioms.remove(ax); // we're satisfied this axiom is already in the ontologies, no need to create or check against it
                     }
                     else{
-                        OWLDescription supercls = ((OWLSubClassAxiom)ax).getSuperClass();
+                        OWLClassExpression supercls = ((OWLSubClassOfAxiom)ax).getSuperClass();
                         if (type.isAssignableFrom(supercls.getClass())){
                             if (((OWLRestriction)supercls).getProperty().equals(p)){
                                 // we already know the filler does not match otherwise it would be in the "axioms" set
@@ -171,7 +171,7 @@ public class FillerHelper {
 
         for (R filler : fillers){
             OWLRestriction restr = createRestriction(p, filler, type);
-            OWLSubClassAxiom subclassAxiom = mngr.getOWLDataFactory().getOWLSubClassAxiom(cls, restr);
+            OWLSubClassOfAxiom subclassAxiom = mngr.getOWLDataFactory().getOWLSubClassOfAxiom(cls, restr);
             changes.add(new AddAxiom(activeOnt, subclassAxiom));
         }
 
@@ -180,17 +180,17 @@ public class FillerHelper {
 
 
     private <P extends OWLPropertyExpression, R extends OWLPropertyRange> OWLRestriction createRestriction(P p, R filler, Class<? extends OWLQuantifiedRestriction<P, R>> restrType) {
-        if (OWLObjectSomeRestriction.class.isAssignableFrom(restrType)){
-            return mngr.getOWLDataFactory().getOWLObjectSomeRestriction((OWLObjectPropertyExpression)p, (OWLDescription)filler);
+        if (OWLObjectSomeValuesFrom.class.isAssignableFrom(restrType)){
+            return mngr.getOWLDataFactory().getOWLObjectSomeValuesFrom((OWLObjectPropertyExpression)p, (OWLClassExpression)filler);
         }
-        else if (OWLObjectAllRestriction.class.isAssignableFrom(restrType)){
-            return mngr.getOWLDataFactory().getOWLObjectAllRestriction((OWLObjectPropertyExpression)p, (OWLDescription)filler);
+        else if (OWLObjectAllValuesFrom.class.isAssignableFrom(restrType)){
+            return mngr.getOWLDataFactory().getOWLObjectAllValuesFrom((OWLObjectPropertyExpression)p, (OWLClassExpression)filler);
         }
-        else if (OWLDataSomeRestriction.class.isAssignableFrom(restrType)){
-            return mngr.getOWLDataFactory().getOWLDataSomeRestriction((OWLDataPropertyExpression)p, (OWLDataRange)filler);
+        else if (OWLDataSomeValuesFrom.class.isAssignableFrom(restrType)){
+            return mngr.getOWLDataFactory().getOWLDataSomeValuesFrom((OWLDataPropertyExpression)p, (OWLDataRange)filler);
         }
-        else if (OWLDataAllRestriction.class.isAssignableFrom(restrType)){
-            return mngr.getOWLDataFactory().getOWLDataAllRestriction((OWLDataPropertyExpression)p, (OWLDataRange)filler);
+        else if (OWLDataAllValuesFrom.class.isAssignableFrom(restrType)){
+            return mngr.getOWLDataFactory().getOWLDataAllValuesFrom((OWLDataPropertyExpression)p, (OWLDataRange)filler);
         }
         return null;
     }
@@ -216,7 +216,7 @@ public class FillerHelper {
 //
 //        Set<OWLClass> possibleFillers = new HashSet<OWLClass>();
 //
-//        for (OWLDescription range : objPropHelper.getRanges(p)) {
+//        for (OWLClassExpression range : objPropHelper.getRanges(p)) {
 //            if (!range.isAnonymous()) {
 //                possibleFillers.add(range.asOWLClass());
 //                possibleFillers.addAll(hp.getDescendants(range.asOWLClass()));
@@ -235,8 +235,8 @@ public class FillerHelper {
 
 //    // if there is at least one named range, then return true
 //    public boolean fillersRestricted(OWLObjectProperty p) {
-//        final Set<OWLDescription> ranges = objPropHelper.getRanges(p);
-//        for (OWLDescription range : ranges){
+//        final Set<OWLClassExpression> ranges = objPropHelper.getRanges(p);
+//        for (OWLClassExpression range : ranges){
 //            if (!range.isAnonymous()){
 //                return true;
 //            }
@@ -246,7 +246,7 @@ public class FillerHelper {
 
 //    class NamedFillerExtractor extends AbstractQuantifiedRestrictionVisitorAdapter {
 //
-//        private Set<OWLDescription> fillers = new HashSet<OWLDescription>();
+//        private Set<OWLClassExpression> fillers = new HashSet<OWLClassExpression>();
 //        private OWLProperty p;
 //
 //        public NamedFillerExtractor(OWLProperty p, Set<OWLOntology> onts) {
@@ -254,14 +254,14 @@ public class FillerHelper {
 //            this.p = p;
 //        }
 //
-//        protected void handleObjectRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLDescription> restriction) {
+//        protected void handleObjectRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression> restriction) {
 //            if (restriction.getProperty().equals(p) &&
 //                restriction.getFiller() instanceof OWLClass){
 //                fillers.add(restriction.getFiller());
 //            }
 //        }
 //
-//        public Set<OWLDescription> getFillers(){
+//        public Set<OWLClassExpression> getFillers(){
 //            return fillers;
 //        }
 //    }

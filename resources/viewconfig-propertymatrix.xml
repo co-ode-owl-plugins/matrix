@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+    <VSNode splits="0.8 0.2">
+        <CNode>
+            <Component label="Object property matrix">
+                <Property id="pluginId" value="org.coode.matrix.ObjectPropertyMatrixView"/>
+            </Component>
+            <Component label="Data property matrix">
+                <Property id="pluginId" value="org.coode.matrix.DataPropertyMatrixView"/>
+            </Component>
+        </CNode>
+        <HSNode splits="0.25 0.25">
+            <CNode>
+                <Component label="Object properties">
+                    <Property id="pluginId" value="org.coode.matrix.ObjPropsPalette"/>
+                </Component>
+            </CNode>
+            <CNode>
+                <Component label="Classes palette">
+                    <Property id="pluginId" value="org.coode.matrix.ClassPalette"/>
+                </Component>
+            </CNode>
+        </HSNode>
+    </VSNode>
+</layout>

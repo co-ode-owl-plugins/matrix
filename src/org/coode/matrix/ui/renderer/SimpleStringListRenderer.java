@@ -1,6 +1,6 @@
 package org.coode.matrix.ui.renderer;
 
-import org.semanticweb.owl.model.OWLUntypedConstant;
+import org.semanticweb.owlapi.model.OWLStringLiteral;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -41,13 +41,13 @@ public class SimpleStringListRenderer extends DefaultTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable jTable, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
         if (value instanceof Set){
-            Set<OWLUntypedConstant> constants = (Set <OWLUntypedConstant>)value;
+            Set<OWLStringLiteral> constants = (Set <OWLStringLiteral>)value;
             if (constants.size() == 1){
                 value = constants.iterator().next().getLiteral();
             }
             else{
                 StringBuilder str = new StringBuilder();
-                for (OWLUntypedConstant constant : (Set<OWLUntypedConstant>)value){
+                for (OWLStringLiteral constant : constants){
                     if (str.length() > 0){
                         str.append(", ");
                     }
