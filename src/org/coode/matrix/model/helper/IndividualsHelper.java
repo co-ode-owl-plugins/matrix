@@ -194,10 +194,10 @@ public class IndividualsHelper {
         final OWLClass thing = mngr.getOWLDataFactory().getOWLThing();
         if (cls.equals(thing)){
             for (OWLOntology ont : onts){
-                for (OWLIndividual ind : ont.getReferencedIndividuals()){
+                for (OWLIndividual ind : ont.getIndividualsInSignature()){
                     if (!ind.isAnonymous() &&
                         (ind.getTypes(ont).isEmpty() || ind.getTypes(ont).contains(thing))){
-                        instances.add(ind.asNamedIndividual());
+                        instances.add(ind.asOWLNamedIndividual());
                     }
                 }
             }
@@ -206,7 +206,7 @@ public class IndividualsHelper {
             for (OWLOntology ont : onts){
                 for (OWLClassAssertionAxiom ax : ont.getClassAssertionAxioms(cls)){
                     if (!ax.getIndividual().isAnonymous()){
-                        instances.add(ax.getIndividual().asNamedIndividual());
+                        instances.add(ax.getIndividual().asOWLNamedIndividual());
                     }
                 }
             }

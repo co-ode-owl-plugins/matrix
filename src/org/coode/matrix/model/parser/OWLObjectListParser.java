@@ -96,7 +96,7 @@ public class OWLObjectListParser {
                         }
                         break;
                     case CLASS:
-                        results.addAll(createParser(expression).parseClassExpressionList());
+                        results.addAll(createParser(expression).parseClassExpressionList(true));
                         break;
                     case OBJPROP:
                         results.addAll(createParser(expression).parseObjectPropertyList());
@@ -108,7 +108,7 @@ public class OWLObjectListParser {
                         results.addAll(createParser(expression).parseIndividualList());
                         break;
                     case DESCRIPTION:
-                        results.addAll(createParser(expression).parseClassExpressionList());
+                        results.addAll(createParser(expression).parseClassExpressionList(true));
                         break;
                     case DATARANGE:
                         results.addAll(createParser(expression).parseDataRangeList());

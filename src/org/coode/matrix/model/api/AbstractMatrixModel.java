@@ -195,7 +195,7 @@ public abstract class AbstractMatrixModel<R extends OWLObject> extends AbstractT
 
     private boolean isEntityReferenced(OWLEntity entity) {
         for (OWLOntology ont : mngr.getActiveOntologies()){
-            if (ont.containsEntityReference(entity)){
+            if (ont.containsEntityInSignature(entity)){
                 return true;
             }
         }
