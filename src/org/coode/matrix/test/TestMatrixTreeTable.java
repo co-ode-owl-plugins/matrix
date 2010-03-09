@@ -10,13 +10,13 @@ import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.OWLModelManagerImpl;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 
 import javax.swing.*;
 import java.net.URI;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -60,7 +60,7 @@ public class TestMatrixTreeTable {
         OWLEditorKit eKit = new OWLEditorKit(eKitFac);
         OWLModelManager mngr = new OWLModelManagerImpl();
         try {
-            mngr.getOWLOntologyManager().loadOntologyFromPhysicalURI(new URI("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl"));
+            mngr.getOWLOntologyManager().loadOntologyFromOntologyDocument(IRI.create(new URI("http://www.co-ode.org/ontologies/pizza/2005/10/18/pizza.owl")));
             OWLObjectHierarchyProvider<OWLClass> provider = mngr.getOWLHierarchyManager().getOWLClassHierarchyProvider();
 
             OWLObjectTree<OWLClass> tree = new OWLObjectTree<OWLClass>(eKit, provider);
