@@ -104,29 +104,6 @@ public class ClassMatrixView extends AbstractTreeMatrixView<OWLClass> implements
     }
 
     private TableCellEditor getQuickEditor(OWLClass cls, RestrictionTreeMatrixModel.PropertyRestrictionPair pair) {
-//            OWLPropertyExpression p = pair.getColumnObject();
-//            if (new PropertyHelper(getOWLModelManager()).isFunctional(p)) {
-//                if (getTreeTable().getModel().isValueRestricted(cls, p)) {
-//                    Set fillers = getTreeTable().getModel().getSuggestedFillers(cls, p, threshold);
-//                    if (!fillers.isEmpty()) {
-//                        List values = new ArrayList(fillers);
-//                        values.add(0, RestrictionTreeMatrixModel.NONE);
-//                        JComboBox dropDown = new JComboBox(values.toArray());
-//                        Object value = getTreeTable().getModel().getMatrixValue(cls, p);
-//                        if (value instanceof FillerModel){
-//                            value = ((FillerModel)value).getAssertedFillersFromSupers();
-//                        }
-//                        if (((Set<OWLObject>)value).size() == 1){
-//                            value = ((Set<OWLObject>)value).iterator().next();
-//                            if (values.contains(value)){
-//                                dropDown.setSelectedItem(value);
-//                            }
-//                        }
-//                        dropDown.setRenderer(new OWLCellRenderer(getOWLEditorKit()));
-//                        return new DefaultCellEditor(dropDown);
-//                    }
-//                }
-//            }
         return null;
     }
 

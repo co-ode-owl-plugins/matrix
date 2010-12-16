@@ -90,5 +90,5 @@ public abstract class AbstractQuantifiedRestrictionVisitorAdapter extends OWLObj
         }
     }
 
-    protected abstract void handleObjectRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression> restriction);
+    protected abstract void handleObjectRestriction(OWLQuantifiedRestriction<OWLClassExpression, OWLObjectPropertyExpression, OWLClassExpression> restriction);
 }

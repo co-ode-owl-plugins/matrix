@@ -108,6 +108,6 @@ public abstract class AbstractExistentialVisitorAdapter extends OWLObjectVisitor
         }
     }
 
-    protected abstract void handleRestriction(OWLQuantifiedRestriction<OWLObjectPropertyExpression,
+    protected abstract void handleRestriction(OWLQuantifiedRestriction<OWLClassExpression, OWLObjectPropertyExpression,
             OWLClassExpression> restriction);
 }

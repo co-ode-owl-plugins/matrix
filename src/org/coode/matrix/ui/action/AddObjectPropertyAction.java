@@ -99,9 +99,9 @@ public class AddObjectPropertyAction extends DisposableAction {
         if (new UIHelper(eKit).showDialog(LABEL, pane, propSelector) == JOptionPane.OK_OPTION){
             for (OWLObjectProperty p : propSelector.getSelectedObjects()){
                 if (showRestrictionType){
-                    Class<? extends OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression>> type;
-                    type = (Class<? extends OWLQuantifiedRestriction<OWLObjectPropertyExpression, OWLClassExpression>>) typeSelector.getSelectedItem();
-                    final RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLObjectPropertyExpression, OWLClassExpression> pair = new RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLObjectPropertyExpression, OWLClassExpression>(p, type);
+                    Class<? extends OWLQuantifiedRestriction<OWLClassExpression, OWLObjectPropertyExpression, OWLClassExpression>> type;
+                    type = (Class<? extends OWLQuantifiedRestriction<OWLClassExpression, OWLObjectPropertyExpression, OWLClassExpression>>) typeSelector.getSelectedItem();
+                    final RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLClassExpression, OWLObjectPropertyExpression> pair = new RestrictionTreeMatrixModel.PropertyRestrictionPair<OWLClassExpression, OWLObjectPropertyExpression>(p, type);
                     table.addColumn(pair);
                 }
                 else{

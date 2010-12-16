@@ -38,16 +38,16 @@ import java.util.Set;
  * Bio Health Informatics Group<br>
  * Date: Nov 1, 2007<br><br>
  */
-public class FillerModel<P extends OWLPropertyExpression, R extends OWLPropertyRange> {
+public class FillerModel<R extends OWLPropertyRange, P extends OWLPropertyExpression<R,P>> {
 
     private OWLClass cls;
     private P p;
     private FillerHelper helper;
 
-    private Class<? extends OWLQuantifiedRestriction<P, R>> restrictionType;
+    private Class<? extends OWLQuantifiedRestriction<R, P, R>> restrictionType;
 
 
-    public FillerModel(OWLClass cls, RestrictionTreeMatrixModel.PropertyRestrictionPair<P, R> pair, FillerHelper helper) {
+    public FillerModel(OWLClass cls, RestrictionTreeMatrixModel.PropertyRestrictionPair<R, P> pair, FillerHelper helper) {
         this.cls = cls;
         this.p = pair.getColumnObject();
         this.helper = helper;

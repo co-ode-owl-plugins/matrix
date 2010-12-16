@@ -1,5 +1,13 @@
 package org.coode.matrix.model.impl;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.coode.matrix.model.api.AbstractColumnFilterPair;
 import org.coode.matrix.model.api.AbstractMatrixModel;
 import org.coode.matrix.model.helper.FillerHelper;
@@ -7,32 +15,22 @@ import org.coode.matrix.model.helper.PropertyHelper;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.hierarchy.OWLObjectHierarchyProvider;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
-import org.semanticweb.owlapi.model.*;
-
-import java.net.URI;
-import java.util.*;
-/*
-* Copyright (C) 2007, University of Manchester
-*
-* Modifications to the initial code base are copyright of their
-* respective authors, or their employers as appropriate.  Authorship
-* of the modifications may be determined from the ChangeLog placed at
-* the end of this file.
-*
-* This library is free software; you can redistribute it and/or
-* modify it under the terms of the GNU Lesser General Public
-* License as published by the Free Software Foundation; either
-* version 2.1 of the License, or (at your option) any later version.
-
-* This library is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-* Lesser General Public License for more details.
-
-* You should have received a copy of the GNU Lesser General Public
-* License along with this library; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
+import org.semanticweb.owlapi.model.OWLPropertyRange;
+import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 
 /**
  * Author: Nick Drummond<br>
@@ -71,10 +69,10 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
         }
     }
 
-    private <P extends OWLPropertyExpression, R extends OWLPropertyRange> FillerModel<P, R> createFillerModel(OWLClass cls,
-                                                                                                                    PropertyRestrictionPair<P, R> pair,
+    private <R extends OWLPropertyRange, P extends OWLPropertyExpression<R,P>> FillerModel<R, P> createFillerModel(OWLClass cls,
+                                                                                                                   PropertyRestrictionPair<R, P> pair,
                                                                                                                     FillerHelper helper){
-        return new FillerModel<P, R>(cls, pair, helper);
+        return new FillerModel<R, P>(cls, pair, helper);
     }
 
 
@@ -82,15 +80,15 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
         List<OWLOntologyChange> changes = new ArrayList <OWLOntologyChange>();
 
         if (col instanceof PropertyRestrictionPair){
-            final PropertyRestrictionPair<OWLPropertyExpression, OWLPropertyRange> pair = (PropertyRestrictionPair)col;
-            OWLPropertyExpression prop = pair.getColumnObject();
+            final PropertyRestrictionPair pair = (PropertyRestrictionPair)col;
+            OWLPropertyExpression prop = (OWLPropertyExpression) pair.getColumnObject();
 
             Set<OWLPropertyRange> fillers = getFillerSet(value);
             if (fillers != null){
                 changes = fillerHelper.setFillers(cls,
                                                   prop,
                                                   fillers,
-                                                  pair.getFilterObject(),
+                                                  (Class) pair.getFilterObject(),
                                                   mngr.getActiveOntology());
             }
         }
@@ -105,16 +103,16 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
     public List<OWLOntologyChange> addMatrixValue(OWLClass cls, Object colObj, Object value) {
 
         if (colObj instanceof PropertyRestrictionPair){
-            final PropertyRestrictionPair<OWLPropertyExpression, OWLPropertyRange> pair = (PropertyRestrictionPair) colObj;
-            OWLPropertyExpression objProp = pair.getColumnObject();
-            Set<OWLPropertyRange> values = getFillerSet(value);
+            final PropertyRestrictionPair pair = (PropertyRestrictionPair) colObj;
+            OWLPropertyExpression objProp = (OWLPropertyExpression) pair.getColumnObject();
+            Set<? extends OWLPropertyRange> values = getFillerSet(value);
             if (objHelper.isFunctional(objProp)){
-                if (fillerHelper.getAssertedFillers(cls, objProp, pair.getFilterObject()).isEmpty()){
-                    return performAdd(cls, objProp, values, pair.getFilterObject());
+                if (fillerHelper.getAssertedFillers(cls, objProp, (Class) pair.getFilterObject()).isEmpty()){
+                    return performAdd(cls, objProp, values, (Class) pair.getFilterObject());
                 }
             }
             else{
-                return performAdd(cls, objProp, values, pair.getFilterObject());
+                return performAdd(cls, objProp, values, (Class) pair.getFilterObject());
             }
         }
         else{
@@ -142,17 +140,17 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 
     protected String renderColumnTitle(Object columnObject) {
         if (columnObject instanceof PropertyRestrictionPair){
-            PropertyRestrictionPair<OWLPropertyExpression, OWLPropertyRange> pair = (PropertyRestrictionPair)columnObject;
-            return mngr.getRendering(pair.getColumnObject()) + " (" + pair.render(pair.getFilterObject()) + ")";
+            PropertyRestrictionPair pair = (PropertyRestrictionPair)columnObject;
+            return mngr.getRendering((OWLObject) pair.getColumnObject()) + " (" + pair.render((Class) pair.getFilterObject()) + ")";
         }
         return super.renderColumnTitle(columnObject);
     }
 
 
-    private <P extends OWLPropertyExpression, R extends OWLPropertyRange> List<OWLOntologyChange> performAdd(OWLClass cls,
-                                                                                                             P objProp,
-                                                                                                             Set<R> values,
-                                                                                                             Class<? extends OWLQuantifiedRestriction<P, R>> type) {
+    private <R extends OWLPropertyRange, P extends OWLPropertyExpression<R,P>> List<OWLOntologyChange> performAdd(OWLClass cls,
+                                                                                                                  P objProp,
+                                                                                                                  Set<R> values,
+                                                                                                                  Class<? extends OWLQuantifiedRestriction<R, P, R>> type) {
         if (values != null && !values.isEmpty()){
             return fillerHelper.addNamedFillers(cls, objProp, type, values, mngr.getActiveOntology());
         }
@@ -176,10 +174,10 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 
     public Object getSuitableColumnObject(Object columnObject) {
         if (columnObject instanceof OWLObjectProperty){
-            return new PropertyRestrictionPair<OWLObjectPropertyExpression, OWLClassExpression>((OWLObjectProperty)columnObject, OWLObjectSomeValuesFrom.class);
+            return new PropertyRestrictionPair<OWLClassExpression, OWLObjectPropertyExpression>((OWLObjectProperty)columnObject, OWLObjectSomeValuesFrom.class);
         }
         else if (columnObject instanceof OWLDataProperty){
-            return new PropertyRestrictionPair<OWLDataPropertyExpression, OWLDataRange>((OWLDataProperty)columnObject, OWLDataSomeValuesFrom.class);
+            return new PropertyRestrictionPair<OWLDataRange, OWLDataPropertyExpression>((OWLDataProperty)columnObject, OWLDataSomeValuesFrom.class);
         }
         else if (columnObject instanceof URI){
             return columnObject;
@@ -190,17 +188,15 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
 
     public boolean isValueRestricted(OWLClass cls, Object p) {
         return false;
-//        return fillerHelper.fillersRestricted((OWLObjectProperty)p);
     }
 
 
     public Set getSuggestedFillers(OWLClass cls, Object p, int threshold) {
         return null;
-//        return fillerHelper.getSuggestedFillers(cls, (OWLObjectProperty)p, threshold);
     }
 
 
-    public static class PropertyRestrictionPair<P extends OWLPropertyExpression, R extends OWLPropertyRange> extends AbstractColumnFilterPair<P, Class<? extends OWLQuantifiedRestriction<P, R>>> {
+    public static class PropertyRestrictionPair<R extends OWLPropertyRange, P extends OWLPropertyExpression<R,P>> extends AbstractColumnFilterPair<P, Class<? extends OWLQuantifiedRestriction<R, P, R>>> {
 
         private static Map<Class, String> renderMap = new HashMap<Class, String>();
         static {
@@ -210,7 +206,7 @@ public class RestrictionTreeMatrixModel extends AbstractMatrixModel<OWLClass> {
             renderMap.put(OWLDataAllValuesFrom.class, "only");
         }
 
-        public PropertyRestrictionPair(P object, Class<? extends OWLQuantifiedRestriction<P, R>> filter) {
+        public PropertyRestrictionPair(P object, Class<? extends OWLQuantifiedRestriction<R, P, R>> filter) {
             super(object, filter);
         }
 

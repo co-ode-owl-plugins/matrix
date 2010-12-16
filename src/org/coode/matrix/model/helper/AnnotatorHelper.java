@@ -121,8 +121,9 @@ public class AnnotatorHelper {
         for (OWLOntology ont : mngr.getActiveOntologies()){
             for (OWLAnnotationAssertionAxiom ax : ont.getAnnotationAssertionAxioms(entity.getIRI())){
                 if (ax.getAnnotation().getProperty().equals(property)){
-                    if (ax.getAnnotation().getValue() instanceof OWLStringLiteral){
-                        OWLStringLiteral constant = (OWLStringLiteral)ax.getAnnotation().getValue();
+                	OWLAnnotationValue annotationValue = ax.getAnnotation().getValue();
+                    if (annotationValue instanceof OWLLiteral && ((OWLLiteral) annotationValue).isRDFPlainLiteral()){
+                    	OWLLiteral constant = (OWLLiteral) annotationValue;
                         if (lang.equals(constant.getLang()) ||
                             (lang.equals("!") && constant.getLang() == null)){
                             if (newAxioms.contains(ax)){
@@ -149,11 +150,11 @@ public class AnnotatorHelper {
         Set<OWLObject> values = new HashSet<OWLObject>();
         for (OWLAnnotation annot : getAnnotations(entity, property)){
             final OWLAnnotationValue value = annot.getValue();
-            if (value instanceof OWLStringLiteral){
-                if (lang.equals(((OWLStringLiteral)value).getLang())){
+            if (value instanceof OWLLiteral && ((OWLLiteral) value).isRDFPlainLiteral()){
+                if (lang.equals(((OWLLiteral)value).getLang())){
                     values.add(value);
                 }
-                else if (lang.equals("!") && ((OWLStringLiteral)value).getLang() == null){
+                else if (lang.equals("!") && ((OWLLiteral)value).getLang() == null){
                     values.add(value);
                 }
             }
