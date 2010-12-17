@@ -6,7 +6,7 @@
    <property file="version.properties"/>
    <property name="major.version" value="1"/>
    <property name="minor.version" value="1"/>
-   <property name="micro.version" value="1"/>
+   <property name="micro.version" value="2"/>
 
 
    <!-- 
@@ -220,30 +220,75 @@
            overwrite = "true"/>
    </target>
 
-   <target name = "create.update.properties">
-       <property name="update.properties.file"
-                 location="${build}/update.matrix.properties"/>
-       <echo file="${update.properties.file}" append="false">
+   <target name = "clean">
+     <delete dir = "${build}"/>
+   </target>
+
+
+   <!-- ===================================================================  -->
+   <!-- Distribution Support - Optional                                      -->
+   <!-- ===================================================================  -->
+
+   <!-- 
+        **** CHANGE ME ****
+
+     This entire last section will probably only need to be setup relatively 
+     late in a project. It is optional and you can delete this section
+     if desired (you can always get it from the plugin template later
+     when you need it.)  It is designed to make it easier for
+     plugin developers to configure an update.properties file for use with the
+     Protege 4 automatic update feature.   Setting up the
+     update.properties file is a tedious process and I am trying to
+     make it simpler.  There will be a wiki for this process soon when
+     the new version of the Protege update mechanism is in place. 
+
+     This first property is the svn root of this project.  The idea is
+     allow the Protege update mechanism to find the update.properties
+     and version-readme.html in the ${svn.root}/etc directory of the
+     svn repository.  So all you need to do to make these files
+     available to the Protege update process is  to commit them.
+     However, feel free to choose other locations for these files if
+     it makes sense.
+     -->
+   <property name="svn.root" value="http://co-ode-owl-plugins.googlecode.com/svn/trunk/matrix"/>
+
+
+   <property name="update.properties.file" value="${svn.root}/etc/update.matrix.properties"/>
+   <property name="readme.file"            value="${svn.root}/etc/version.matrix.html"/>
+
+   <property name="download"               value="http://co-ode-owl-plugins.googlecode.com/files/${plugin}_${major.version}_${minor.version}_${micro.version}.zip"/>
+
+
+   <target name = "dist" depends="jar">
+       <echo file="./etc/update.matrix.properties" append="false">
 name=Matrix Views
 id=${plugin}
 version=${bundle.version}
-download=http://co-ode-owl-plugins.googlecode.com/files/${plugin}_${major.version}_${minor.version}_${micro.version}.zip
-readme=http://co-ode-owl-plugins.googlecode.com/svn/trunk/registries/4_1/version.matrix.html
+download=${download}
+readme=${readme.file}
 license=http://www.gnu.org/licenses/lgpl.html
 author=CO-ODE, The University of Manchester
        </echo>
-   </target>
-
-   <target name = "dist" depends="jar, create.update.properties">
        <zip destfile="${build}/${plugin}_${major.version}_${minor.version}_${micro.version}.zip">
            <fileset dir="${build}">
                <filename name="${plugin}.jar"/>
            </fileset>
        </zip>
+       <echo message="The build file should ensure that"/>
+       <echo message="1. The bundle version and id is correct."/>
+       <echo message="Check the following things"/>
+       <echo message="1. The main repository uses "/>
+       <echo message="      ${update.properties.file}"/>
+       <echo message="   to find this update"/>
+       <echo message="2. The update.properties can be found at "/>
+       <echo message="      ${update.properties.file}"/>
+       <echo message="   Usually this is ensured by committing your changed files."/>
+       <echo message="3. The readme file for this update can be found at"/>
+       <echo message="      ${readme.file}"/>
+       <echo message="   Usually this is ensured by committing your changed files."/>
+       <echo message="4. The download for this update can be found at"/>
+       <echo message="      ${download}"/>
    </target>
-	
-   <target name = "clean">
-     <delete dir = "${build}"/>
-   </target>
+
 
 </project>
