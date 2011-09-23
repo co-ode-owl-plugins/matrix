@@ -27,7 +27,7 @@ Import-Package: org.osgi.framework,
  javax.swing.text.rtf,
  javax.swing.tree,
  javax.swing.undo
-Bundle-Version: 1.1.1
+Bundle-Version: 1.1.2
 Bundle-Activator: org.protege.editor.core.plugin.DefaultPluginActivator
 Require-Bundle: org.eclipse.equinox.registry,
  org.eclipse.equinox.common,
