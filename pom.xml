@@ -12,7 +12,7 @@
 
 	<groupId>edu.stanford.protege</groupId>
 	<artifactId>org.coode.matrix</artifactId>
-	<version>4.0.0</version>
+	<version>4.0.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 
