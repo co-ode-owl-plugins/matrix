@@ -2,6 +2,7 @@ package org.coode.matrix.ui.editor;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.util.AbstractList;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.Set;
@@ -24,6 +25,8 @@ import org.protege.editor.owl.ui.clsdescriptioneditor.OWLAutoCompleter;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.semanticweb.owlapi.model.OWLObject;
+
+import com.google.common.collect.ImmutableSet;
 
 /*
 * Copyright (C) 2007, University of Manchester
@@ -129,9 +132,11 @@ public class OWLObjectListEditor extends AbstractCellEditor implements TableCell
 
 
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-
         if (value instanceof FillerModel){
             originalFillers = ((FillerModel)value).getAssertedFillersFromSupers();
+        }
+        else if (value instanceof AbstractList){
+            originalFillers = ImmutableSet.copyOf(((AbstractList)value).iterator());
         }
         else{
             originalFillers = (Set<OWLObject>) value;
